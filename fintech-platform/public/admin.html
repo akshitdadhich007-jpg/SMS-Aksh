@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - Society Fintech (Demo)</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <h1>Society Fintech</h1>
+        <p>Admin Panel (Demo)</p>
+      </div>
+      <div class="navbar-user">
+        <span id="userName" class="user-info">Welcome</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </nav>
+
+    <div class="dashboard-content">
+      <main class="main-content">
+        <div class="dashboard-header">
+          <h2>Dashboard</h2>
+          <p>Overview (demo)</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <h3>3</h3>
+              <p>Total Residents</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🏠</div>
+            <div class="stat-info">
+              <h3>5</h3>
+              <p>Total Flats</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Quick Actions</h3>
+          <div class="form-section">
+            <form id="addFlatForm" class="form">
+              <input type="text" id="flat_number" name="flat_number" placeholder="Flat number (e.g. A-101)" required>
+              <input type="text" id="block_name" name="block_name" placeholder="Block name (optional)">
+              <input type="number" id="floor_number" name="floor_number" placeholder="Floor number (optional)">
+              <input type="text" id="owner_name" name="owner_name" placeholder="Owner name (optional)">
+              <button class="btn btn-primary" type="submit">Add Flat</button>
+            </form>
+
+            <form id="addResidentForm" class="form" style="margin-top:12px;">
+              <input type="text" id="res_name" name="name" placeholder="Resident name" required>
+              <input type="email" id="res_email" name="email" placeholder="Email" required>
+              <select id="res_flat_id" name="flat_id" required>
+                <option value="">Select flat</option>
+              </select>
+              <input type="password" id="res_password" name="password" placeholder="Temporary password" required>
+              <button class="btn btn-secondary" type="submit">Add Resident</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>All Residents (Demo)</h2>
+          <div style="overflow:auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Flat Number</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Raj Kumar</td><td>resident1@society.local</td><td>A-101</td><td><span class="status active">Active</span></td></tr>
+                <tr><td>Priya Singh</td><td>resident2@society.local</td><td>A-102</td><td><span class="status active">Active</span></td></tr>
+                <tr><td>Amit Patel</td><td>resident3@society.local</td><td>B-201</td><td><span class="status inactive">Inactive</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // fetch session info
+    fetch('/api/me').then(r=>r.json()).then(data=>{
+      if (!data.loggedIn) { window.location.href = '/'; return; }
+      if (data.user.role !== 'admin') { window.location.href = '/'; return; }
+      document.getElementById('userName').textContent = 'Welcome, ' + data.user.name;
+    }).catch(()=>{ window.location.href = '/'; });
+  </script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

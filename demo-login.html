@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Fintech - Demo Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 40px 32px;
+            width: 100%;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .heading {
+            font-size: 28px;
+            font-weight: 700;
+            color: #003d82;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .role-text {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #003d82;
+            box-shadow: 0 0 0 3px rgba(0, 61, 130, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #003d82;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #002555;
+        }
+
+        .demo-section {
+            background-color: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+            font-size: 13px;
+        }
+
+        .demo-section h3 {
+            color: #0369a1;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .demo-credentials {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .credential-box {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #0369a1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .credential-box:hover {
+            background-color: #f8fafb;
+            transform: translateX(4px);
+        }
+
+        .credential-label {
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 4px;
+        }
+
+        .credential-info {
+            font-size: 12px;
+            color: #6b7280;
+            font-family: monospace;
+        }
+
+        .success-message {
+            background-color: #dcfce7;
+            border: 1px solid #86efac;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <h1 class="heading">Society Fintech</h1>
+                <p class="subtitle">Login to manage maintenance payments</p>
+                <p class="role-text">For society members and committee administrators</p>
+            </div>
+
+            <form class="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-button">Login</button>
+            </form>
+
+            <div class="success-message" id="successMsg">
+                ✅ Login successful! User data saved.
+            </div>
+
+            <div class="demo-section">
+                <h3>📋 Demo Credentials (Click to Fill)</h3>
+                <div class="demo-credentials">
+                    <div class="credential-box" onclick="fillCredentials('admin@society.local', 'Admin@123456')">
+                        <div class="credential-label">👨‍💼 Admin Account</div>
+                        <div class="credential-info">admin@society.local</div>
+                        <div class="credential-info">Admin@123456</div>
+                    </div>
+                    <div class="credential-box" onclick="fillCredentials('resident1@society.local', 'Resident@123')">
+                        <div class="credential-label">👤 Resident 1</div>
+                        <div class="credential-info">resident1@society.local</div>
+                        <div class="credential-info">Resident@123</div>
+                    </div>
+                    <div class="credential-box" onclick="fillCredentials('resident2@society.local', 'Resident@123')">
+                        <div class="credential-label">👤 Resident 2</div>
+                        <div class="credential-info">resident2@society.local</div>
+                        <div class="credential-info">Resident@123</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer-text">
+            <p>&copy; 2026 Society Fintech. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        const demoUsers = [
+            {
+                email: 'admin@society.local',
+                password: 'Admin@123456',
+                name: 'Society Admin',
+                role: 'admin'
+            },
+            {
+                email: 'resident1@society.local',
+                password: 'Resident@123',
+                name: 'Raj Kumar',
+                role: 'resident',
+                flat: 'A-101'
+            },
+            {
+                email: 'resident2@society.local',
+                password: 'Resident@123',
+                name: 'Priya Singh',
+                role: 'resident',
+                flat: 'A-102'
+            }
+        ];
+
+        function fillCredentials(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            document.getElementById('email').focus();
+        }
+
+        document.querySelector('.login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+
+            const user = demoUsers.find(u => u.email.toLowerCase() === email);
+
+            if (!user) {
+                alert('❌ Invalid email or password');
+                return;
+            }
+
+            if (user.password !== password) {
+                alert('❌ Invalid email or password');
+                return;
+            }
+
+            // Store user info
+            localStorage.setItem('user', JSON.stringify(user));
+
+            // Show success message
+            const successMsg = document.getElementById('successMsg');
+            successMsg.classList.add('show');
+            successMsg.textContent = `✅ Welcome ${user.name}! (${user.role.toUpperCase()})`;
+
+            setTimeout(() => {
+                // Redirect to appropriate demo page
+                if (user.role === 'admin') {
+                    window.location.href = 'admin-ui.html';
+                } else {
+                    window.location.href = 'resident-ui.html';
+                }
+            }, 600);
+        });
+    </script>
+</body>
+</html>

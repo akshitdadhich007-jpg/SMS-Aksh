@@ -1,0 +1,16 @@
+{
+  "name": "society-fintech",
+  "version": "1.0.0",
+  "description": "Society Fintech - Node.js backend with MySQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "@supabase/supabase-js": "^2.4.0",
+    "dotenv": "^16.0.3"
+  }
+}

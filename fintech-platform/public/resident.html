@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Resident - Society Fintech (Demo)</title>
+  <link rel="stylesheet" href="css/resident.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <h1>Society Fintech</h1>
+        <p>Resident Portal (Demo)</p>
+      </div>
+      <div class="navbar-user">
+        <span id="userName" class="user-info">Welcome</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </nav>
+
+    <div class="dashboard-content">
+      <main class="main-content">
+        <section class="card">
+          <h2>Your Flat Details</h2>
+          <div class="flat-info">
+            <div class="info-item"><span class="label">Flat Number:</span><span id="flatNumber" class="value">A-101</span></div>
+            <div class="info-item"><span class="label">Block:</span><span id="blockName" class="value">Block A</span></div>
+            <div class="info-item"><span class="label">Floor:</span><span id="floorNumber" class="value">1</span></div>
+          </div>
+        </section>
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-amount">₹0.00</div>
+            <div class="stat-label">Total Paid</div>
+            <div class="stat-indicator paid">Paid</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-amount">₹2500.00</div>
+            <div class="stat-label">Pending Amount</div>
+            <div class="stat-indicator pending">Pending</div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Maintenance Payment History</h2>
+          <table class="table">
+            <thead>
+              <tr><th>Month</th><th>Year</th><th>Amount</th><th>Due Date</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>January</td><td>2026</td><td>₹2500.00</td><td>Jan 15, 2026</td><td><span class="status-badge paid">Paid</span></td></tr>
+              <tr><td>February</td><td>2026</td><td>₹2500.00</td><td>Feb 15, 2026</td><td><span class="status-badge pending">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Official Notices</h2>
+          <div class="notices-list">
+            <div class="notice-item"><h3>Annual Society Meeting</h3><p>Annual general meeting scheduled for February 15, 2026 at 7:00 PM in the community hall.</p><span class="notice-date">Jan 10, 2026</span></div>
+            <div class="notice-item"><h3>Maintenance Fee Increase</h3><p>Please note that maintenance fees will be revised from March 2026. Details will be shared soon.</p><span class="notice-date">Jan 20, 2026</span></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/resident.js"></script>
+</body>
+</html>

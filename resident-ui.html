@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Resident Dashboard - Society Fintech (Demo)</title>
+  <link rel="stylesheet" href="resident-style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand"><h2 id="societyName">Greenfield Residency</h2></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="#">🏠 Dashboard</a>
+      <a class="nav-item" href="#billCard">🧾 My Bills</a>
+      <a class="nav-item" href="#paySection">💳 Pay Maintenance</a>
+      <a class="nav-item" href="#history">📜 Payment History</a>
+      <a class="nav-item" href="#complaints">⚠️ Complaints</a>
+      <a class="nav-item" href="#announcements">📢 Announcements</a>
+      <a class="nav-item" href="#documents">📂 Documents</a>
+      <a class="nav-item" href="#emergency">🚨 Emergency</a>
+      <a class="nav-item" href="#staff">👷 Staff & Services</a>
+    </nav>
+    <div class="sidebar-footer">© 2026 Society Fintech</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="left"><h3 id="topSociety">Greenfield Residency</h3></div>
+      <div class="right">
+        <div class="notif">🔔<span id="notifCount" class="badge">2</span></div>
+        <div class="profile">
+          <button id="profileBtn">Resident ▾</button>
+          <div id="profileMenu" class="profile-menu">
+            <a href="#">My Profile</a>
+            <a href="#">Change Password</a>
+            <a href="#" id="logoutBtn">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Summary cards -->
+      <section class="cards">
+        <div class="card small">
+          <div class="card-title">Current Due</div>
+          <div class="card-value" id="currentDue">₹0</div>
+        </div>
+        <div class="card small">
+          <div class="card-title">Due Date</div>
+          <div class="card-value" id="dueDate">-</div>
+        </div>
+        <div class="card small">
+          <div class="card-title">Payment Status</div>
+          <div class="card-value" id="paymentStatus">-</div>
+        </div>
+        <div class="card small">
+          <div class="card-title">Last Payment</div>
+          <div class="card-value" id="lastPayment">-</div>
+        </div>
+      </section>
+
+      <!-- Bill & Pay -->
+      <section id="billCard" class="section">
+        <div class="section-left">
+          <h2>Current Month Bill</h2>
+          <div class="bill-card">
+            <div><strong>Flat:</strong> <span id="flatNum">A-101</span></div>
+            <div><strong>Billing Month:</strong> <span id="billMonth">Feb 2026</span></div>
+            <div><strong>Maintenance Charges:</strong> <span id="maintCharges">₹2,500</span></div>
+            <div><strong>Additional Charges:</strong> <span id="addCharges">₹0</span></div>
+            <div><strong>Total:</strong> <span id="billTotal">₹2,500</span></div>
+            <div class="bill-actions">
+              <button id="payNow" class="btn-primary">Pay Now</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="paySection" class="section-right">
+          <h3>Payment Methods</h3>
+          <div class="methods">
+            <label><input type="radio" name="method" value="UPI" checked> UPI</label>
+            <label><input type="radio" name="method" value="Card"> Debit / Credit Card</label>
+            <label><input type="radio" name="method" value="NetBanking"> Net Banking</label>
+          </div>
+
+          <div id="paymentFlow" class="payment-flow hidden">
+            <h4>Confirm Payment</h4>
+            <div id="paySummary">Pay <strong id="payAmount">₹2,500</strong> using <span id="payMethod">UPI</span></div>
+            <button id="confirmPay" class="btn-primary">Confirm Payment</button>
+            <div id="paymentResult" class="payment-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Payment History -->
+      <section id="history" class="section">
+        <h3>Payment History</h3>
+        <table class="table" id="historyTable">
+          <thead><tr><th>Month</th><th>Amount</th><th>Mode</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Complaints -->
+      <section id="complaints" class="section">
+        <h3>Raise Complaint</h3>
+        <form id="complaintForm" class="form">
+          <label>Category
+            <select id="complaintCategory">
+              <option>Plumbing</option>
+              <option>Electricity</option>
+              <option>Housekeeping</option>
+              <option>Noise</option>
+            </select>
+          </label>
+          <label>Description
+            <textarea id="complaintDesc" rows="3"></textarea>
+          </label>
+          <button class="btn-primary" type="submit">Submit Complaint</button>
+        </form>
+
+        <h4 style="margin-top:16px">My Complaints</h4>
+        <table class="table" id="complaintsTable">
+          <thead><tr><th>ID</th><th>Category</th><th>Description</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Announcements -->
+      <section id="announcements" class="section">
+        <h3>Announcements & Events</h3>
+        <div id="annList" class="ann-list"></div>
+      </section>
+
+      <section id="emergency" class="section">
+        <h3>Emergency Contacts</h3>
+        <div class="emergency-list">
+          <div>Security: +91-1234567890</div>
+          <div>Electrician: +91-9876543210</div>
+          <div>Plumber: +91-9988776655</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">Designed for demo — easy payments and complaints</footer>
+  </div>
+
+  <script src="resident.js"></script>
+</body>
+</html>

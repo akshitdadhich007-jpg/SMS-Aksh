@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Dashboard - Society Fintech (Demo)</title>
+  <link rel="stylesheet" href="admin-style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h2 id="societyName">My Society</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="#"><span class="icon">🏠</span> Dashboard</a>
+      <a class="nav-item" href="#"><span class="icon">👥</span> Residents</a>
+      <a class="nav-item" href="#"><span class="icon">🛍️</span> Shops</a>
+      <a class="nav-item" href="#"><span class="icon">🧾</span> Maintenance & Bills</a>
+      <a class="nav-item" href="#"><span class="icon">💳</span> Payments</a>
+      <a class="nav-item" href="#"><span class="icon">📈</span> Expenses</a>
+      <a class="nav-item" href="#"><span class="icon">👔</span> Staff & Salaries</a>
+      <a class="nav-item" href="#"><span class="icon">🤝</span> Committee</a>
+      <a class="nav-item" href="#"><span class="icon">🚗</span> Vehicles & Visitors</a>
+      <a class="nav-item" href="#"><span class="icon">📦</span> Deliveries</a>
+      <a class="nav-item" href="#"><span class="icon">⚠️</span> Complaints</a>
+      <a class="nav-item" href="#"><span class="icon">🎉</span> Events & Announcements</a>
+      <a class="nav-item" href="#"><span class="icon">📂</span> Documents</a>
+      <a class="nav-item" href="#"><span class="icon">🚨</span> Emergency & Helpline</a>
+      <a class="nav-item" href="#"><span class="icon">📊</span> Reports</a>
+      <a class="nav-item" href="#"><span class="icon">⚙️</span> Settings</a>
+    </nav>
+
+    <div class="sidebar-footer">© 2026 Society Fintech</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="sidebarToggle" class="btn-icon">☰</button>
+      </div>
+      <div class="topbar-right">
+        <div class="notif" id="notifBtn">
+          <span class="bell">🔔</span>
+          <span class="badge" id="notifCount">3</span>
+        </div>
+        <div class="profile">
+          <button id="profileBtn" class="profile-btn">Admin ▾</button>
+          <div id="profileMenu" class="profile-menu">
+            <a href="#">Profile</a>
+            <a href="#">Change Password</a>
+            <a href="#" id="logoutBtn">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="content container">
+      <!-- Summary Cards -->
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Total Flats</div>
+          <div class="card-value" id="totalFlats">--</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Residents</div>
+          <div class="card-value" id="totalResidents">--</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Monthly Collection</div>
+          <div class="card-value" id="monthlyCollection">--</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Pending Dues</div>
+          <div class="card-value" id="pendingDues">--</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Expenses</div>
+          <div class="card-value" id="totalExpenses">--</div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="analytics">
+        <div class="chart-card">
+          <h3>Monthly Maintenance Collection</h3>
+          <div style="position:relative; height:300px; width:100%;">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Expense Distribution</h3>
+          <div style="position:relative; height:280px; width:100%;">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tables -->
+      <div class="tables">
+        <div class="table-card">
+          <h3>Recent Payments</h3>
+          <table class="table" id="paymentsTable">
+            <thead>
+              <tr><th>Flat</th><th>Resident</th><th>Month</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="table-card">
+          <h3>Latest Complaints</h3>
+          <table class="table" id="complaintsTable">
+            <thead>
+              <tr><th>Complaint ID</th><th>Flat</th><th>Category</th><th>Status</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">Designed for demo — responsive and scalable UI</footer>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

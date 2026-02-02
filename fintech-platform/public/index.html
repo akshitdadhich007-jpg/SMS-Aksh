@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Society Fintech - Login (Demo)</title>
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo-section">
+        <h1 class="heading">Society Fintech</h1>
+        <p class="subtitle">Login to manage maintenance payments</p>
+        <p class="role-text">For society members and committee administrators</p>
+      </div>
+
+      <div id="alert" style="display:none;" class="alert"></div>
+
+      <form id="loginForm" class="login-form" onsubmit="return false;">
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">
+              <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button id="loginBtn" type="submit" class="login-button">Login</button>
+
+        <div class="footer-links">
+          <a href="#" class="link">Forgot password?</a>
+        </div>
+      </form>
+
+      <div style="margin-top:12px; color:#6b7280; font-size:13px;">
+        <strong>Demo credentials</strong><br>
+        Admin: admin@society.local / Admin@123456<br>
+        Resident: resident1@society.local / Resident@123
+      </div>
+    </div>
+
+    <footer class="footer-text">
+      <p>&copy; 2026 Society Fintech. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="js/login.js"></script>
+  <script>
+    // prefill demo credentials into placeholders for quick testing (optional)
+    (function(){
+      const email = document.getElementById('email');
+      const pass = document.getElementById('password');
+      if (email && pass && !email.value) {
+        // leave blank by default; user can enter demo creds shown below
+      }
+    })();
+  </script>
+</body>
+</html>
