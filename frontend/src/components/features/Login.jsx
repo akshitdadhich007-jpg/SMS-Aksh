@@ -6,7 +6,8 @@ import { Button } from '../ui';
 const demoUsers = [
     { email: 'admin@society.local', password: 'Admin@123456', name: 'Society Admin', role: 'admin' },
     { email: 'resident1@society.local', password: 'Resident@123', name: 'Raj Kumar', role: 'resident', flat: 'A-101' },
-    { email: 'resident2@society.local', password: 'Resident@123', name: 'Priya Singh', role: 'resident', flat: 'A-102' }
+    { email: 'resident2@society.local', password: 'Resident@123', name: 'Priya Singh', role: 'resident', flat: 'A-102' },
+    { email: 'security@society.local', password: 'Security@123', name: 'Ram Singh', role: 'security' }
 ];
 
 const Login = () => {
@@ -29,6 +30,7 @@ const Login = () => {
 
         setTimeout(() => {
             if (user.role === 'admin') navigate('/admin');
+            else if (user.role === 'security') navigate('/security');
             else navigate('/resident');
         }, 600);
     };
@@ -92,14 +94,15 @@ const Login = () => {
                             <div className="credential-info">resident1@society.local</div>
                             <div className="credential-info">Resident@123</div>
                         </div>
-                        <div className="credential-box" onClick={() => fillCredentials('resident2@society.local', 'Resident@123')}>
-                            <div className="credential-label">👤 Resident 2</div>
-                            <div className="credential-info">resident2@society.local</div>
-                            <div className="credential-info">Resident@123</div>
+                        <div className="credential-box" onClick={() => fillCredentials('security@society.local', 'Security@123')}>
+                            <div className="credential-label">👮 Security Guard</div>
+                            <div className="credential-info">security@society.local</div>
+                            <div className="credential-info">Security@123</div>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <footer className="footer-text">
                 <p>&copy; 2026 Society Fintech. All rights reserved.</p>
