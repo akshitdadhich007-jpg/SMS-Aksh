@@ -1,0 +1,192 @@
+/* Component Styles - Enterprise SaaS */
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--brand-blue);
+    color: white;
+    border: 1px solid var(--brand-blue);
+    box-shadow: var(--shadow-btn);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10), 0 6px 14px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    box-shadow: var(--shadow-btn-pressed);
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--hover-bg);
+    border-color: #cbd5e1;
+}
+
+.btn-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.btn-danger:hover {
+    background: #fecaca;
+}
+
+/* Cards */
+.ui-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.card-highlight {
+    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+    border: 1px solid #E0E7FF;
+}
+
+.ui-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.ui-card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ui-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.ui-card-body {
+    padding: 24px;
+}
+
+/* Stat Cards */
+.stat-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -1px;
+}
+
+.stat-trend {
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.trend-up {
+    color: var(--success);
+}
+
+.trend-down {
+    color: var(--danger);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.badge-success {
+    background: #ecfdf5;
+    color: var(--success);
+    border: 1px solid #a7f3d0;
+}
+
+.badge-warning {
+    background: #fffbeb;
+    color: var(--warning);
+    border: 1px solid #fde68a;
+}
+
+.badge-danger {
+    background: #fef2f2;
+    color: var(--danger);
+    border: 1px solid #fecaca;
+}
+
+.badge-neutral {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}

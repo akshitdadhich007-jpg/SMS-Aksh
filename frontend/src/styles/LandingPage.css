@@ -1,0 +1,435 @@
+/* Landing Page Root */
+.landing-page-root {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 32px;
+    color: var(--brand-dark);
+    letter-spacing: -0.5px;
+}
+
+.section-closing {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-top: 48px;
+    font-weight: 600;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* SECTION 1: HERO */
+.landing-hero {
+    display: flex;
+    height: 100vh;
+    min-height: 700px;
+    background: var(--card);
+    /* Match app card/white background */
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-left {
+    width: 70%;
+    position: relative;
+    background-image: url('/assets/society-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    color: white;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 650px;
+}
+
+.hero-title {
+    font-size: 64px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+    line-height: 1.1;
+}
+
+.hero-tagline {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    opacity: 0.95;
+    line-height: 1.4;
+}
+
+.hero-description {
+    font-size: 20px;
+    line-height: 1.6;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.hero-supporting {
+    font-size: 16px;
+    line-height: 1.6;
+    opacity: 0.85;
+    max-width: 580px;
+    margin-bottom: 32px;
+}
+
+.hero-highlights {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.15);
+    padding: 12px 24px;
+    border-radius: 99px;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-right {
+    width: 30%;
+    background: var(--bg);
+    /* Use app background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: var(--shadow-card);
+    /* Strict shadow */
+    z-index: 10;
+}
+
+/* Common Section Styles */
+.landing-section {
+    padding: 60px 0;
+    height: auto;
+    min-height: auto;
+}
+
+/* SECTION 2: PROBLEM */
+.section-problem {
+    background: var(--card);
+    padding-top: 60px;
+}
+
+
+
+.problem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    text-align: left;
+    max-width: 1000px;
+    /* Increased slightly to accommodate boxes */
+    margin: 0 auto;
+}
+
+.problem-item {
+    display: flex;
+    gap: 20px;
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    /* Box Styling */
+    background: var(--bg);
+    padding: 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+    align-items: flex-start;
+}
+
+.problem-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+    background: white;
+    /* Subtle highlight on hover */
+}
+
+/* Make the last odd item span full width */
+.problem-item:last-child {
+    grid-column: 1 / -1;
+}
+
+.problem-item .icon {
+    font-size: 28px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    /* Visual alignment with text */
+}
+
+.context-paragraph {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-top: 60px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.impact-line {
+    font-size: 22px;
+    color: var(--brand-dark);
+    font-weight: 700;
+    margin-top: 24px;
+}
+
+/* SECTION 3: SOLUTION */
+.section-solution {
+    background: var(--brand-dark);
+    color: white;
+}
+
+.section-solution .section-title {
+    color: white;
+    margin-bottom: 32px;
+}
+
+.solution-text {
+    font-size: 24px;
+    line-height: 1.5;
+    max-width: 800px;
+    margin: 0 auto 32px;
+    font-weight: 600;
+}
+
+.solution-supporting {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 750px;
+    margin: 0 auto 32px;
+    opacity: 0.9;
+}
+
+.value-emphasis {
+    font-size: 20px;
+    font-weight: 700;
+    color: #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* SECTION 4: FEATURES */
+.section-features {
+    background: var(--bg);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.feature-card {
+    background: var(--card);
+    padding: 28px;
+    border-radius: var(--radius);
+    /* Strict radius */
+    box-shadow: var(--shadow-card);
+    text-align: left;
+    border: 1px solid var(--border);
+    /* Strict border */
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    /* Strict hover shadow if applicable, or keep default */
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--brand-dark);
+}
+
+.feature-main {
+    font-size: 16px;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 600;
+}
+
+.feature-depth {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+/* SECTION 5: HOW IT WORKS */
+.section-how {
+    background: var(--card);
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px;
+    background: var(--bg);
+    /* Distinct form card */
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--brand-blue);
+    color: white;
+    border-radius: var(--radius);
+    /* Consistent radius even for small elements if desired, or keep 12px if standard */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.step-item p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+    padding-top: 4px;
+}
+
+/* SECTION 6: TRUST */
+.section-trust {
+    background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+    /* Keep gradient as it matches card-highlight */
+}
+
+.trust-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 600px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.trust-list li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--brand-dark);
+}
+
+.trust-list li::before {
+    content: "🛡️";
+    font-size: 24px;
+}
+
+/* SECTION 7: FOOTER */
+.landing-footer {
+    background: var(--brand-dark);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 32px;
+    text-align: center;
+    font-size: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .landing-hero {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .hero-left {
+        width: 100%;
+        min-height: 600px;
+        padding: 60px 32px;
+        text-align: center;
+    }
+
+    .hero-content {
+        margin: 0 auto;
+    }
+
+    .hero-right {
+        width: 100%;
+        padding: 60px 24px;
+        background: var(--card);
+        /* Switch to card background on mobile stack */
+    }
+
+    .features-grid,
+    .problem-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .hero-title {
+        font-size: 40px;
+    }
+}

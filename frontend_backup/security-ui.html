@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Security Dashboard - Society Fintech (Demo)</title>
+  <link rel="stylesheet" href="assets/css/security-style.css">
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <h2 id="societyName">Greenfield Residency</h2>
+    </div>
+    <nav class="nav">
+      <a class="nav-item active" href="#">🏠 Dashboard</a>
+      <a class="nav-item" href="#visitor">👤 Visitor Entry</a>
+      <a class="nav-item" href="#vehicle">🚗 Vehicle Entry</a>
+      <a class="nav-item" href="#delivery">📦 Deliveries</a>
+      <a class="nav-item" href="#emergency">🚨 Emergency Logs</a>
+    </nav>
+    <div class="footer">© 2026 Society Fintech</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="left"><strong id="topSociety">Greenfield Residency</strong></div>
+      <div class="right">
+        <div class="notif">🔔<span id="notifCount" class="badge">1</span></div>
+        <div class="profile">
+          <button id="profileBtn">Security ▾</button>
+          <div id="profileMenu" class="profile-menu"><a href="#">Profile</a><a href="#" id="logoutBtn">Logout</a></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="quick">
+        <button class="qa" data-action="visitor">Add Visitor Entry</button>
+        <button class="qa" data-action="vehicle">Add Vehicle Entry</button>
+        <button class="qa" data-action="delivery">Log Delivery</button>
+        <button class="qa" data-action="emergency">Emergency Alert</button>
+      </section>
+
+      <section id="visitor" class="panel">
+        <h3>Visitor Entry</h3>
+        <form id="visitorForm" class="form">
+          <input id="vName" placeholder="Visitor Name" required>
+          <input id="vPurpose" placeholder="Purpose of Visit" required>
+          <input id="vFlat" placeholder="Flat Number to Visit" required>
+          <input id="vTime" type="datetime-local">
+          <button class="btn" type="submit">Save Visitor</button>
+        </form>
+        <h4>Recent Visitors</h4>
+        <table id="visitorTable" class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Flat</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section id="vehicle" class="panel">
+        <h3>Vehicle Entry</h3>
+        <form id="vehicleForm" class="form">
+          <input id="vehNumber" placeholder="Vehicle Number" required>
+          <select id="vehType">
+            <option>Visitor</option>
+            <option>Resident</option>
+          </select>
+          <label><input type="checkbox" id="vehAuth"> Authorized</label>
+          <div class="note">Only authorized vehicles allowed inside.</div>
+          <button class="btn" type="submit">Save Vehicle</button>
+        </form>
+        <h4>Recent Vehicles</h4>
+        <table id="vehicleTable" class="table">
+          <thead>
+            <tr>
+              <th>Vehicle</th>
+              <th>Type</th>
+              <th>Auth</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section id="delivery" class="panel">
+        <h3>Deliveries</h3>
+        <form id="deliveryForm" class="form">
+          <input id="courier" placeholder="Courier Name (e.g., Amazon)" required>
+          <input id="delFlat" placeholder="Flat Number" required>
+          <button class="btn" type="submit">Log Delivery</button>
+        </form>
+        <h4>Delivery List</h4>
+        <table id="deliveryTable" class="table">
+          <thead>
+            <tr>
+              <th>Courier</th>
+              <th>Flat</th>
+              <th>Status</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section id="emergency" class="panel">
+        <h3>Emergency Logs</h3>
+        <div class="contacts">
+          <div><strong>Police:</strong> 100</div>
+          <div><strong>Ambulance:</strong> 102</div>
+          <div><strong>Fire:</strong> 101</div>
+        </div>
+        <form id="emergencyForm" class="form">
+          <input id="emTitle" placeholder="Incident (e.g., Lift failure)" required>
+          <textarea id="emDesc" placeholder="Short description"></textarea>
+          <button class="btn" type="submit">Log Incident</button>
+        </form>
+        <h4>Emergency Log</h4>
+        <table id="emTable" class="table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Incident</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+
+    <footer class="footer">Security Panel — quick actions for gate operations</footer>
+  </div>
+
+  <script src="assets/js/security.js"></script>
+</body>
+
+</html>

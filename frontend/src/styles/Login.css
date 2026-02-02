@@ -1,0 +1,193 @@
+/* Login Styles - Fintech Theme */
+/* Inherits variables from index.css */
+
+/* Body styles moved to .login-page to avoid global pollution */
+/* Body styles moved to .login-page to avoid global pollution */
+.login-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: linear-gradient(rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.65)), url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    /* Allow scrolling if card is too tall */
+    z-index: 9999;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    padding: 48px 40px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.heading {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.role-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--bg);
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: #fff;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--brand-dark);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 24px;
+    transition: all 0.2s;
+}
+
+.login-button:hover {
+    background-color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.demo-section {
+    background-color: var(--hover-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.demo-section h3 {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.demo-credentials {
+    display: grid;
+    gap: 8px;
+}
+
+.credential-box {
+    background: white;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.credential-box:hover {
+    border-color: var(--brand-blue);
+    background: #f8fafc;
+}
+
+.credential-label {
+    font-weight: 600;
+    color: var(--brand-dark);
+    font-size: 13px;
+}
+
+.credential-info {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.success-message {
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    display: none;
+}
+
+.success-message.show {
+    display: block;
+}
+
+.footer-text {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
