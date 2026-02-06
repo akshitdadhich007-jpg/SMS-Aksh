@@ -5,7 +5,7 @@ import '../styles/LandingPage.css';
 const LandingPage = () => {
     return (
         <div className="landing-page-root">
-            {/* SECTION 1: HERO + SIDE LOGIN */}
+
             <section className="landing-hero">
                 <div className="hero-left">
                     <div className="hero-overlay"></div>
@@ -26,7 +26,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 2: PROBLEM STATEMENT */}
+
             <section className="landing-section section-problem">
                 <div className="container">
                     <h2 className="section-title">Residential societies face daily operational chaos</h2>
@@ -59,7 +59,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 3: SOLUTION */}
+
             <section className="landing-section section-solution">
                 <div className="container">
                     <h2 className="section-title">One platform. Complete control. Total transparency.</h2>
@@ -72,7 +72,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 4: FEATURES */}
+
             <section className="landing-section section-features">
                 <div className="container">
                     <h2 className="section-title">Designed for every role in your society</h2>
@@ -106,7 +106,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 5: HOW IT WORKS */}
+
             <section className="landing-section section-how">
                 <div className="container">
                     <h2 className="section-title">How Society Fintech works</h2>
@@ -128,7 +128,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 6: TRUST & COMMUNITY */}
+
             <section className="landing-section section-trust">
                 <div className="container">
                     <h2 className="section-title">Built for trust, accountability, and community living</h2>
@@ -143,7 +143,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* SECTION 7: FOOTER */}
+
             <footer className="landing-footer">
                 <p>Society Fintech — simplifying community living through technology.</p>
             </footer>

@@ -1,216 +1,246 @@
+
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import '../styles/admin-style.css';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { PageHeader, Card, StatCard, StatusBadge, Button, CardHeader, CardContent } from '../components/ui';
+import {
+    LayoutDashboard,
+    Users,
+    FileText,
+    Settings,
+    Building,
+    Wallet,
+    Bell,
+    LogOut,
+    Menu,
+    Search,
+    MoreVertical
+} from 'lucide-react';
+import { Card, PageHeader, StatusBadge } from '../components/ui';
 
 const Admin = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [profileOpen, setProfileOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const [activeMenu, setActiveMenu] = useState('Dashboard');
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    const menuItems = [
-        { name: 'Dashboard', icon: '🏠' },
-        { name: 'Residents', icon: '👥' },
-        { name: 'Shops', icon: '🛍️' },
-        { name: 'Maintenance & Bills', icon: '🧾' },
-        { name: 'Payments', icon: '💳' },
-        { name: 'Expenses', icon: '📈' },
-        { name: 'Staff & Salaries', icon: '👔' },
-        { name: 'Committee', icon: '🤝' },
-        { name: 'Vehicles & Visitors', icon: '🚗' },
-        { name: 'Deliveries', icon: '📦' },
-        { name: 'Complaints', icon: '⚠️' },
-        { name: 'Events & Announcements', icon: '🎉' },
-        { name: 'Documents', icon: '📂' },
-        { name: 'Emergency & Helpline', icon: '🚨' },
-        { name: 'Reports', icon: '📊' },
-        { name: 'Settings', icon: '⚙️' },
+    const navItems = [
+        { icon: <LayoutDashboard size={20} />, label: 'Dashboard', active: true },
+        { icon: <Users size={20} />, label: 'Residents' },
+        { icon: <Building size={20} />, label: 'Flats & Units' },
+        { icon: <Wallet size={20} />, label: 'Accounts' },
+        { icon: <FileText size={20} />, label: 'Reports' },
+        { icon: <Settings size={20} />, label: 'Settings' },
+    ];
+
+    const stats = [
+        { label: 'Total Residents', value: '450', change: '+12%', trend: 'up' },
+        { label: 'Pending Dues', value: '₹1.2L', change: '-5%', trend: 'down' },
+        { label: 'Complaints', value: '8', change: '3 New', trend: 'neutral' },
+        { label: 'Occupancy', value: '92%', change: '+2%', trend: 'up' },
     ];
 
     return (
-        <div className="admin-body">
+        <div className="layout" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-main)' }}>
+
+            {/* Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="sidebar-overlay"
+                    onClick={() => setIsSidebarOpen(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className={`sidebar ${sidebarOpen ? '' : 'hidden'}`} style={{ display: sidebarOpen ? 'flex' : 'none' }}>
-                <div className="sidebar-brand">
-                    <h2 id="societyName">My Society</h2>
+            <aside
+                className={`sidebar ${isSidebarOpen ? 'open' : ''} `}
+                style={{
+                    width: '260px',
+                    background: '#1a1c23', // Admin dark sidebar
+                    color: 'white',
+                    position: 'fixed',
+                    height: '100vh',
+                    zIndex: 50,
+                    transition: 'transform 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    left: 0,
+                    top: 0
+                }}
+            >
+                <div style={{ padding: '24px', borderBottom: '1px solid #2d3748' }}>
+                    <div style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '32px', height: '32px', background: 'var(--brand-blue)', borderRadius: '8px' }}></div>
+                        AdminPanel
+                    </div>
                 </div>
 
-                <nav className="sidebar-nav">
-                    {menuItems.map((item) => (
-                        <a
-                            key={item.name}
-                            className={`nav-item ${activeMenu === item.name ? 'active' : ''}`}
-                            href="#"
-                            onClick={(e) => { e.preventDefault(); setActiveMenu(item.name); }}
-                        >
-                            <span className="icon">{item.icon}</span> {item.name}
-                        </a>
-                    ))}
+                <nav style={{ flex: 1, padding: '24px 16px', overflowY: 'auto' }}>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {navItems.map((item, index) => (
+                            <li key={index}>
+                                <a
+                                    href="#"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '12px 16px',
+                                        borderRadius: '8px',
+                                        color: item.active ? 'white' : '#a0aec0',
+                                        background: item.active ? 'var(--brand-blue)' : 'transparent',
+                                        textDecoration: 'none',
+                                        fontWeight: '500',
+                                        fontSize: '14px',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {item.icon}
+                                    {item.label}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
                 </nav>
 
-                <div className="sidebar-footer">© 2026 Society Fintech</div>
+                <div style={{ padding: '24px', borderTop: '1px solid #2d3748' }}>
+                    <button style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '12px',
+                        border: 'none',
+                        background: 'transparent',
+                        color: '#fc8181',
+                        cursor: 'pointer',
+                        fontWeight: '500'
+                    }}>
+                        <LogOut size={20} />
+                        Logout
+                    </button>
+                </div>
             </aside>
 
-            <div className="main" style={{ marginLeft: sidebarOpen ? '260px' : '0' }}>
-                <header className="topbar">
-                    <div className="topbar-left">
-                        <button id="sidebarToggle" className="btn-icon" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
-                    </div>
-                    <div className="topbar-right">
-                        <div className="notif" id="notifBtn">
-                            <span className="bell">🔔</span>
-                            <span className="badge" id="notifCount">3</span>
+            {/* Main Content */}
+            <div style={{ flex: 1, marginLeft: '260px', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+
+                {/* Header */}
+                <header style={{
+                    height: '64px',
+                    background: 'white',
+                    borderBottom: '1px solid var(--border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 24px',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 30
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <button onClick={toggleSidebar} style={{ display: 'none' }} className="mobile-toggle">
+                            <Menu size={24} />
+                        </button>
+
+                        <div style={{ position: 'relative', width: '300px' }}>
+                            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                            <input
+                                type="text"
+                                placeholder="Search residents, flats, reports..."
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 10px 10px 40px',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--border)',
+                                    background: 'var(--bg-light)',
+                                    fontSize: '14px'
+                                }}
+                            />
                         </div>
-                        <div className="profile">
-                            <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Admin ▾</button>
-                            <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
-                                <a href="#">Profile</a>
-                                <a href="#">Change Password</a>
-                                <a href="/" id="logoutBtn">Logout</a>
-                            </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <div style={{ position: 'relative', cursor: 'pointer' }}>
+                            <Bell size={20} color="var(--text-secondary)" />
+                            <span style={{ position: 'absolute', top: '-1px', right: '-1px', width: '8px', height: '8px', background: 'var(--danger)', borderRadius: '50%' }}></span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#4a5568', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '600' }}>AD</div>
                         </div>
                     </div>
                 </header>
 
-                <section className="content container">
-                    {/* Scoped Styles for Layout */}
-                    <style>{`
-                        .analytics, .tables {
-                            display: grid !important;
-                            grid-template-columns: 1fr 400px !important;
-                            gap: 24px !important;
-                            margin-bottom: 32px;
-                        }
-                        @media (max-width: 1024px) {
-                            .analytics, .tables {
-                                grid-template-columns: 1fr !important;
-                            }
-                        }
-                    `}</style>
-
+                {/* Dashboard Content */}
+                <main className="page-container" style={{ paddingTop: '32px', paddingBottom: '32px' }}>
                     <PageHeader
-                        title="Overview"
+                        title="Dashboard Overview"
                         subtitle="Welcome back, Administrator"
-                        action={<Button variant="primary">Download Report</Button>}
+                        action={<button className="btn-primary">Generate Report</button>}
                     />
 
-                    {/* Summary Cards */}
-                    <div className="cards">
-                        <StatCard label="Total Flats" value="120" trend={0} />
-                        <StatCard label="Total Residents" value="305" trend={2.5} trendLabel="this month" />
-                        <StatCard label="Monthly Collection" value="₹ 4.5L" trend={12} trendLabel="vs last month" />
-                        <StatCard label="Pending Dues" value="₹ 45k" trend={-5} trendLabel="decreased" />
-                        <StatCard label="Total Expenses" value="₹ 2.1L" trend={0} />
+                    {/* Stats Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+                        {stats.map((stat, i) => (
+                            <Card key={i}>
+                                <div style={{ marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '500' }}>{stat.label}</div>
+                                <div style={{ fontSize: '28px', fontWeight: '700', color: '#1a202c', marginBottom: '8px' }}>{stat.value}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                                    <span style={{
+                                        color: stat.trend === 'up' ? 'var(--success)' : stat.trend === 'down' ? 'var(--danger)' : 'var(--text-secondary)',
+                                        fontWeight: '600'
+                                    }}>
+                                        {stat.change}
+                                    </span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>vs last month</span>
+                                </div>
+                            </Card>
+                        ))}
                     </div>
 
-                    {/* Analytics */}
-                    <div className="analytics">
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+                        {/* Recent Activity */}
                         <Card>
-                            <CardHeader title="Monthly Maintenance Collection" />
-                            <CardContent style={{ height: 320 }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart
-                                        data={[
-                                            { name: 'Jan', amount: 4000 },
-                                            { name: 'Feb', amount: 3000 },
-                                            { name: 'Mar', amount: 2000 },
-                                            { name: 'Apr', amount: 2780 },
-                                            { name: 'May', amount: 1890 },
-                                            { name: 'Jun', amount: 2390 },
-                                        ]}
-                                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                                        <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                        <Bar dataKey="amount" fill="#2563eb" radius={[4, 4, 0, 0]} barSize={40} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Recent Payments</h3>
+                                <button style={{ color: 'var(--brand-blue)', background: 'none', border: 'none', fontWeight: '500', cursor: 'pointer' }}>View All</button>
+                            </div>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                                        <th style={{ padding: '12px 0', color: 'var(--text-secondary)' }}>Resident</th>
+                                        <th style={{ padding: '12px 0', color: 'var(--text-secondary)' }}>Flat</th>
+                                        <th style={{ padding: '12px 0', color: 'var(--text-secondary)' }}>Amount</th>
+                                        <th style={{ padding: '12px 0', color: 'var(--text-secondary)' }}>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <tr key={i} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                                            <td style={{ padding: '16px 0', fontWeight: '500' }}>Amit Sharma</td>
+                                            <td style={{ padding: '16px 0', color: 'var(--text-secondary)' }}>A-10{i}</td>
+                                            <td style={{ padding: '16px 0', fontWeight: '600' }}>₹2,500</td>
+                                            <td style={{ padding: '16px 0' }}><StatusBadge status="Paid" /></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </Card>
 
-                        <Card>
-                            <CardHeader title="Expense Distribution" />
-                            <CardContent style={{ height: 320 }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={[
-                                                { name: 'Salaries', value: 400 },
-                                                { name: 'Utilities', value: 300 },
-                                                { name: 'Maintenance', value: 300 },
-                                                { name: 'Events', value: 200 },
-                                            ]}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={90}
-                                            paddingAngle={5}
-                                            dataKey="value"
-                                        >
-                                            {
-                                                [
-                                                    { name: 'Salaries', value: 400 },
-                                                    { name: 'Utilities', value: 300 },
-                                                    { name: 'Maintenance', value: 300 },
-                                                    { name: 'Events', value: 200 },
-                                                ].map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={['#2563eb', '#10b981', '#f59e0b', '#64748b'][index % 4]} strokeWidth={0} />
-                                                ))
-                                            }
-                                        </Pie>
-                                        <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                        <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: '13px', color: '#64748b' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
+                        {/* Quick Actions / Notices */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                            <Card>
+                                <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600' }}>Quick Actions</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <button style={{ width: '100%', padding: '12px', background: 'var(--bg-light)', border: 'none', borderRadius: '8px', textAlign: 'left', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}>+ Add New Resident</button>
+                                    <button style={{ width: '100%', padding: '12px', background: 'var(--bg-light)', border: 'none', borderRadius: '8px', textAlign: 'left', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}>📢 Create Announcement</button>
+                                    <button style={{ width: '100%', padding: '12px', background: 'var(--bg-light)', border: 'none', borderRadius: '8px', textAlign: 'left', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}>⚠️ View Emergency Logs</button>
+                                </div>
+                            </Card>
+                        </div>
                     </div>
-
-                    {/* Tables */}
-                    <div className="tables">
-                        <Card>
-                            <CardHeader title="Recent Payments" action={<Button variant="secondary" size="sm">View All</Button>} />
-                            <CardContent className="p-0">
-                                <table className="table" id="paymentsTable">
-                                    <thead>
-                                        <tr><th>Flat</th><th>Resident</th><th>Month</th><th>Amount</th><th>Status</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr><td>A-101</td><td>Raj Kumar</td><td>Feb 2026</td><td>₹2,500</td><td><StatusBadge status="Paid" /></td></tr>
-                                        <tr><td>B-205</td><td>Anita</td><td>Feb 2026</td><td>₹2,500</td><td><StatusBadge status="Pending" /></td></tr>
-                                        <tr><td>C-304</td><td>Vikram</td><td>Jan 2026</td><td>₹2,500</td><td><StatusBadge status="Overdue" /></td></tr>
-                                        <tr><td>A-202</td><td>Suresh</td><td>Feb 2026</td><td>₹2,500</td><td><StatusBadge status="Paid" /></td></tr>
-                                    </tbody>
-                                </table>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader title="Latest Complaints" />
-                            <CardContent className="p-0">
-                                <table className="table" id="complaintsTable">
-                                    <thead>
-                                        <tr><th>ID</th><th>Category</th><th>Status</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr><td>#101</td><td>Plumbing</td><td><StatusBadge status="Open" /></td></tr>
-                                        <tr><td>#102</td><td>Electrical</td><td><StatusBadge status="Resolved" /></td></tr>
-                                        <tr><td>#103</td><td>Noise</td><td><StatusBadge status="Processing" /></td></tr>
-                                    </tbody>
-                                </table>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </section>
-
-                <footer className="footer">Designed for demo — responsive and scalable UI</footer>
+                </main>
             </div>
         </div>
     );
 };
 
 export default Admin;
+

@@ -1,8 +1,3 @@
-/* Login Styles - Fintech Theme */
-/* Inherits variables from index.css */
-
-/* Body styles moved to .login-page to avoid global pollution */
-/* Body styles moved to .login-page to avoid global pollution */
 .login-page {
     position: fixed;
     top: 0;
@@ -18,7 +13,7 @@
     justify-content: center;
     align-items: center;
     overflow-y: auto;
-    /* Allow scrolling if card is too tall */
+
     z-index: 9999;
 }
 

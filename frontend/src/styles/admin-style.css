@@ -1,6 +1,3 @@
-/* Admin Styles - Fintech Theme */
-/* Variables are inherited from index.css */
-
 * {
     box-sizing: border-box;
 }
@@ -11,7 +8,7 @@ body {
     margin: 0;
 }
 
-/* Sidebar */
+
 .sidebar {
     width: 260px;
     position: fixed;
@@ -50,7 +47,7 @@ body {
     gap: 12px;
     padding: 12px;
     color: #94a3b8;
-    /* Slate 400 */
+
     text-decoration: none;
     border-radius: 8px;
     font-size: 14px;
@@ -86,7 +83,7 @@ body {
     margin-top: 20px;
 }
 
-/* Main Layout */
+
 .main {
     margin-left: 260px;
     min-height: 100vh;
@@ -229,7 +226,7 @@ body {
     width: 100%;
 }
 
-/* Cards */
+
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -324,6 +321,7 @@ body {
     font-size: 14px;
     color: var(--text-primary);
     font-weight: 500;
+    text-align: left;
 }
 
 .table tbody tr:last-child td {
@@ -333,7 +331,7 @@ body {
 .status-paid {
     background: #ecfdf5;
     color: var(--success);
-    /* Emerald 600 */
+
     padding: 4px 12px;
     border-radius: 999px;
     font-weight: 600;
@@ -344,7 +342,7 @@ body {
 .status-pending {
     background: #fff7ed;
     color: var(--warning);
-    /* Orange 700 */
+
     padding: 4px 12px;
     border-radius: 999px;
     font-weight: 600;
@@ -359,9 +357,7 @@ body {
     text-align: center;
 }
 
-@media (max-width: 1024px) {
-    /* Responsive overrides already handled by Admin.jsx */
-}
+@media (max-width: 1024px) {}
 
 @media (max-width: 760px) {
     .sidebar {
