@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import NotificationPanel from '../components/ui/NotificationPanel';
+import { Settings, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/admin-style.css';
 
 const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [profileOpen, setProfileOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { isDarkMode, toggleDarkMode } = useTheme();
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -28,15 +33,26 @@ const AdminLayout = () => {
         { name: 'Notices', icon: '🎉', path: '/admin/notices' },
         { name: 'Documents', icon: '📂', path: '/admin/documents' },
         { name: 'Emergency', icon: '🚨', path: '/admin/emergency' },
-        { name: 'Reports', icon: '📊', path: '/admin/reports' },
-        { name: 'Settings', icon: '⚙️', path: '/admin/settings' },
+        { name: 'Assets & Bookings', icon: '🏟️', path: '/admin/bookings' },
+        { name: 'Visitor Analytics', icon: '📊', path: '/admin/visitor-analytics' },
+        { name: 'Reports', icon: '📈', path: '/admin/reports' },
     ];
 
     return (
         <div className="admin-body">
             <aside className={`sidebar ${sidebarOpen ? '' : 'hidden'}`} style={{ display: sidebarOpen ? 'flex' : 'none' }}>
                 <div className="sidebar-brand">
-                    <h2 id="societyName">My Society</h2>
+                    <div className="sidebar-brand-content">
+                        <h2 id="societyName">My Society</h2>
+                        <button
+                            className={`theme-shortcut ${isDarkMode ? 'active' : ''}`}
+                            onClick={toggleDarkMode}
+                            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            title={isDarkMode ? 'Light mode' : 'Dark mode'}
+                        >
+                            {isDarkMode ? <Moon size={16} /> : <Sun size={16} />}
+                        </button>
+                    </div>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -52,6 +68,16 @@ const AdminLayout = () => {
                     ))}
                 </nav>
 
+                <div className="sidebar-actions">
+                    <NavLink
+                        to="/admin/settings"
+                        className={({ isActive }) => `sidebar-action-btn ${isActive ? 'active' : ''}`}
+                    >
+                        <span className="icon"><Settings size={20} /></span>
+                        Settings
+                    </NavLink>
+                </div>
+
                 <div className="sidebar-footer">© 2026 Society Fintech</div>
             </aside>
 
@@ -61,10 +87,7 @@ const AdminLayout = () => {
                         <button id="sidebarToggle" className="btn-icon" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
                     </div>
                     <div className="topbar-right">
-                        <div className="notif" id="notifBtn">
-                            <span className="bell">🔔</span>
-                            <span className="badge" id="notifCount">3</span>
-                        </div>
+                        <NotificationPanel />
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Admin ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>

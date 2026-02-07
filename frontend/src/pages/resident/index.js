@@ -9,3 +9,6 @@ export { default as Emergency } from './Emergency';
 export { default as Staff } from './Staff';
 export { default as Vehicles } from './Vehicles';
 export { default as Visitors } from './Visitors';
+export { default as ResidentSettings } from './ResidentSettings';
+export { default as AssetBooking } from './AssetBooking';
+export { default as VisitorPreApproval } from './VisitorPreApproval';

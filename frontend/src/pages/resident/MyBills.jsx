@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, PageHeader, Button, StatusBadge } from '../../components/ui';
+import './MyBills.css';
 
 const MyBills = () => {
     // Mock data - In a real app, this would come from an API
@@ -38,76 +39,68 @@ const MyBills = () => {
                 }
             />
 
-            <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+            <div className="mybills-grid">
                 {/* Left: Bill Breakdown */}
-                <Card>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
-                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--brand-dark)' }}>Current Month Bill</h3>
+                <div className="bill-card-container">
+                    <div className="bill-card-header">
+                        <h3>Current Month Bill</h3>
                         <StatusBadge status={currentBill.status} />
                     </div>
 
-                    <div className="bill-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '15px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
-                            <span className="text-secondary">Bill ID:</span>
-                            <span style={{ fontWeight: '600', fontFamily: 'monospace' }}>{currentBill.id}</span>
+                    <div className="bill-details">
+                        <div className="bill-row">
+                            <span className="bill-row-label">Bill ID:</span>
+                            <span className="bill-row-value monospace">{currentBill.id}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span className="text-secondary">Flat Number:</span>
-                            <span style={{ fontWeight: '600' }}>{currentBill.flat}</span>
+                        <div className="bill-row">
+                            <span className="bill-row-label">Flat Number:</span>
+                            <span className="bill-row-value">{currentBill.flat}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span className="text-secondary">Billing Month:</span>
-                            <span style={{ fontWeight: '600' }}>{currentBill.month}</span>
+                        <div className="bill-row">
+                            <span className="bill-row-label">Billing Month:</span>
+                            <span className="bill-row-value">{currentBill.month}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span className="text-secondary">Maintenance Charges:</span>
-                            <span style={{ fontWeight: '600' }}>₹{currentBill.maintenance.toLocaleString()}</span>
+                        <div className="bill-row">
+                            <span className="bill-row-label">Maintenance Charges:</span>
+                            <span className="bill-row-value">₹{currentBill.maintenance.toLocaleString()}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span className="text-secondary">Additional Charges:</span>
-                            <span style={{ fontWeight: '600' }}>₹{currentBill.additional.toLocaleString()}</span>
-                        </div>
-
-                        <div style={{
-                            borderTop: '2px dashed var(--border)',
-                            paddingTop: '16px',
-                            marginTop: '8px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            fontSize: '20px',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Total Amount:</span>
-                            <span style={{ fontWeight: '800', color: 'var(--brand-blue)' }}>₹{totalAmount.toLocaleString()}</span>
-                        </div>
-
-                        <div className="bill-actions" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
-                            <Button style={{ flex: 1 }}>Pay Now via UPI</Button>
-                            <Button variant="secondary" style={{ flex: 1 }}>Download Invoice</Button>
+                        <div className="bill-row">
+                            <span className="bill-row-label">Additional Charges:</span>
+                            <span className="bill-row-value">₹{currentBill.additional.toLocaleString()}</span>
                         </div>
                     </div>
-                </Card>
+
+                    <div className="bill-total-section">
+                        <span className="bill-total-label">Total Amount:</span>
+                        <span className="bill-total-amount">₹{totalAmount.toLocaleString()}</span>
+                    </div>
+
+                    <div className="bill-actions">
+                        <Button>Pay Now via UPI</Button>
+                        <Button variant="secondary">Download Invoice</Button>
+                    </div>
+                </div>
 
                 {/* Right: Status Summary */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <Card className="card-highlight">
-                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payment Status</h4>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '24px' }}>⚠️</span>
-                            <div>
-                                <div style={{ fontWeight: '700', color: 'var(--warning)', fontSize: '18px' }}>Payment Pending</div>
-                                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Due by {currentBill.dueDate}</div>
+                <div className="mybills-right-section">
+                    <div className="payment-status-card">
+                        <h4>Payment Status</h4>
+                        <div className="payment-status-content">
+                            <span className="payment-status-icon">⚠️</span>
+                            <div className="payment-status-info">
+                                <div className="payment-status-title">Payment Pending</div>
+                                <div className="payment-status-date">Due by {currentBill.dueDate}</div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
 
-                    <Card>
-                        <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bill Details</h4>
-                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                            <p style={{ margin: 0 }}>This bill includes standard monthly maintenance plus a quarterly amenities fee.</p>
-                            <p style={{ marginTop: '12px' }}>For discrepancies, please raise a complaint under the 'Accounts' category.</p>
+                    <div className="bill-details-card">
+                        <h4>Bill Details</h4>
+                        <div className="bill-details-content">
+                            <p>This bill includes standard monthly maintenance plus a quarterly amenities fee.</p>
+                            <p>For discrepancies, please raise a complaint under the 'Accounts' category.</p>
                         </div>
-                    </Card>
+                    </div>
                 </div>
             </div>
         </>

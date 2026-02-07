@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import NotificationPanel from '../components/ui/NotificationPanel';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/admin-style.css';
 import {
     LayoutDashboard,
@@ -10,13 +12,18 @@ import {
     Bell,
     FileText,
     Phone,
-    Users
+    Users,
+    Settings,
+    Sun,
+    Moon,
+    Building
 } from 'lucide-react';
 
 const ResidentLayout = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const navigate = useNavigate();
+    const { isDarkMode, toggleDarkMode } = useTheme();
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -33,14 +40,26 @@ const ResidentLayout = () => {
         { name: 'Announcements', path: '/resident/announcements', icon: <Bell size={20} /> },
         { name: 'Documents', path: '/resident/documents', icon: <FileText size={20} /> },
         { name: 'Emergency', path: '/resident/emergency', icon: <Phone size={20} /> },
-        { name: 'Staff & Services', path: '/resident/staff', icon: <Users size={20} /> }
+        { name: 'Staff & Services', path: '/resident/staff', icon: <Users size={20} /> },
+        { name: 'Asset Booking', path: '/resident/bookings', icon: <Building size={20} /> },
+        { name: 'Visitor Pre-Approval', path: '/resident/visitor-approval', icon: '👥' }
     ];
 
     return (
         <div className="admin-body">
             <aside className={`sidebar ${sidebarOpen ? '' : 'hidden'}`} style={{ display: sidebarOpen ? 'flex' : 'none' }}>
                 <div className="sidebar-brand">
-                    <h2 id="societyName">My Society</h2>
+                    <div className="sidebar-brand-content">
+                        <h2 id="societyName">My Society</h2>
+                        <button
+                            className={`theme-shortcut ${isDarkMode ? 'active' : ''}`}
+                            onClick={toggleDarkMode}
+                            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            title={isDarkMode ? 'Light mode' : 'Dark mode'}
+                        >
+                            {isDarkMode ? <Moon size={16} /> : <Sun size={16} />}
+                        </button>
+                    </div>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -56,6 +75,16 @@ const ResidentLayout = () => {
                     ))}
                 </nav>
 
+                <div className="sidebar-actions">
+                    <NavLink
+                        to="/resident/settings"
+                        className={({ isActive }) => `sidebar-action-btn ${isActive ? 'active' : ''}`}
+                    >
+                        <span className="icon"><Settings size={20} /></span>
+                        Settings
+                    </NavLink>
+                </div>
+
                 <div className="sidebar-footer">© 2026 Society Fintech</div>
             </aside>
 
@@ -65,10 +94,7 @@ const ResidentLayout = () => {
                         <button id="sidebarToggle" className="btn-icon" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
                     </div>
                     <div className="topbar-right">
-                        <div className="notif" id="notifBtn">
-                            <span className="bell">🔔</span>
-                            <span className="badge" id="notifCount">2</span>
-                        </div>
+                        <NotificationPanel />
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Resident ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>

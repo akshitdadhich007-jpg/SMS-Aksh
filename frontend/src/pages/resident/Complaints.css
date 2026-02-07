@@ -1,0 +1,306 @@
+/* Complaints Page Styling */
+
+/* Page Container */
+.complaints-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Grid Layout - 1:1.5 Column */
+.complaints-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 1.5fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ===== LEFT SIDE: RAISE A COMPLAINT FORM ===== */
+
+.complaint-form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.complaint-form-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.complaint-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.form-group select,
+.form-group textarea {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  line-height: 1.5;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+  box-shadow: var(--focus-ring);
+}
+
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: var(--border);
+  background: var(--card);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group textarea::placeholder {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Submit Button */
+.complaint-submit-btn {
+  padding: 12px 24px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--brand-blue);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1.4;
+  box-shadow: var(--shadow-btn);
+}
+
+.complaint-submit-btn:hover {
+  background: var(--brand-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10), 0 6px 14px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.complaint-submit-btn:active {
+  box-shadow: var(--shadow-btn-pressed);
+  transform: translateY(1px);
+}
+
+.complaint-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== RIGHT SIDE: MY COMPLAINTS LIST ===== */
+
+.complaints-list-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.complaints-list-card h3 {
+  margin: 0 0 24px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* Complaints Table */
+.complaints-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.complaints-table thead {
+  background: var(--bg);
+}
+
+.complaints-table thead th {
+  padding: 16px 18px;
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+.complaints-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--transition-fast);
+}
+
+.complaints-table tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+.complaints-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.complaints-table tbody td {
+  padding: 18px 18px;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+/* Table Cell: Complaint ID */
+.complaint-id {
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* Table Cell: Complaint Details */
+.complaint-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.complaint-category {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.complaint-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.complaint-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Table Cell: Status Badge */
+.complaint-status-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Empty State */
+.complaints-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  min-height: 200px;
+}
+
+.complaints-empty-state p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+  .complaints-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .complaint-form-card,
+  .complaints-list-card {
+    padding: 20px;
+  }
+
+  .complaint-form-card h3,
+  .complaints-list-card h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .complaint-form {
+    gap: 20px;
+  }
+
+  .complaints-table {
+    font-size: 12px;
+  }
+
+  .complaints-table thead th {
+    padding: 12px 14px;
+    font-size: 11px;
+  }
+
+  .complaints-table tbody td {
+    padding: 14px 12px;
+  }
+
+  .complaint-id {
+    font-size: 12px;
+  }
+
+  .complaint-category {
+    font-size: 13px;
+  }
+
+  .complaint-description {
+    font-size: 12px;
+  }
+
+  .complaint-date {
+    font-size: 11px;
+  }
+}

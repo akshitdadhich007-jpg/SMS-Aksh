@@ -1,0 +1,272 @@
+/* MyBills Page Styling */
+
+/* Page Container */
+.mybills-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Grid Layout - 2 Column */
+.mybills-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ===== LEFT SIDE: CURRENT MONTH BILL ===== */
+
+.bill-card-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bill-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bill-card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* Bill Details Rows */
+.bill-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+}
+
+.bill-row:last-of-type {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.bill-row-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.bill-row-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  line-height: 1.4;
+}
+
+.bill-row-value.monospace {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* Total Amount Section */
+.bill-total-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 4px;
+  margin-top: 12px;
+  border-top: 2px dashed var(--border);
+  font-size: 18px;
+}
+
+.bill-total-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.bill-total-amount {
+  font-weight: 800;
+  color: var(--brand-blue);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+/* Bill Actions */
+.bill-actions {
+  display: flex;
+  gap: 14px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+}
+
+.bill-actions button {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+/* ===== RIGHT SIDE: PAYMENT & DETAILS ===== */
+
+.mybills-right-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Payment Status Card */
+.payment-status-card {
+  background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+  border: 1px solid #E0E7FF;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-status-card h4 {
+  margin: 0 0 18px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.payment-status-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.payment-status-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.payment-status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-status-title {
+  font-weight: 700;
+  color: var(--warning);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.payment-status-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Bill Details Card */
+.bill-details-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.bill-details-card h4 {
+  margin: 0 0 18px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.bill-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.bill-details-content p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+  .mybills-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .mybills-right-section {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bill-card-container,
+  .payment-status-card,
+  .bill-details-card {
+    padding: 20px;
+  }
+
+  .bill-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .bill-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bill-actions button {
+    padding: 14px 16px;
+  }
+
+  .payment-status-content {
+    gap: 12px;
+  }
+}

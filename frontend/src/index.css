@@ -1,6 +1,6 @@
 :root {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 400;
 
 
@@ -32,6 +32,19 @@
   --shadow-container: 0 4px 25px -6px hsl(200 95% 50% / 0.25);
   --shadow-btn: 0 4px 15px -3px hsl(200 95% 50% / 0.45);
   --shadow-btn-pressed: 0 2px 8px -4px hsl(200 95% 50% / 0.35);
+
+  --radius-lg: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+  --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.18);
 
 
 

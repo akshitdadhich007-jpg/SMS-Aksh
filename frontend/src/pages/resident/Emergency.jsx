@@ -1,78 +1,93 @@
 import React from 'react';
-import { PageHeader, Card, Button } from '../../components/ui';
+import { PageHeader } from '../../components/ui';
 import { Phone, Shield, User, Flame, HeartPulse, Siren } from 'lucide-react';
+import './Emergency.css';
 
 const Emergency = () => {
     return (
         <>
             <PageHeader title="Emergency Contacts" subtitle="Quick access to important numbers" />
 
-            <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                {/* Society Emergency */}
-                <Card className="card-highlight" style={{ borderColor: 'var(--warning)', background: '#fffbeb' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                        <div style={{ padding: '12px', background: '#fef3c7', borderRadius: '50%', color: '#d97706' }}>
-                            <Shield size={28} />
+            <div className="emergency-page">
+                <div className="emergency-grid">
+                    {/* Main Gate Security */}
+                    <div className="emergency-contact-card security">
+                        <div className="emergency-contact-header">
+                            <div className="emergency-icon-container">
+                                <Shield />
+                            </div>
+                            <div className="emergency-contact-info">
+                                <h3 className="emergency-contact-title">Main Gate Security</h3>
+                                <div className="emergency-contact-availability">24/7 Available</div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#92400e' }}>Main Gate Security</h3>
-                            <div style={{ fontSize: '14px', color: '#b45309', marginTop: '4px' }}>24/7 Available</div>
-                        </div>
+                        <a href="tel:+919876543210" style={{ textDecoration: 'none' }}>
+                            <button className="emergency-contact-button">
+                                <Phone /> Call Now
+                            </button>
+                        </a>
+                        <div className="emergency-contact-phone">+91 98765 43210</div>
                     </div>
-                    <a href="tel:+919876543210" style={{ textDecoration: 'none' }}>
-                        <Button style={{ width: '100%', background: '#d97706', border: 'none', display: 'flex', gap: '8px', justifyContent: 'center', padding: '12px' }}>
-                            <Phone size={18} /> Call Now
-                        </Button>
-                    </a>
-                    <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#1f2937' }}>+91 98765 43210</div>
-                </Card>
 
-                {/* Society Office */}
-                <Card>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-                        <div style={{ padding: '12px', background: 'var(--bg-light)', borderRadius: '50%', color: 'var(--brand-blue)' }}>
-                            <User size={28} />
+                    {/* Society Manager */}
+                    <div className="emergency-contact-card">
+                        <div className="emergency-contact-header">
+                            <div className="emergency-icon-container">
+                                <User />
+                            </div>
+                            <div className="emergency-contact-info">
+                                <h3 className="emergency-contact-title">Society Manager</h3>
+                                <div className="emergency-contact-availability">9:00 AM - 6:00 PM</div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)' }}>Society Manager</h3>
-                            <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>9:00 AM - 6:00 PM</div>
-                        </div>
+                        <a href="tel:+919876543211" style={{ textDecoration: 'none' }}>
+                            <button className="emergency-contact-button">
+                                <Phone /> Call Manager
+                            </button>
+                        </a>
+                        <div className="emergency-contact-phone">+91 98765 43211</div>
                     </div>
-                    <a href="tel:+919876543211" style={{ textDecoration: 'none' }}>
-                        <Button variant="secondary" style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center', padding: '12px' }}>
-                            <Phone size={18} /> Call Manager
-                        </Button>
-                    </a>
-                    <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)' }}>+91 98765 43211</div>
-                </Card>
 
-                {/* Local Services */}
-                <Card>
-                    <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600' }}>Local Emergency Services</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <Siren size={20} color="#dc2626" />
-                                <span style={{ fontWeight: '600' }}>Police</span>
+                    {/* Local Emergency Services */}
+                    <div className="emergency-services-card">
+                        <h3 className="emergency-services-title">Local Emergency Services</h3>
+                        <div className="emergency-services-list">
+                            <div className="emergency-service-item">
+                                <div className="emergency-service-info">
+                                    <div className="emergency-service-icon" style={{ color: '#dc2626' }}>
+                                        <Siren />
+                                    </div>
+                                    <span className="emergency-service-label">Police</span>
+                                </div>
+                                <a href="tel:100" style={{ color: '#dc2626', textDecoration: 'none' }}>
+                                    <span className="emergency-service-number">100</span>
+                                </a>
                             </div>
-                            <a href="tel:100" style={{ color: '#dc2626', fontWeight: '700', textDecoration: 'none', fontSize: '16px' }}>100</a>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <Flame size={20} color="#ea580c" />
-                                <span style={{ fontWeight: '600' }}>Fire Brigade</span>
+                            <div className="emergency-service-item">
+                                <div className="emergency-service-info">
+                                    <div className="emergency-service-icon" style={{ color: '#ea580c' }}>
+                                        <Flame />
+                                    </div>
+                                    <span className="emergency-service-label">Fire Brigade</span>
+                                </div>
+                                <a href="tel:101" style={{ color: '#ea580c', textDecoration: 'none' }}>
+                                    <span className="emergency-service-number">101</span>
+                                </a>
                             </div>
-                            <a href="tel:101" style={{ color: '#ea580c', fontWeight: '700', textDecoration: 'none', fontSize: '16px' }}>101</a>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <HeartPulse size={20} color="#db2777" />
-                                <span style={{ fontWeight: '600' }}>Ambulance</span>
+                            <div className="emergency-service-item">
+                                <div className="emergency-service-info">
+                                    <div className="emergency-service-icon" style={{ color: '#db2777' }}>
+                                        <HeartPulse />
+                                    </div>
+                                    <span className="emergency-service-label">Ambulance</span>
+                                </div>
+                                <a href="tel:102" style={{ color: '#db2777', textDecoration: 'none' }}>
+                                    <span className="emergency-service-number">102</span>
+                                </a>
                             </div>
-                            <a href="tel:102" style={{ color: '#db2777', fontWeight: '700', textDecoration: 'none', fontSize: '16px' }}>102</a>
                         </div>
                     </div>
-                </Card>
+                </div>
             </div>
         </>
     );

@@ -12,15 +12,34 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-y: auto;
-
+    overflow: hidden;
     z-index: 9999;
+}
+
+/* Login Wrapper - Contains both card and demo box */
+.login-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* Login Content - Side-by-side layout */
+.login-content {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 1000px;
+    width: 100%;
 }
 
 .login-container {
     width: 100%;
     max-width: 440px;
-    padding: 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -28,17 +47,24 @@
 
 .login-card {
     background: rgba(255, 255, 255, 0.95);
+    background: rgb(255, 255, 255);
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border-radius: 16px;
     box-shadow: var(--shadow-card);
-    padding: 48px 40px;
+    padding: 40px 36px;
     width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .logo-section {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .heading {
@@ -61,8 +87,48 @@
     opacity: 0.8;
 }
 
-.form-group {
+/* Role Tabs - Segmented Control */
+.role-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--hover-bg);
+    padding: 4px;
+    border-radius: 10px;
     margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.role-tab {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.role-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.role-tab.active {
+    background: white;
+    color: var(--brand-dark);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+    margin-bottom: 16px;
+    flex-shrink: 0;
 }
 
 .form-label {
@@ -101,8 +167,9 @@
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    margin-top: 24px;
+    margin-top: 20px;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .login-button:hover {
@@ -112,30 +179,30 @@
 }
 
 .demo-section {
-    background-color: var(--hover-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 24px;
+    display: none;
 }
 
 .demo-section h3 {
     color: var(--text-secondary);
-    font-size: 12px;
-    margin-bottom: 12px;
+    font-size: 11px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
+    margin-top: 0;
+    flex-shrink: 0;
 }
 
 .demo-credentials {
     display: grid;
     gap: 8px;
+    overflow: visible;
+    min-height: 0;
 }
 
 .credential-box {
     background: white;
-    padding: 12px;
+    padding: 10px 12px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     cursor: pointer;
@@ -148,16 +215,17 @@
 .credential-box:hover {
     border-color: var(--brand-blue);
     background: #f8fafc;
+    transform: translateY(-1px);
 }
 
 .credential-label {
     font-weight: 600;
     color: var(--brand-dark);
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .credential-info {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-secondary);
     font-family: monospace;
 }
@@ -173,6 +241,7 @@
     font-weight: 500;
     text-align: center;
     display: none;
+    flex-shrink: 0;
 }
 
 .success-message.show {
@@ -181,8 +250,195 @@
 
 .footer-text {
     text-align: center;
-    margin-top: 24px;
+    margin-top: 16px;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
+    flex-shrink: 0;
+}
+
+/* Demo Credentials Box - Attached to Login */
+.demo-credentials-box {
+    width: 340px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.demo-credentials-box::-webkit-scrollbar {
+    width: 5px;
+}
+
+.demo-credentials-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.demo-credentials-box::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.demo-box-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 8px 0;
+    padding: 0;
+    text-align: center;
+}
+
+.demo-accounts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.demo-account-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--hover-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.demo-account-item:hover {
+    background: white;
+    border-color: var(--brand-blue);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transform: translateY(-2px);
+}
+
+.demo-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.demo-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.demo-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.demo-cred {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+/* Responsive - Stack on smaller screens */
+@media (max-width: 900px) {
+    .login-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .demo-credentials-box {
+        width: 100%;
+        max-width: 400px;
+        max-height: 280px;
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-height: 900px) {
+    .login-card {
+        padding: 32px 30px;
+    }
+
+    .logo-section {
+        margin-bottom: 18px;
+    }
+
+    .role-tabs {
+        margin-bottom: 18px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+    .heading {
+        font-size: 22px;
+        margin-bottom: 6px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+    }
+
+    .footer-text {
+        margin-top: 12px;
+    }
+}
+
+@media (max-height: 750px) {
+    .login-container {
+        padding: 16px;
+    }
+
+    .login-card {
+        padding: 28px 26px;
+    }
+
+    .logo-section {
+        margin-bottom: 16px;
+    }
+
+    .heading {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .role-text {
+        font-size: 11px;
+    }
+
+    .role-tabs {
+        margin-bottom: 16px;
+        padding: 3px;
+    }
+
+    .role-tab {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    .footer-text {
+        margin-top: 10px;
+        font-size: 11px;
+    }
 }

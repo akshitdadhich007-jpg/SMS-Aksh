@@ -14,3 +14,5 @@ export { default as DocumentRepo } from './DocumentRepo';
 export { default as EmergencyManagement } from './EmergencyManagement';
 export { default as ReportsAnalytics } from './ReportsAnalytics';
 export { default as AdminSettings } from './AdminSettings';
+export { default as AssetBooking } from './AssetBooking';
+export { default as VisitorAnalytics } from './VisitorAnalytics';

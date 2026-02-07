@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PageHeader, Card, Button, StatusBadge } from '../../components/ui';
+import './Complaints.css';
 
 const Complaints = () => {
     // Mock Data
@@ -17,14 +18,14 @@ const Complaints = () => {
         <>
             <PageHeader title="Complaints" subtitle="Raise issues and track their status" />
 
-            <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1.5fr', gap: '24px' }}>
+            <div className="complaints-grid">
                 {/* Section 1: Raise Complaint */}
-                <Card>
-                    <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600' }}>Raise a Complaint</h3>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-secondary)' }}>Category</label>
-                            <select style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '14px', background: 'var(--bg-card)', color: 'var(--text-primary)', outline: 'none' }}>
+                <div className="complaint-form-card">
+                    <h3>Raise a Complaint</h3>
+                    <form onSubmit={handleSubmit} className="complaint-form">
+                        <div className="form-group">
+                            <label>Category</label>
+                            <select>
                                 <option>Plumbing</option>
                                 <option>Electrical</option>
                                 <option>Security</option>
@@ -33,51 +34,51 @@ const Complaints = () => {
                             </select>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-secondary)' }}>Description</label>
+                        <div className="form-group">
+                            <label>Description</label>
                             <textarea
-                                rows="4"
                                 placeholder="Describe the issue in detail..."
-                                style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '14px', background: 'var(--bg-card)', color: 'var(--text-primary)', resize: 'vertical', outline: 'none' }}
                             ></textarea>
                         </div>
 
-                        <Button type="submit" style={{ width: '100%' }}>Submit Complaint</Button>
+                        <Button type="submit" className="complaint-submit-btn">Submit Complaint</Button>
                     </form>
-                </Card>
+                </div>
 
                 {/* Section 2: My Complaints */}
-                <Card>
-                    <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '600' }}>My Complaints</h3>
+                <div className="complaints-list-card">
+                    <h3>My Complaints</h3>
                     {complaints.length === 0 ? (
-                        <div className="text-center p-8">
-                            <p className="text-gray-500">No complaints raised yet.</p>
+                        <div className="complaints-empty-state">
+                            <p>No complaints raised yet.</p>
                         </div>
                     ) : (
                         <div style={{ overflowX: 'auto' }}>
-                            <table className="table" style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: '14px' }}>
+                            <table className="complaints-table">
                                 <colgroup>
-                                    <col style={{ width: '150px' }} />
+                                    <col style={{ width: '140px' }} />
                                     <col />
-                                    <col style={{ width: '120px' }} />
+                                    <col style={{ width: '130px' }} />
                                 </colgroup>
                                 <thead>
-                                    <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px' }}>ID</th>
-                                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px' }}>Details</th>
-                                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px' }}>Status</th>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Details</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {complaints.map((item) => (
-                                        <tr key={item.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                                            <td style={{ padding: '16px', fontWeight: '600', fontFamily: 'monospace', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>{item.id}</td>
-                                            <td style={{ padding: '16px', verticalAlign: 'middle' }}>
-                                                <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{item.category}</div>
-                                                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{item.description}</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{item.date}</div>
+                                        <tr key={item.id}>
+                                            <td className="complaint-id">{item.id}</td>
+                                            <td>
+                                                <div className="complaint-details">
+                                                    <div className="complaint-category">{item.category}</div>
+                                                    <div className="complaint-description">{item.description}</div>
+                                                    <div className="complaint-date">{item.date}</div>
+                                                </div>
                                             </td>
-                                            <td style={{ padding: '16px', verticalAlign: 'middle' }}>
+                                            <td className="complaint-status-cell">
                                                 <StatusBadge status={item.status} />
                                             </td>
                                         </tr>
@@ -86,7 +87,7 @@ const Complaints = () => {
                             </table>
                         </div>
                     )}
-                </Card>
+                </div>
             </div>
         </>
     );

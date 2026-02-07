@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageHeader, Card, Button } from '../../components/ui';
 import { FileText, Download } from 'lucide-react';
+import './Documents.css';
 
 const Documents = () => {
     // Mock Data
@@ -19,10 +20,10 @@ const Documents = () => {
         return (
             <>
                 <PageHeader title="Documents" subtitle="Access important society files" />
-                <Card className="text-center p-8">
-                    <h3 className="text-lg font-semibold text-gray-700">No documents uploaded yet</h3>
-                    <p className="text-gray-500 mt-2">Check back later.</p>
-                </Card>
+                <div className="documents-empty-state">
+                    <h3>No documents uploaded yet</h3>
+                    <p>Check back later.</p>
+                </div>
             </>
         );
     }
@@ -31,35 +32,36 @@ const Documents = () => {
         <>
             <PageHeader title="Documents" subtitle="Access important society files" />
 
-            <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+            <div className="documents-grid">
                 {documents.map((doc) => (
-                    <Card key={doc.id} className="hover:shadow-md transition-shadow">
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', height: '100%' }}>
-                            <div style={{
-                                background: 'var(--bg-light)',
-                                padding: '12px',
-                                borderRadius: '8px',
-                                color: 'var(--brand-blue)',
-                                flexShrink: 0
-                            }}>
-                                <FileText size={24} />
+                    <div key={doc.id} className="document-card">
+                        <div className="document-header">
+                            <div className="document-icon-container">
+                                <FileText />
                             </div>
-                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>{doc.title}</h3>
-                                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px', flex: 1 }}>
-                                    {doc.date} • {doc.size}
+                            <div style={{ flex: 1 }}>
+                                <h3 className="document-title">{doc.title}</h3>
+                                <div className="document-metadata">
+                                    <div className="document-metadata-item">
+                                        <span>{doc.date}</span>
+                                        <span>•</span>
+                                        <span>{doc.size}</span>
+                                    </div>
                                 </div>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => handleDownload(doc.title)}
-                                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                                >
-                                    <Download size={16} /> Download
-                                </Button>
                             </div>
                         </div>
-                    </Card>
+
+                        <div className="document-actions">
+                            <button
+                                className="document-download-btn"
+                                onClick={() => handleDownload(doc.title)}
+                                type="button"
+                            >
+                                <Download />
+                                Download
+                            </button>
+                        </div>
+                    </div>
                 ))}
             </div>
         </>

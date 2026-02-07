@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import NotificationPanel from '../components/ui/NotificationPanel';
+import { Settings, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/admin-style.css';
 
 const SecurityLayout = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { isDarkMode, toggleDarkMode } = useTheme();
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -15,13 +20,28 @@ const SecurityLayout = () => {
     return (
         <div className="security-body">
             <aside className="sidebar">
-                <div className="sidebar-brand" style={{ padding: '0 14px' }}><h2 id="societyName">Greenfield Residency</h2></div>
+                <div className="sidebar-brand" style={{ padding: '0 14px' }}>
+                    <div className="sidebar-brand-content">
+                        <h2 id="societyName">Greenfield Residency</h2>
+                        <button
+                            className={`theme-shortcut ${isDarkMode ? 'active' : ''}`}
+                            onClick={toggleDarkMode}
+                            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                            title={isDarkMode ? 'Light mode' : 'Dark mode'}
+                        >
+                            {isDarkMode ? <Moon size={16} /> : <Sun size={16} />}
+                        </button>
+                    </div>
+                </div>
                 <nav className="sidebar-nav">
                     <NavLink to="/security" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                         🏠 Dashboard
                     </NavLink>
                     <NavLink to="/security/visitors" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                         👤 Visitor Entry
+                    </NavLink>
+                    <NavLink to="/security/preapproved" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        🔍 Pre-Approved Visitors
                     </NavLink>
                     <NavLink to="/security/vehicles" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                         🚗 Vehicle Entry
@@ -33,6 +53,15 @@ const SecurityLayout = () => {
                         🚨 Emergency Logs
                     </NavLink>
                 </nav>
+                <div className="sidebar-actions">
+                    <NavLink
+                        to="/security/settings"
+                        className={({ isActive }) => `sidebar-action-btn ${isActive ? 'active' : ''}`}
+                    >
+                        <span className="icon"><Settings size={20} /></span>
+                        Settings
+                    </NavLink>
+                </div>
                 <div className="sidebar-footer">© 2026 Society Fintech</div>
             </aside>
 
@@ -40,10 +69,7 @@ const SecurityLayout = () => {
                 <header className="topbar">
                     <div className="left"><strong id="topSociety">Greenfield Residency</strong></div>
                     <div className="topbar-right">
-                        <div className="notif" id="notifBtn">
-                            <span className="bell">🔔</span>
-                            <span className="badge" id="notifCount">1</span>
-                        </div>
+                        <NotificationPanel />
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Security ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>

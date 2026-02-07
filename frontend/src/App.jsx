@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { VisitorProvider } from './context/VisitorContext';
 
 import LandingPage from './pages/LandingPage';
 import AdminLayout from './pages/AdminLayout';
@@ -12,7 +14,9 @@ import './App.css';
 
 function App() {
     return (
-        <Router>
+        <ThemeProvider>
+            <VisitorProvider>
+                <Router>
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/admin" element={<AdminLayout />}>
@@ -32,6 +36,8 @@ function App() {
                     <Route path="emergency" element={<AdminPages.EmergencyManagement />} />
                     <Route path="reports" element={<AdminPages.ReportsAnalytics />} />
                     <Route path="settings" element={<AdminPages.AdminSettings />} />
+                    <Route path="bookings" element={<AdminPages.AssetBooking />} />
+                    <Route path="visitor-analytics" element={<AdminPages.VisitorAnalytics />} />
                 </Route>
 
                 {/* Resident Nested Routes */}
@@ -47,6 +53,9 @@ function App() {
                     <Route path="documents" element={<ResidentPages.Documents />} />
                     <Route path="emergency" element={<ResidentPages.Emergency />} />
                     <Route path="staff" element={<ResidentPages.Staff />} />
+                    <Route path="settings" element={<ResidentPages.ResidentSettings />} />
+                    <Route path="bookings" element={<ResidentPages.AssetBooking />} />
+                    <Route path="visitor-approval" element={<ResidentPages.VisitorPreApproval />} />
                 </Route>
 
                 <Route path="/security" element={<SecurityLayout />}>
@@ -55,9 +64,13 @@ function App() {
                     <Route path="vehicles" element={<SecurityPages.VehicleEntry />} />
                     <Route path="deliveries" element={<SecurityPages.Deliveries />} />
                     <Route path="emergency" element={<SecurityPages.EmergencyLogs />} />
+                    <Route path="settings" element={<SecurityPages.SecuritySettings />} />
+                    <Route path="preapproved" element={<SecurityPages.PreApprovedVisitors />} />
                 </Route>
             </Routes>
-        </Router>
+            </Router>
+            </VisitorProvider>
+        </ThemeProvider>
     );
 }
 

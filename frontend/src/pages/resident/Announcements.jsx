@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PageHeader, Card } from '../../components/ui';
+import './Announcements.css';
 
 const Announcements = () => {
     // Mock Data
@@ -28,10 +29,10 @@ const Announcements = () => {
         return (
             <>
                 <PageHeader title="Announcements" subtitle="Updates and news from the society" />
-                <Card className="text-center p-8">
-                    <h3 className="text-lg font-semibold text-gray-700">No announcements at the moment</h3>
-                    <p className="text-gray-500 mt-2">Check back later for updates.</p>
-                </Card>
+                <div className="announcements-empty-state">
+                    <h3>No announcements at the moment</h3>
+                    <p>Check back later for updates.</p>
+                </div>
             </>
         );
     }
@@ -40,17 +41,17 @@ const Announcements = () => {
         <>
             <PageHeader title="Announcements" subtitle="Updates and news from the society" />
 
-            <div style={{ maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="announcements-container">
                 {announcements.map((item) => (
-                    <Card key={item.id} className="hover:shadow-md transition-shadow">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: 'var(--brand-dark)' }}>{item.title}</h3>
-                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)', background: 'var(--bg-light)', padding: '6px 12px', borderRadius: '20px', fontWeight: '500' }}>{item.date}</span>
+                    <div key={item.id} className="announcement-card">
+                        <div className="announcement-header">
+                            <h3 className="announcement-title">{item.title}</h3>
+                            <span className="announcement-date">{item.date}</span>
                         </div>
-                        <p style={{ margin: 0, color: 'var(--text-primary)', lineHeight: '1.6', fontSize: '15px' }}>
+                        <p className="announcement-description">
                             {item.description}
                         </p>
-                    </Card>
+                    </div>
                 ))}
             </div>
         </>
