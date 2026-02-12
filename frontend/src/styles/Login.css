@@ -11,21 +11,22 @@
     background-attachment: fixed;
     display: flex;
     justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    align-items: flex-start;
+    overflow-y: auto;
     z-index: 9999;
+    padding: 40px 0;
 }
 
 /* Login Wrapper - Contains both card and demo box */
 .login-wrapper {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    overflow: hidden;
+    padding: 40px 20px;
+    overflow: visible;
 }
 
 /* Login Content - Side-by-side layout */
@@ -43,6 +44,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 16px;
+    padding-bottom: 40px;
 }
 
 .login-card {
@@ -240,13 +243,90 @@
     font-size: 13px;
     font-weight: 500;
     text-align: center;
-    display: none;
+    display: none !important;
+    opacity: 0;
     flex-shrink: 0;
 }
 
 .success-message.show {
-    display: block;
+    display: block !important;
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in-out;
 }
+
+.error-message {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    display: none !important;
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.error-message.show {
+    display: block !important;
+    opacity: 1;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Google Login Button */
+.google-login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    color: #3c3c3c;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #dadce0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.google-login-button:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    border-color: #dadce0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transform: translateY(-1px);
+}
+
+.google-login-button:active:not(:disabled) {
+    background-color: #f1f3f4;
+    transform: translateY(0);
+}
+
+.google-login-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.google-login-button svg {
+    width: 18px;
+    height: 18px;
+}
+
 
 .footer-text {
     text-align: center;
@@ -264,27 +344,14 @@
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     padding: 20px;
+    padding-bottom: 24px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     display: flex;
     flex-direction: column;
     gap: 14px;
-    max-height: 520px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-}
-
-.demo-credentials-box::-webkit-scrollbar {
-    width: 5px;
-}
-
-.demo-credentials-box::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.demo-credentials-box::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
 }
 
 .demo-box-title {
@@ -296,12 +363,69 @@
     margin: 0 0 8px 0;
     padding: 0;
     text-align: center;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.demo-box-title:hover {
+    color: var(--brand-blue);
+}
+
+.demo-chevron {
+    position: absolute;
+    right: 0;
+    font-size: 16px;
+    color: var(--text-secondary);
+    transition: transform 0.18s ease-in-out, color 0.2s ease;
+    display: inline-block;
+    line-height: 1;
+}
+
+.demo-chevron.expanded {
+    transform: rotate(180deg);
+}
+
+.demo-box-title:hover .demo-chevron {
+    color: var(--brand-blue);
 }
 
 .demo-accounts-list {
-    display: flex;
+    display: none;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    position: absolute;
+    bottom: 100%; /* Opens UP */
+    left: 0;
+    width: 100%;
+    margin-bottom: 12px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.demo-accounts-list.expanded {
+    display: flex;
+    animation: slideUpFade 0.2s ease-out forwards;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .demo-account-item {
@@ -361,7 +485,6 @@
     .demo-credentials-box {
         width: 100%;
         max-width: 400px;
-        max-height: 280px;
     }
 }
 

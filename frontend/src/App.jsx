@@ -38,6 +38,12 @@ function App() {
                     <Route path="settings" element={<AdminPages.AdminSettings />} />
                     <Route path="bookings" element={<AdminPages.AssetBooking />} />
                     <Route path="visitor-analytics" element={<AdminPages.VisitorAnalytics />} />
+                    <Route path="traceback" element={<AdminPages.LostAndFoundTraceback />} />
+                    <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
+                    <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
+                    <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
+                    <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>
 
                 {/* Resident Nested Routes */}
@@ -56,6 +62,12 @@ function App() {
                     <Route path="settings" element={<ResidentPages.ResidentSettings />} />
                     <Route path="bookings" element={<ResidentPages.AssetBooking />} />
                     <Route path="visitor-approval" element={<ResidentPages.VisitorPreApproval />} />
+                    <Route path="traceback" element={<AdminPages.LostAndFoundTraceback />} />
+                    <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
+                    <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
+                    <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
+                    <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>
 
                 <Route path="/security" element={<SecurityLayout />}>
@@ -66,6 +78,12 @@ function App() {
                     <Route path="emergency" element={<SecurityPages.EmergencyLogs />} />
                     <Route path="settings" element={<SecurityPages.SecuritySettings />} />
                     <Route path="preapproved" element={<SecurityPages.PreApprovedVisitors />} />
+                    <Route path="traceback" element={<AdminPages.LostAndFoundTraceback />} />
+                    <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
+                    <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
+                    <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
+                    <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>
             </Routes>
             </Router>

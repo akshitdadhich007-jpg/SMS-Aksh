@@ -129,17 +129,17 @@
 }
 
 [data-theme="dark"] table th {
-  background: #0F172A;
+  background: #111827;
   color: #CBD5E1;
-  border-bottom-color: #334155;
+  border-bottom-color: #1F2937;
 }
 
 [data-theme="dark"] table td {
-  border-bottom-color: #334155;
+  border-bottom-color: #1F2937;
 }
 
-[data-theme="dark"] table tr:hover {
-  background: rgba(79, 70, 229, 0.1);
+[data-theme="dark"] table tr:hover td {
+  background: rgba(79, 70, 229, 0.12);
 }
 
 /* Badges and Pills in Dark Mode */

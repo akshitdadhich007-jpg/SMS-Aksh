@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader, Card, StatCard, StatusBadge, Button, CardHeader, CardContent } from '../../components/ui';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Search } from 'lucide-react';
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     return (
         <>
             <style>{`
@@ -131,6 +134,7 @@ const AdminDashboard = () => {
                     </CardContent>
                 </Card>
             </div>
+
         </>
     );
 };

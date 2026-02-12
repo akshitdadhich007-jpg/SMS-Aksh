@@ -34,6 +34,7 @@ const AdminLayout = () => {
         { name: 'Documents', icon: '📂', path: '/admin/documents' },
         { name: 'Emergency', icon: '🚨', path: '/admin/emergency' },
         { name: 'Assets & Bookings', icon: '🏟️', path: '/admin/bookings' },
+        { name: 'Lost & Found – Traceback', icon: '🧭', path: '/admin/traceback' },
         { name: 'Visitor Analytics', icon: '📊', path: '/admin/visitor-analytics' },
         { name: 'Reports', icon: '📈', path: '/admin/reports' },
     ];

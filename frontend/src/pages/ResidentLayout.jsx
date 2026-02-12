@@ -16,7 +16,8 @@ import {
     Settings,
     Sun,
     Moon,
-    Building
+    Building,
+    Search
 } from 'lucide-react';
 
 const ResidentLayout = () => {
@@ -42,6 +43,7 @@ const ResidentLayout = () => {
         { name: 'Emergency', path: '/resident/emergency', icon: <Phone size={20} /> },
         { name: 'Staff & Services', path: '/resident/staff', icon: <Users size={20} /> },
         { name: 'Asset Booking', path: '/resident/bookings', icon: <Building size={20} /> },
+        { name: 'Lost & Found – Traceback', path: '/resident/traceback', icon: <Search size={20} /> },
         { name: 'Visitor Pre-Approval', path: '/resident/visitor-approval', icon: '👥' }
     ];
 

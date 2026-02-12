@@ -52,6 +52,9 @@ const SecurityLayout = () => {
                     <NavLink to="/security/emergency" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                         🚨 Emergency Logs
                     </NavLink>
+                    <NavLink to="/security/traceback" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                        🧭 Lost & Found – Traceback
+                    </NavLink>
                 </nav>
                 <div className="sidebar-actions">
                     <NavLink
