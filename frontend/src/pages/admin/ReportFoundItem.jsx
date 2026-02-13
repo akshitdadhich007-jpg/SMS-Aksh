@@ -36,25 +36,43 @@ const ReportFoundItem = () => {
         setImageFile(file);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMsg('');
         setIsSubmitting(true);
 
-        const payload = {
-            ...formData,
-            imageName: imageFile ? imageFile.name : null,
-            submittedAt: new Date().toISOString()
-        };
+        try {
+            const response = await fetch('http://localhost:3001/api/traceback/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    type: 'found',
+                    category: formData.category,
+                    description: formData.description,
+                    location: formData.locationFound,
+                    event_date: formData.dateFound,
+                    image_url: imageFile ? imageFile.name : ''
+                }),
+            });
 
-        const existing = JSON.parse(localStorage.getItem('foundItems') || '[]');
-        localStorage.setItem('foundItems', JSON.stringify([payload, ...existing]));
-        localStorage.setItem('traceback:lastAction', 'found');
+            const data = await response.json();
 
-        setTimeout(() => {
+            if (data.success) {
+                // If found item, maybe show success message or go to a different view?
+                // For now, go to matches to see if anyone lost it.
+                navigate(getTracebackPath(location.pathname, 'matches'));
+            } else {
+                setErrorMsg(data.message || 'Failed to submit report.');
+                setIsSubmitting(false);
+            }
+        } catch (err) {
+            console.error('Report error:', err);
+            setErrorMsg('Network error. Please try again.');
             setIsSubmitting(false);
-            navigate(getTracebackPath(location.pathname, 'matches'));
-        }, 400);
+        }
     };
 
     return (

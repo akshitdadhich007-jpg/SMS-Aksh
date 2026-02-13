@@ -42,6 +42,8 @@ function App() {
                     <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
                     <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
                     <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/inventory" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/claims" element={<AdminPages.TracebackMatches />} />
                     <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
                     <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>
@@ -66,6 +68,8 @@ function App() {
                     <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
                     <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
                     <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/inventory" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/claims" element={<AdminPages.TracebackMatches />} />
                     <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
                     <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>
@@ -82,6 +86,8 @@ function App() {
                     <Route path="traceback/report-lost" element={<AdminPages.ReportLostItem />} />
                     <Route path="traceback/report-found" element={<AdminPages.ReportFoundItem />} />
                     <Route path="traceback/matches" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/inventory" element={<AdminPages.TracebackMatches />} />
+                    <Route path="traceback/claims" element={<AdminPages.TracebackMatches />} />
                     <Route path="traceback/prove-ownership" element={<AdminPages.ProveOwnership />} />
                     <Route path="traceback/claim-review" element={<AdminPages.FinderClaimReview />} />
                 </Route>

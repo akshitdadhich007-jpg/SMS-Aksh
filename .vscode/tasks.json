@@ -1,0 +1,61 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Run Project (New Window)",
+			"command": "run_project.bat",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "server"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Start Diagnostic",
+			"command": "node diagnostic.js",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "server"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Start Backend",
+			"command": "npm start",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "server"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Start Frontend",
+			"command": "npm run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/frontend"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "server"
+			}
+		}
+	]
+}

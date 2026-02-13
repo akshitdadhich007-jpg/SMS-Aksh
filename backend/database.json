@@ -1,0 +1,357 @@
+{
+    "users": [
+        {
+            "id": "admin-1",
+            "email": "admin@society.local",
+            "password": "Admin@12345",
+            "role": "admin",
+            "name": "Society Admin"
+        },
+        {
+            "id": "res-1",
+            "email": "resident1@society.local",
+            "password": "Resident@123",
+            "role": "resident",
+            "name": "Raj Kumar",
+            "flat": "A-101"
+        },
+        {
+            "id": "sec-1",
+            "email": "security@society.local",
+            "password": "Security@123",
+            "role": "security",
+            "name": "Ram Singh"
+        }
+    ],
+    "traceback_items": [
+        {
+            "id": "b4f4ec0e-ffec-42fc-a9ed-d46fbd30e4c8",
+            "type": "lost",
+            "category": "electronics",
+            "description": "Black iPhone 14",
+            "location": "26.35154, 73.05029",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-resident",
+            "status": "open",
+            "image_url": "",
+            "created_at": "2026-02-13T07:15:49.006Z"
+        },
+        {
+            "id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "type": "found",
+            "category": "electronics",
+            "description": "found a black iphone",
+            "location": "near pool",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "open",
+            "image_url": "",
+            "created_at": "2026-02-13T07:17:54.066Z"
+        },
+        {
+            "id": "aca49b30-a072-4122-aeae-241c1a49087f",
+            "type": "lost",
+            "category": "electronics",
+            "description": "red colored rope",
+            "location": "26.35154, 73.05029",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "open",
+            "image_url": "",
+            "created_at": "2026-02-13T07:23:12.750Z"
+        },
+        {
+            "id": "99b5720e-4719-4130-8d02-111f849da2c2",
+            "type": "found",
+            "category": "electronics",
+            "description": "red rope",
+            "location": "parking",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "open",
+            "image_url": "",
+            "created_at": "2026-02-13T07:24:07.232Z"
+        },
+        {
+            "id": "26a0de2e-b650-4dc1-817b-f89d5697ac3d",
+            "type": "lost",
+            "category": "keys",
+            "description": "car key suzuki",
+            "location": "26.35155, 73.05028",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "open",
+            "image_url": "",
+            "created_at": "2026-02-13T08:35:30.885Z"
+        },
+        {
+            "id": "69b7b8d1-cae0-4398-86bc-a150d44f776a",
+            "type": "lost",
+            "category": "documents",
+            "description": "pan card",
+            "location": "26.35154, 73.05029",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "matched",
+            "image_url": "",
+            "created_at": "2026-02-13T09:37:29.922Z",
+            "match_id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd"
+        },
+        {
+            "id": "18212012-b75d-4255-a8b1-b36004cb7e4a",
+            "type": "found",
+            "category": "documents",
+            "description": "pan card",
+            "location": "parking",
+            "event_date": "2026-02-13",
+            "reporter_id": "demo-security",
+            "status": "matched",
+            "image_url": "",
+            "created_at": "2026-02-13T09:38:53.461Z",
+            "match_id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd"
+        }
+    ],
+    "traceback_matches": [
+        {
+            "id": "3a6a277d-94ff-4d34-8058-b55809ac56af",
+            "lost_item_id": "b4f4ec0e-ffec-42fc-a9ed-d46fbd30e4c8",
+            "found_item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "match_score": 70,
+            "ai_reason": "Category match (electronics) with 2 keyword overlaps.",
+            "status": "potential",
+            "created_at": "2026-02-13T07:17:54.067Z",
+            "lost_item": {
+                "id": "b4f4ec0e-ffec-42fc-a9ed-d46fbd30e4c8",
+                "type": "lost",
+                "category": "electronics",
+                "description": "Black iPhone 14",
+                "location": "26.35154, 73.05029",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-resident",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:15:49.006Z"
+            },
+            "found_item": {
+                "id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+                "type": "found",
+                "category": "electronics",
+                "description": "found a black iphone",
+                "location": "near pool",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:17:54.066Z"
+            }
+        },
+        {
+            "id": "93e6a5f3-087e-4124-a214-a80a8ad1c8c3",
+            "lost_item_id": "aca49b30-a072-4122-aeae-241c1a49087f",
+            "found_item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "match_score": 40,
+            "ai_reason": "Category match (electronics) with 0 keyword overlaps.",
+            "status": "potential",
+            "created_at": "2026-02-13T07:23:12.750Z",
+            "lost_item": {
+                "id": "aca49b30-a072-4122-aeae-241c1a49087f",
+                "type": "lost",
+                "category": "electronics",
+                "description": "red colored rope",
+                "location": "26.35154, 73.05029",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:23:12.750Z"
+            },
+            "found_item": {
+                "id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+                "type": "found",
+                "category": "electronics",
+                "description": "found a black iphone",
+                "location": "near pool",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:17:54.066Z"
+            }
+        },
+        {
+            "id": "d5cd2652-912c-4595-8ed4-e2c2903642dd",
+            "lost_item_id": "b4f4ec0e-ffec-42fc-a9ed-d46fbd30e4c8",
+            "found_item_id": "99b5720e-4719-4130-8d02-111f849da2c2",
+            "match_score": 40,
+            "ai_reason": "Category match (electronics) with 0 keyword overlaps.",
+            "status": "potential",
+            "created_at": "2026-02-13T07:24:07.232Z",
+            "lost_item": {
+                "id": "b4f4ec0e-ffec-42fc-a9ed-d46fbd30e4c8",
+                "type": "lost",
+                "category": "electronics",
+                "description": "Black iPhone 14",
+                "location": "26.35154, 73.05029",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-resident",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:15:49.006Z"
+            },
+            "found_item": {
+                "id": "99b5720e-4719-4130-8d02-111f849da2c2",
+                "type": "found",
+                "category": "electronics",
+                "description": "red rope",
+                "location": "parking",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:24:07.232Z"
+            }
+        },
+        {
+            "id": "dfd8b5c4-4b2a-46e6-aeb3-0638d0475fa2",
+            "lost_item_id": "aca49b30-a072-4122-aeae-241c1a49087f",
+            "found_item_id": "99b5720e-4719-4130-8d02-111f849da2c2",
+            "match_score": 55,
+            "ai_reason": "Category match (electronics) with 1 keyword overlaps.",
+            "status": "potential",
+            "created_at": "2026-02-13T07:24:07.232Z",
+            "lost_item": {
+                "id": "aca49b30-a072-4122-aeae-241c1a49087f",
+                "type": "lost",
+                "category": "electronics",
+                "description": "red colored rope",
+                "location": "26.35154, 73.05029",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:23:12.750Z"
+            },
+            "found_item": {
+                "id": "99b5720e-4719-4130-8d02-111f849da2c2",
+                "type": "found",
+                "category": "electronics",
+                "description": "red rope",
+                "location": "parking",
+                "event_date": "2026-02-13",
+                "reporter_id": "demo-security",
+                "status": "open",
+                "image_url": "",
+                "created_at": "2026-02-13T07:24:07.232Z"
+            }
+        },
+        {
+            "id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd",
+            "lost_item_id": "69b7b8d1-cae0-4398-86bc-a150d44f776a",
+            "found_item_id": "18212012-b75d-4255-a8b1-b36004cb7e4a",
+            "match_score": 90,
+            "ai_reason": "Score: 90 (Kw:50 Loc:0 Time:10)",
+            "status": "potential",
+            "created_at": "2026-02-13T09:38:53.461Z"
+        }
+    ],
+    "traceback_claims": [
+        {
+            "id": "c8bf3d34-d8b9-4b64-a4ea-6dc0ebe58ed1",
+            "item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "claimant_id": "demo-security",
+            "status": "pending_verification",
+            "verification_token": "7a668653fb2e0c2596ca53ddfe3084bb8316e411207a42087da42e9a32c2cce8",
+            "token_expiry": "2026-02-14T07:19:41.944Z",
+            "created_at": "2026-02-13T07:19:41.945Z"
+        },
+        {
+            "id": "bed47154-bfcb-4559-9896-2114ba574892",
+            "item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "claimant_id": "demo-security",
+            "status": "pending_verification",
+            "verification_token": "f5cdb8e8b9f2169ed2d54477514fdd1e98219fac1f13acb5ce4a3c4ce226514f",
+            "token_expiry": "2026-02-14T07:23:21.022Z",
+            "created_at": "2026-02-13T07:23:21.022Z"
+        },
+        {
+            "id": "528724ee-67a8-48fb-a147-1e03ab57ad86",
+            "item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "claimant_id": "demo-security",
+            "status": "pending_verification",
+            "verification_token": "5f2ee5a09a9ab0c8b9eccbffd1370474a1c7a28b5df1352b4b65c4d8cbfd3049",
+            "token_expiry": "2026-02-14T07:23:23.450Z",
+            "created_at": "2026-02-13T07:23:23.450Z"
+        },
+        {
+            "id": "7e5bca44-3b52-411a-8e5b-49278c988015",
+            "item_id": "99b5720e-4719-4130-8d02-111f849da2c2",
+            "claimant_id": "demo-security",
+            "status": "pending_verification",
+            "verification_token": "1edd5d1332874c5850a2ed2cfbc0839dfd7f5b866806450be5c57d82e89c91f3",
+            "token_expiry": "2026-02-14T07:24:28.508Z",
+            "created_at": "2026-02-13T07:24:28.508Z"
+        },
+        {
+            "id": "217ffc99-c7a2-40c2-91ca-0918d88808bf",
+            "item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "claimant_id": "demo-resident",
+            "status": "pending_verification",
+            "verification_token": "b1e6dfcfa9edd8610754f57c4cb639f27d7f6323164fe25db3f6005f3c404d99",
+            "token_expiry": "2026-02-14T07:44:11.466Z",
+            "created_at": "2026-02-13T07:44:11.468Z"
+        },
+        {
+            "id": "d8de8603-3043-4e73-b11b-8508913163ea",
+            "item_id": "3c33a985-84de-4bdd-a99a-0dd1b3ebdf8c",
+            "claimant_id": "demo-security",
+            "status": "pending_verification",
+            "verification_token": "b25a86e52676f70ce9592040fa666538ae9858541591d706b733f5d7bb170719",
+            "token_expiry": "2026-02-14T08:11:32.336Z",
+            "created_at": "2026-02-13T08:11:32.337Z"
+        }
+    ],
+    "traceback_handover_logs": [],
+    "traceback_tokens": [],
+    "traceback_audit_logs": [
+        {
+            "id": "7a28557b-cdd9-4c65-80be-67953137cb35",
+            "user_id": "demo-security",
+            "user_email": "security@society.local",
+            "role": "security",
+            "timestamp": "2026-02-13T09:37:29.922Z",
+            "action": "report_created",
+            "item_id": "69b7b8d1-cae0-4398-86bc-a150d44f776a",
+            "meta": {
+                "type": "lost",
+                "category": "documents"
+            }
+        },
+        {
+            "id": "c92bb642-b0b4-4033-ba5b-f2962510f197",
+            "user_id": "demo-security",
+            "user_email": "security@society.local",
+            "role": "security",
+            "timestamp": "2026-02-13T09:38:53.461Z",
+            "action": "report_created",
+            "item_id": "18212012-b75d-4255-a8b1-b36004cb7e4a",
+            "meta": {
+                "type": "found",
+                "category": "documents"
+            }
+        },
+        {
+            "id": "3ad4eed4-21a8-41ea-892e-a01fd906bc64",
+            "user_id": "system",
+            "user_email": "system",
+            "role": "system",
+            "timestamp": "2026-02-13T09:38:53.462Z",
+            "action": "match_generated",
+            "item_id": "18212012-b75d-4255-a8b1-b36004cb7e4a",
+            "meta": {
+                "match_id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd",
+                "score": 90,
+                "linked_item": "69b7b8d1-cae0-4398-86bc-a150d44f776a"
+            }
+        }
+    ]
+}

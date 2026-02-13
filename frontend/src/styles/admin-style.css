@@ -640,3 +640,24 @@ body {
         padding: 16px;
     }
 }
+
+/* Complaint Stats Grid - 4 cols desktop, 2 tablet, 1 mobile */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}

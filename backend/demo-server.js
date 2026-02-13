@@ -1,10 +1,16 @@
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: ['http://localhost:5174', 'http://localhost:5173'],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

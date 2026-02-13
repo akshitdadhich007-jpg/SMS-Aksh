@@ -117,3 +117,92 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* TRACEBACK DASHBOARD STYLES */
+.traceback-page { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.traceback-tabs { display: flex; gap: 10px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 25px; }
+.traceback-tabs .btn { padding: 10px 20px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all 0.2s; background: transparent; color: #64748b; font-size: 14px; position: relative; }
+.traceback-tabs .btn:hover { background: #f1f5f9; color: #0f172a; }
+.traceback-tabs .btn-primary { background: #eff6ff; color: #2563eb; font-weight: 600; }
+.notification-badge { position: absolute; top: 0; right: 0; transform: translate(50%, -50%); background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+.traceback-grid-2col { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+.traceback-card.item-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: box-shadow 0.2s; }
+.traceback-card.item-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
+.item-category { font-weight: 600; color: #0f172a; font-size: 1.1em; }
+.item-desc { color: #475569; margin-bottom: 15px; line-height: 1.5; font-size: 0.95em; }
+.item-meta { font-size: 0.85em; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+
+.match-score-pill { background: #ecfdf5; color: #059669; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: inline-block; margin-bottom: 10px; }
+.traceback-match-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 15px; background: white; transition: all 0.2s; position: relative; overflow: hidden; }
+.traceback-match-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border-color: #cbd5e1; }
+.traceback-match-title { font-weight: 600; font-size: 1.1em; color: #1e293b; margin-bottom: 5px; }
+
+.traceback-claim-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: white; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.claim-header { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+.claim-user-avatar { width: 42px; height: 42px; border-radius: 50%; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; font-size: 1.1em; background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.claim-user-name { font-weight: 600; color: #1e293b; }
+.claim-item-ref { font-size: 0.85em; color: #64748b; }
+.claim-status-badge { margin-left: auto; padding: 6px 14px; background: #fff7ed; color: #c2410c; border-radius: 20px; font-size: 0.8em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.meta-label { font-weight: 600; color: #64748b; font-size: 0.9em; margin-right: 5px; }
+.traceback-info-box.success { background: #f0fdf4; color: #166534; padding: 12px; border-radius: 8px; font-weight: 500; text-align: center; border: 1px solid #bbf7d0; }
+
+
+
+/* PREMIUM TRACEBACK REDESIGN */
+
+/* 1. Header & Layout */
+.traceback-page { max-width: 1400px; padding: 32px; margin: 0 auto; color: #1e293b; }
+.premium-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.header-title-group { display: flex; align-items: start; gap: 16px; }
+.header-icon-box { background: linear-gradient(135deg, #6366f1, #8b5cf6); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
+.header-text h1 { font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2; letter-spacing: -0.5px; }
+.header-text p { color: #64748b; font-size: 15px; margin: 4px 0 0; font-weight: 500; }
+.header-actions { display: flex; gap: 12px; }
+.btn-gradient { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); transition: all 0.2s ease; }
+.btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35); }
+
+/* 2. Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+.stat-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid #f1f5f9; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 16px; transition: all 0.2s; position: relative; overflow: hidden; }
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: #e2e8f0; }
+.stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.stat-info h3 { margin: 0; font-size: 24px; font-weight: 700; color: #0f172a; }
+.stat-info p { margin: 0; font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+/* Stat Variants */
+.stat-blue .stat-icon { background: #eff6ff; color: #3b82f6; }
+.stat-purple .stat-icon { background: #f5f3ff; color: #8b5cf6; }
+.stat-orange .stat-icon { background: #fff7ed; color: #f97316; }
+.stat-green .stat-icon { background: #f0fdf4; color: #22c55e; }
+
+/* 3. Pill Tabs */
+.pill-tabs-container { background: #f8fafc; padding: 6px; border-radius: 16px; display: inline-flex; gap: 4px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
+.pill-tab { padding: 10px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; color: #64748b; background: transparent; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+.pill-tab:hover { color: #334155; background: rgba(0,0,0,0.03); }
+.pill-tab.active { background: white; color: #4f46e5; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.tab-badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+
+/* 4. Empty State */
+.premium-empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 2px dashed #e2e8f0; }
+.empty-icon-circle { width: 80px; height: 80px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #94a3b8; }
+.premium-empty-state h3 { font-size: 20px; color: #0f172a; margin-bottom: 8px; }
+.premium-empty-state p { color: #64748b; max-width: 400px; margin: 0 auto 24px; }
+
+/* 5. Card Improvements */
+.traceback-grid-2col { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; }
+.item-card { border: none !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03) !important; }
+.item-card:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important; transform: translateY(-4px); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .premium-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .header-actions { width: 100%; flex-direction: column; }
+    .btn-gradient { width: 100%; justify-content: center; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .pill-tabs-container { width: 100%; overflow-x: auto; }
+}
+

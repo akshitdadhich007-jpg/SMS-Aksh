@@ -66,11 +66,14 @@ const ComplaintManagement = () => {
 
     // Inline Styles for Dashboard
     const styles = {
+        pageContainer: {
+            maxWidth: '1280px',
+            margin: '0 auto',
+            width: '100%',
+            padding: '0 24px',
+        },
         statsGrid: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '20px',
-            marginBottom: '30px'
+            width: '100%'
         },
         statCard: {
             padding: '24px',
@@ -80,18 +83,19 @@ const ComplaintManagement = () => {
             border: '1px solid #e5e7eb',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             height: '140px',
             transition: 'transform 0.2s',
             cursor: 'default',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            gap: '12px'
         },
         statHeader: {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '10px'
+            margin: 0 // Remove margin to rely on gap for perfect spacing
         },
         statLabel: {
             color: '#6b7280',
@@ -195,14 +199,15 @@ const ComplaintManagement = () => {
     };
 
     return (
-        <div className="complaint-management-page">
-            <PageHeader
-                title="Complaint Management"
-                subtitle="Efficiently track, manage, and resolve resident issues"
-            />
+        <div className="complaint-management-page" style={styles.pageContainer}>
+            {/* Custom Header for strict alignment */}
+            <div style={{ marginBottom: '32px' }}>
+                <h1 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: '700', color: '#111827' }}>Complaint Management</h1>
+                <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Efficiently track, manage, and resolve resident issues</p>
+            </div>
 
             {/* Stats Dashboard */}
-            <div style={styles.statsGrid}>
+            <div className="stats-grid" style={styles.statsGrid}>
                 <div style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#3b82f6')}><MessageSquare size={24} /></div>
@@ -292,16 +297,16 @@ const ComplaintManagement = () => {
                     <span style={{ fontSize: '13px', color: '#6b7280' }}>Showing {filteredComplaints.length} entries</span>
                 </div>
                 <div style={{ overflowX: 'auto' }}>
-                    <table className="table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table className="table" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid #e5e7eb', backgroundColor: '#f9fafb' }}>
-                                <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>ID / Date</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Resident</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Category</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Description</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Priority</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'center', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Status</th>
-                                <th style={{ padding: '16px 24px', textAlign: 'center', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Actions</th>
+                                <th style={{ width: '12%', padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>ID / Date</th>
+                                <th style={{ width: '18%', padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Resident</th>
+                                <th style={{ width: '14%', padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Category</th>
+                                <th style={{ width: '26%', padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Description</th>
+                                <th style={{ width: '10%', padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Priority</th>
+                                <th style={{ width: '10%', padding: '16px 24px', textAlign: 'center', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Status</th>
+                                <th style={{ width: '10%', padding: '16px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '0.05em' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -328,8 +333,15 @@ const ComplaintManagement = () => {
                                                 {complaint.category}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '16px 24px', verticalAlign: 'middle', maxWidth: '300px' }}>
-                                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#4b5563' }}>
+                                        <td style={{ padding: '16px 24px', verticalAlign: 'middle' }}>
+                                            <div style={{ 
+                                                whiteSpace: 'nowrap', 
+                                                overflow: 'hidden', 
+                                                textOverflow: 'ellipsis', 
+                                                color: '#4b5563',
+                                                maxWidth: '100%',
+                                                display: 'block'
+                                            }}>
                                                 {complaint.description}
                                             </div>
                                         </td>
@@ -342,8 +354,8 @@ const ComplaintManagement = () => {
                                         <td style={{ padding: '16px 24px', textAlign: 'center', verticalAlign: 'middle' }}>
                                             <StatusBadge status={complaint.status} />
                                         </td>
-                                        <td style={{ padding: '16px 24px', textAlign: 'center', verticalAlign: 'middle' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                                        <td style={{ padding: '16px 24px', textAlign: 'right', verticalAlign: 'middle' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                                                 <button 
                                                     style={{...styles.rowActionBtn, color: '#3b82f6', backgroundColor: '#eff6ff'}} 
                                                     title="View Details"

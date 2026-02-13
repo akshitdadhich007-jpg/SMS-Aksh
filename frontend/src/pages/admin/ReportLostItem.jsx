@@ -54,7 +54,7 @@ const ReportLostItem = () => {
         );
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setErrorMsg('');
 
@@ -65,19 +65,36 @@ const ReportLostItem = () => {
 
         setIsSubmitting(true);
 
-        const payload = {
-            ...formData,
-            imageName: imageFile ? imageFile.name : null,
-            submittedAt: new Date().toISOString()
-        };
+        try {
+            const response = await fetch('http://localhost:3001/api/traceback/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // Important for session cookie
+                body: JSON.stringify({
+                    type: 'lost',
+                    category: formData.category,
+                    description: formData.description,
+                    location: formData.locationLost,
+                    event_date: formData.dateLost,
+                    image_url: imageFile ? imageFile.name : '' // In a real app, upload this first
+                }),
+            });
 
-        const existing = JSON.parse(localStorage.getItem('lostItems') || '[]');
-        localStorage.setItem('lostItems', JSON.stringify([payload, ...existing]));
+            const data = await response.json();
 
-        setTimeout(() => {
+            if (data.success) {
+                navigate(getTracebackPath(location.pathname, 'matches'));
+            } else {
+                setErrorMsg(data.message || 'Failed to submit report.');
+                setIsSubmitting(false);
+            }
+        } catch (err) {
+            console.error('Report error:', err);
+            setErrorMsg('Network error. Please try again.');
             setIsSubmitting(false);
-            navigate(getTracebackPath(location.pathname, 'matches'));
-        }, 400);
+        }
     };
 
     return (

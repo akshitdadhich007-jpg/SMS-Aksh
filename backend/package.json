@@ -4,13 +4,20 @@
   "description": "Society Fintech - Node.js backend with MySQL",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "start:demo": "node demo-server.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.4.0",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "@supabase/supabase-js": "^2.4.0",
-    "dotenv": "^16.0.3"
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
