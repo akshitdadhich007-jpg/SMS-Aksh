@@ -109,6 +109,18 @@
             "image_url": "",
             "created_at": "2026-02-13T09:38:53.461Z",
             "match_id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd"
+        },
+        {
+            "id": "cfe41fd9-e847-4f29-8af8-1d358448c970",
+            "type": "lost",
+            "category": "electronics",
+            "description": "black watch ",
+            "location": "26.35154, 73.05028",
+            "event_date": "2026-02-19",
+            "reporter_id": "demo-admin",
+            "status": "reported",
+            "image_url": "",
+            "created_at": "2026-02-19T10:34:37.195Z"
         }
     ],
     "traceback_matches": [
@@ -351,6 +363,19 @@
                 "match_id": "332bd768-2716-4a77-b1de-c2cfc2d59fdd",
                 "score": 90,
                 "linked_item": "69b7b8d1-cae0-4398-86bc-a150d44f776a"
+            }
+        },
+        {
+            "id": "c06215f6-7dde-46ea-a668-97905401c7c9",
+            "user_id": "demo-admin",
+            "user_email": "admin@society.local",
+            "role": "admin",
+            "timestamp": "2026-02-19T10:34:37.195Z",
+            "action": "report_created",
+            "item_id": "cfe41fd9-e847-4f29-8af8-1d358448c970",
+            "meta": {
+                "type": "lost",
+                "category": "electronics"
             }
         }
     ]

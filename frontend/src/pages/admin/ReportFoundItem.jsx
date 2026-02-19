@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PageHeader, Card, Button, TracebackNav } from '../../components/ui';
 import { getTracebackPath } from '../../utils/tracebackHelper';
+import { getDB, saveDB } from '../../utils/tracebackStorage';
+import { calculateMatchScore } from '../../utils/tracebackAI';
 import '../../styles/Traceback.css';
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -36,43 +38,60 @@ const ReportFoundItem = () => {
         setImageFile(file);
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         setErrorMsg('');
         setIsSubmitting(true);
 
-        try {
-            const response = await fetch('http://localhost:3001/api/traceback/items', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    type: 'found',
-                    category: formData.category,
-                    description: formData.description,
-                    location: formData.locationFound,
-                    event_date: formData.dateFound,
-                    image_url: imageFile ? imageFile.name : ''
-                }),
-            });
+        const db = getDB();
 
-            const data = await response.json();
+        const newItem = {
+            id: Date.now().toString(),
+            type: 'found',
+            category: formData.category,
+            description: formData.description,
+            location: formData.locationFound,
+            event_date: formData.dateFound,
+            contact: formData.contact,
+            image_url: imageFile ? imageFile.name : '',
+            status: 'reported',
+            created_at: new Date().toISOString()
+        };
 
-            if (data.success) {
-                // If found item, maybe show success message or go to a different view?
-                // For now, go to matches to see if anyone lost it.
-                navigate(getTracebackPath(location.pathname, 'matches'));
-            } else {
-                setErrorMsg(data.message || 'Failed to submit report.');
-                setIsSubmitting(false);
+        db.items.push(newItem);
+
+        // Auto match
+        const oppositeType = 'lost';
+
+        db.items.forEach(item => {
+            if (
+                item.type === oppositeType &&
+                item.category === newItem.category
+            ) {
+                const lost = item;
+                const found = newItem;
+
+                const score = calculateMatchScore(lost, found);
+
+                if (score >= 40) {
+                    db.matches.push({
+                        id: Date.now() + Math.random(),
+                        lostId: lost.id,
+                        foundId: found.id,
+                        score,
+                        status: 'matched'
+                    });
+
+                    lost.status = 'matched';
+                    found.status = 'matched';
+                }
             }
-        } catch (err) {
-            console.error('Report error:', err);
-            setErrorMsg('Network error. Please try again.');
-            setIsSubmitting(false);
-        }
+        });
+
+        saveDB(db);
+        alert('✅ Report saved! AI scan complete.');
+        navigate(getTracebackPath(location.pathname, 'matches'));
+        setIsSubmitting(false);
     };
 
     return (

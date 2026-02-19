@@ -591,3 +591,14 @@
 input, select, textarea, button {
     transition: all 0.2s ease;
 }
+
+.fake-qr {
+  padding: 30px;
+  border: 3px dashed #00f;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin: 20px 0;
+  background: white;
+  color: #00f;
+}

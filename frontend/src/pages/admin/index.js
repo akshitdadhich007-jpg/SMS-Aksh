@@ -22,3 +22,6 @@ export { default as ReportFoundItem } from './ReportFoundItem';
 export { default as TracebackMatches } from './TracebackMatches';
 export { default as ProveOwnership } from './ProveOwnership';
 export { default as FinderClaimReview } from './FinderClaimReview';
+export { default as SmartSurveillance } from './SmartSurveillance';
+export { default as AttendanceLogs } from './AttendanceLogs';
+
