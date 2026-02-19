@@ -76,7 +76,7 @@ const SecurityLayout = () => {
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Security ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
-                                <a href="#">Profile</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); navigate('/security/settings'); }}>Profile</a>
                                 <a href="/" id="logoutBtn" onClick={handleLogout}>Logout</a>
                             </div>
                         </div>

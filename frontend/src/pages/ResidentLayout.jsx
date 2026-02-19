@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import NotificationPanel from '../components/ui/NotificationPanel';
+import { useToast } from '../components/ui/Toast';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/admin-style.css';
 import {
@@ -24,6 +25,8 @@ const ResidentLayout = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const navigate = useNavigate();
+    const location = useLocation();
+    const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
 
     const handleLogout = (e) => {
@@ -100,8 +103,8 @@ const ResidentLayout = () => {
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Resident ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
-                                <a href="#">Profile</a>
-                                <a href="#">Change Password</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); navigate('/resident/settings'); }}>Profile</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); toast.info('Navigate to Settings to change your password', 'Change Password'); navigate('/resident/settings'); }}>Change Password</a>
                                 <a href="/" id="logoutBtn" onClick={handleLogout}>Logout</a>
                             </div>
                         </div>

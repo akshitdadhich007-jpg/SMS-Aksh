@@ -1,8 +1,10 @@
 import React from 'react';
-import { Card, PageHeader } from '../../components/ui';
+import { useNavigate } from 'react-router-dom';
+import { Card, PageHeader, Button } from '../../components/ui';
 
 const ResidentDashboard = () => {
-    // Stats Data
+    const navigate = useNavigate();
+
     const stats = [
         { label: 'Total Due', value: '₹ 2,500', trend: 'Due in 5 days', color: '#ef4444' },
         { label: 'Last Paid', value: '₹ 2,500', trend: 'Jan 10, 2026', color: '#10b981' },
@@ -10,25 +12,59 @@ const ResidentDashboard = () => {
         { label: 'Notices', value: '2', trend: 'New Updates', color: '#3b82f6' },
     ];
 
+    const quickActions = [
+        { label: 'Pay Now', icon: '💳', route: '/resident/pay-maintenance', variant: 'primary' },
+        { label: 'File Complaint', icon: '📝', route: '/resident/complaints', variant: 'secondary' },
+        { label: 'View Announcements', icon: '📢', route: '/resident/announcements', variant: 'secondary' },
+        { label: 'Emergency', icon: '🚨', route: '/resident/emergency', variant: 'danger' },
+    ];
+
+    const recentActivity = [
+        { time: '2 hrs ago', text: 'Maintenance of ₹2,500 due in 5 days', icon: '⏰' },
+        { time: 'Yesterday', text: 'Complaint #103 status: In Progress', icon: '🔧' },
+        { time: '2 days ago', text: 'New notice: Water supply maintenance', icon: '📋' },
+        { time: '10 Jan', text: 'Payment of ₹2,500 received — Jan 2026', icon: '✅' },
+    ];
+
     return (
         <div>
-            <PageHeader title="Dashboard" subtitle="Welcome back, Amit Sharma (A-101)" />
+            <PageHeader title="My Dashboard" subtitle="Welcome back, Resident" />
 
-            <div className="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-                {stats.map((stat, i) => (
-                    <Card key={i}>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>{stat.label}</div>
-                        <div style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '8px' }}>{stat.value}</div>
-                        <div style={{ fontSize: '13px', color: stat.color, fontWeight: '600' }}>{stat.trend}</div>
+            {/* Stats Cards */}
+            <div className="cards">
+                {stats.map((stat, index) => (
+                    <Card key={index}>
+                        <div style={{ padding: '4px' }}>
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>{stat.label}</div>
+                            <div style={{ fontSize: '28px', fontWeight: '700', color: stat.color }}>{stat.value}</div>
+                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{stat.trend}</div>
+                        </div>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-                {/* Recent Activity */}
-                <Card>
-                </Card>
+            {/* Quick Actions */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
+                {quickActions.map((action, i) => (
+                    <Button key={i} variant={action.variant} onClick={() => navigate(action.route)} style={{ padding: '12px 20px' }}>
+                        {action.icon} {action.label}
+                    </Button>
+                ))}
             </div>
+
+            {/* Recent Activity */}
+            <Card>
+                <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600', color: 'var(--text-secondary)' }}>Recent Activity</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {recentActivity.map((item, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', background: 'var(--bg-light)' }}>
+                            <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                            <div style={{ flex: 1, fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>{item.text}</div>
+                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{item.time}</span>
+                        </div>
+                    ))}
+                </div>
+            </Card>
         </div>
     );
 };

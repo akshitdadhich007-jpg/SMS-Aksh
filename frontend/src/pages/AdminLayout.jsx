@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import NotificationPanel from '../components/ui/NotificationPanel';
+import { useToast } from '../components/ui/Toast';
 import { Settings, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/admin-style.css';
@@ -10,6 +11,7 @@ const AdminLayout = () => {
     const [profileOpen, setProfileOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
 
     const handleLogout = (e) => {
@@ -92,8 +94,8 @@ const AdminLayout = () => {
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>Admin ▾</button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
-                                <a href="#">Profile</a>
-                                <a href="#">Change Password</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); navigate('/admin/settings'); }}>Profile</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); toast.info('Navigate to Settings to change your password', 'Change Password'); navigate('/admin/settings'); }}>Change Password</a>
                                 <a href="/" id="logoutBtn" onClick={handleLogout}>Logout</a>
                             </div>
                         </div>

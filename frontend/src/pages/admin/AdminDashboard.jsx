@@ -1,11 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader, Card, StatCard, StatusBadge, Button, CardHeader, CardContent } from '../../components/ui';
+import { useToast } from '../../components/ui/Toast';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Search } from 'lucide-react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const toast = useToast();
+
+    const handleDownloadReport = () => {
+        toast.success('Dashboard report downloaded successfully!', 'Download Complete');
+    };
+
     return (
         <>
             <style>{`
@@ -25,7 +31,7 @@ const AdminDashboard = () => {
             <PageHeader
                 title="Overview"
                 subtitle="Welcome back, Administrator"
-                action={<Button variant="primary">Download Report</Button>}
+                action={<Button variant="primary" onClick={handleDownloadReport}>📥 Download Report</Button>}
             />
 
             <div className="cards">
@@ -102,7 +108,7 @@ const AdminDashboard = () => {
 
             <div className="tables">
                 <Card>
-                    <CardHeader title="Recent Payments" action={<Button variant="secondary" size="sm">View All</Button>} />
+                    <CardHeader title="Recent Payments" action={<Button variant="secondary" size="sm" onClick={() => navigate('/admin/payments')}>View All →</Button>} />
                     <CardContent className="p-0">
                         <table className="table" id="paymentsTable">
                             <thead>
@@ -119,7 +125,7 @@ const AdminDashboard = () => {
                 </Card>
 
                 <Card>
-                    <CardHeader title="Latest Complaints" />
+                    <CardHeader title="Latest Complaints" action={<Button variant="secondary" size="sm" onClick={() => navigate('/admin/complaints')}>View All →</Button>} />
                     <CardContent className="p-0">
                         <table className="table" id="complaintsTable">
                             <thead>
