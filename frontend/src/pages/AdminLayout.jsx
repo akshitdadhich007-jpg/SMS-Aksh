@@ -39,6 +39,8 @@ const AdminLayout = () => {
         { name: 'Lost & Found – Traceback', icon: '🧭', path: '/admin/traceback' },
         { name: 'Visitor Analytics', icon: '📊', path: '/admin/visitor-analytics' },
         { name: 'Reports', icon: '📈', path: '/admin/reports' },
+        { name: 'CivicGuard AI', icon: '🚨', path: '/admin/surveillance' },
+        { name: 'Staff Attendance Logs', icon: '📋', path: '/admin/attendance' },
     ];
 
     return (
