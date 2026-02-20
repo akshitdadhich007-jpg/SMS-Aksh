@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Heart, Share2, Send, Calendar, ArrowLeft, Trash2, Bed, Bath, Maximize, Layers, Car, Sofa, MapPin, Eye } from 'lucide-react';
+import { Heart, Share2, Send, Calendar, ArrowLeft, Trash2, Bed, Bath, Maximize, Layers, Car, Sofa, MapPin, Eye, Plus, X, Edit2 } from 'lucide-react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { formatPrice, timeAgo } from '../utils/helpers';
 import { useToast } from '../../../components/ui/Toast';
@@ -26,6 +26,11 @@ const ListingDetails = () => {
     const [showWithdrawModal, setShowWithdrawModal] = useState(false);
     const [enquiryForm, setEnquiryForm] = useState({ name: '', phone: '', message: '' });
     const [visitForm, setVisitForm] = useState({ name: '', date: '', time: '', notes: '' });
+
+    // Custom Features State
+    const [showFeaturesModal, setShowFeaturesModal] = useState(false);
+    const [customFeatures, setCustomFeatures] = useState(listing?.customFeatures || []);
+    const [newFeature, setNewFeature] = useState({ label: '', value: '' });
 
     useEffect(() => {
         if (listing) {
@@ -109,6 +114,41 @@ const ListingDetails = () => {
         navigate('/resident/marketplace/my-listings');
     };
 
+    const handleAddFeature = () => {
+        if (!newFeature.label.trim() || !newFeature.value.trim()) {
+            toast.error('Both label and value are required');
+            return;
+        }
+        if (newFeature.label.length > 30) {
+            toast.error('Label must be under 30 characters');
+            return;
+        }
+        if (newFeature.value.length > 100) {
+            toast.error('Value must be under 100 characters');
+            return;
+        }
+        if (customFeatures.some(f => f.label.toLowerCase() === newFeature.label.toLowerCase())) {
+            toast.error('Feature label already exists');
+            return;
+        }
+        setCustomFeatures([...customFeatures, newFeature]);
+        setNewFeature({ label: '', value: '' });
+    };
+
+    const removeFeature = (idx) => {
+        setCustomFeatures(customFeatures.filter((_, i) => i !== idx));
+    };
+
+    const saveCustomFeatures = () => {
+        updateListing(id, { customFeatures });
+        toast.success('Custom features updated successfully!');
+        setShowFeaturesModal(false);
+    };
+
+    // Assuming the user object is stored in localStorage by Login
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const isOwner = currentUser.name === listing.ownerName && currentUser.role === 'resident';
+
     const furnishLabel = { 'unfurnished': 'Unfurnished', 'semi-furnished': 'Semi-Furnished', 'fully-furnished': 'Fully Furnished' };
     const parkingLabel = { 'none': 'No Parking', 'open': 'Open Parking', 'covered': 'Covered Parking' };
 
@@ -152,6 +192,20 @@ const ListingDetails = () => {
                         </div>
                     </div>
 
+                    {(listing.customFeatures && listing.customFeatures.length > 0) && (
+                        <div className="mp-detail-section">
+                            <h2>Additional Property Highlights</h2>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
+                                {listing.customFeatures.map((feat, idx) => (
+                                    <div key={idx} style={{ background: 'var(--hover-bg, #f1f5f9)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '13px' }}>
+                                        <span style={{ fontWeight: 600, color: 'var(--text-secondary)', marginRight: '6px' }}>{feat.label}:</span>
+                                        <span style={{ color: 'var(--text-primary)' }}>{feat.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mp-detail-section">
                         <h2>Description</h2>
                         <p className="mp-detail-desc">{listing.description}</p>
@@ -173,6 +227,13 @@ const ListingDetails = () => {
                                 <Heart size={16} fill={isFav ? '#dc2626' : 'none'} /> {isFav ? 'Remove Favorite' : 'Add to Favorites'}
                             </button>
                             <button className="mp-btn mp-btn-secondary" onClick={handleShare}><Share2 size={16} /> Share Listing</button>
+
+                            {isOwner && !['sold', 'rented'].includes(listing.status) && (
+                                <button className="mp-btn mp-btn-secondary" onClick={() => setShowFeaturesModal(true)} style={{ marginTop: 8 }}>
+                                    <Edit2 size={16} /> Add Custom Features
+                                </button>
+                            )}
+
                             {listing.ownerFlat && (
                                 <button className="mp-btn mp-btn-warning" onClick={() => setShowWithdrawModal(true)}><Trash2 size={16} /> Withdraw Listing</button>
                             )}
@@ -249,6 +310,47 @@ const ListingDetails = () => {
                         <div className="mp-modal-footer">
                             <button className="mp-btn mp-btn-secondary" onClick={() => setShowVisitModal(false)}>Cancel</button>
                             <button className="mp-btn mp-btn-success" onClick={handleVisit}><Calendar size={16} /> Schedule</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Custom Features Modal */}
+            {showFeaturesModal && (
+                <div className="mp-modal-overlay" onClick={() => setShowFeaturesModal(false)}>
+                    <div className="mp-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
+                        <div className="mp-modal-header"><h2>Define Property Features</h2><button className="mp-btn-icon" onClick={() => setShowFeaturesModal(false)}>✕</button></div>
+                        <div className="mp-modal-body">
+                            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>Add custom highlights (e.g., "Italian Marble", "Smart Home").</p>
+
+                            <div className="mp-form" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 8, alignItems: 'end', marginBottom: 20 }}>
+                                <div className="mp-form-group" style={{ marginBottom: 0 }}>
+                                    <label>Label</label>
+                                    <input type="text" placeholder="e.g. Flooring" value={newFeature.label} onChange={e => setNewFeature({ ...newFeature, label: e.target.value })} maxLength={30} />
+                                </div>
+                                <div className="mp-form-group" style={{ marginBottom: 0 }}>
+                                    <label>Value</label>
+                                    <input type="text" placeholder="e.g. Italian Marble" value={newFeature.value} onChange={e => setNewFeature({ ...newFeature, value: e.target.value })} maxLength={100} />
+                                </div>
+                                <button className="mp-btn mp-btn-primary" onClick={handleAddFeature} style={{ height: 40 }}><Plus size={16} /></button>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 200, overflowY: 'auto' }}>
+                                {customFeatures.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: 20, color: 'var(--text-secondary)', fontSize: 13, background: 'var(--hover-bg)', borderRadius: 8 }}>No custom features added yet.</div>
+                                ) : (
+                                    customFeatures.map((feat, idx) => (
+                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: 'var(--hover-bg)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                                            <div style={{ fontSize: 13 }}><strong style={{ color: 'var(--text-secondary)' }}>{feat.label}:</strong> {feat.value}</div>
+                                            <button className="mp-btn-icon" onClick={() => removeFeature(idx)} style={{ color: '#ef4444', padding: 4 }}><X size={14} /></button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                        <div className="mp-modal-footer">
+                            <button className="mp-btn mp-btn-secondary" onClick={() => setShowFeaturesModal(false)}>Cancel</button>
+                            <button className="mp-btn mp-btn-primary" onClick={saveCustomFeatures}>Save Features</button>
                         </div>
                     </div>
                 </div>

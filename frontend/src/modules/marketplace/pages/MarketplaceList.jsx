@@ -20,6 +20,9 @@ const MarketplaceList = () => {
     const [priceRange, setPriceRange] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
     const [page, setPage] = useState(1);
+    const [customBedroom, setCustomBedroom] = useState(false);
+    const [customFurnishing, setCustomFurnishing] = useState(false);
+    const [customPrice, setCustomPrice] = useState(false);
 
     // Simulate initial loading
     useEffect(() => {
@@ -38,16 +41,34 @@ const MarketplaceList = () => {
         let results = state.listings.filter(l => ['approved', 'under_visit'].includes(l.status));
 
         if (typeFilter !== 'all') results = results.filter(l => l.type === typeFilter);
-        if (bedroomFilter !== 'all') results = results.filter(l => l.bedrooms === Number(bedroomFilter));
-        if (furnishingFilter !== 'all') results = results.filter(l => l.furnishing === furnishingFilter);
+        if (bedroomFilter !== 'all') {
+            const bedNum = Number(bedroomFilter);
+            if (!isNaN(bedNum)) {
+                results = results.filter(l => l.bedrooms === bedNum);
+            }
+        }
+        if (furnishingFilter !== 'all') {
+            const matchStr = furnishingFilter.toLowerCase();
+            results = results.filter(l => l.furnishing && l.furnishing.toLowerCase().includes(matchStr));
+        }
 
         if (priceRange !== 'all') {
-            const [min, max] = priceRange.split('-').map(Number);
-            results = results.filter(l => {
-                const val = l.type === 'sale' ? l.price : l.rent;
-                if (max) return val >= min && val <= max;
-                return val >= min;
-            });
+            if (priceRange.includes('-')) {
+                const [min, max] = priceRange.split('-').map(Number);
+                results = results.filter(l => {
+                    const val = l.type === 'sale' ? l.price : l.rent;
+                    if (max) return val >= min && val <= max;
+                    return val >= min;
+                });
+            } else {
+                const maxPrice = Number(priceRange);
+                if (!isNaN(maxPrice) && maxPrice > 0) {
+                    results = results.filter(l => {
+                        const val = l.type === 'sale' ? l.price : l.rent;
+                        return val <= maxPrice;
+                    });
+                }
+            }
         }
 
         if (debouncedSearch) {
@@ -103,42 +124,79 @@ const MarketplaceList = () => {
                     <Search size={16} className="mp-search-icon" />
                     <input type="text" placeholder="Search by flat, description..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                 </div>
+                <button className="mp-btn mp-btn-primary" onClick={() => setDebouncedSearch(searchTerm)}>Search</button>
                 <div className="mp-toggle-group">
                     <button className={`mp-toggle-btn ${typeFilter === 'all' ? 'active' : ''}`} onClick={() => setTypeFilter('all')}>All</button>
                     <button className={`mp-toggle-btn ${typeFilter === 'sale' ? 'active' : ''}`} onClick={() => setTypeFilter('sale')}>Buy</button>
                     <button className={`mp-toggle-btn ${typeFilter === 'rent' ? 'active' : ''}`} onClick={() => setTypeFilter('rent')}>Rent</button>
                 </div>
-                <select className="mp-filter-select" value={bedroomFilter} onChange={e => setBedroomFilter(e.target.value)}>
-                    <option value="all">All Bedrooms</option>
-                    <option value="1">1 BHK</option>
-                    <option value="2">2 BHK</option>
-                    <option value="3">3 BHK</option>
-                    <option value="4">4+ BHK</option>
-                </select>
-                <select className="mp-filter-select" value={furnishingFilter} onChange={e => setFurnishingFilter(e.target.value)}>
-                    <option value="all">All Furnishing</option>
-                    <option value="unfurnished">Unfurnished</option>
-                    <option value="semi-furnished">Semi-Furnished</option>
-                    <option value="fully-furnished">Fully Furnished</option>
-                </select>
-                <select className="mp-filter-select" value={priceRange} onChange={e => setPriceRange(e.target.value)}>
-                    <option value="all">Any Price</option>
-                    {typeFilter === 'rent' ? (
-                        <>
-                            <option value="0-15000">Under ₹15K</option>
-                            <option value="15000-30000">₹15K - ₹30K</option>
-                            <option value="30000-50000">₹30K - ₹50K</option>
-                            <option value="50000-0">₹50K+</option>
-                        </>
-                    ) : (
-                        <>
-                            <option value="0-5000000">Under ₹50L</option>
-                            <option value="5000000-10000000">₹50L - ₹1Cr</option>
-                            <option value="10000000-20000000">₹1Cr - ₹2Cr</option>
-                            <option value="20000000-0">₹2Cr+</option>
-                        </>
-                    )}
-                </select>
+                {/* Bedrooms */}
+                {customBedroom ? (
+                    <div className="mp-custom-filter">
+                        <input type="text" placeholder="Bedrooms e.g. 5" autoFocus value={bedroomFilter === 'all' ? '' : bedroomFilter} onChange={e => setBedroomFilter(e.target.value || 'all')} />
+                        <button className="mp-custom-filter-back" onClick={() => { setCustomBedroom(false); setBedroomFilter('all'); }} title="Back to list">
+                            <SlidersHorizontal size={14} />
+                        </button>
+                    </div>
+                ) : (
+                    <select className="mp-filter-select" value={bedroomFilter} onChange={e => { if (e.target.value === '__custom__') { setCustomBedroom(true); setBedroomFilter('all'); } else { setBedroomFilter(e.target.value); } }}>
+                        <option value="all">All Bedrooms</option>
+                        <option value="1">1 BHK</option>
+                        <option value="2">2 BHK</option>
+                        <option value="3">3 BHK</option>
+                        <option value="4">4+ BHK</option>
+                        <option value="__custom__">✏️ Custom...</option>
+                    </select>
+                )}
+
+                {/* Furnishing */}
+                {customFurnishing ? (
+                    <div className="mp-custom-filter">
+                        <input type="text" placeholder="Furnishing e.g. modular" autoFocus value={furnishingFilter === 'all' ? '' : furnishingFilter} onChange={e => setFurnishingFilter(e.target.value || 'all')} />
+                        <button className="mp-custom-filter-back" onClick={() => { setCustomFurnishing(false); setFurnishingFilter('all'); }} title="Back to list">
+                            <SlidersHorizontal size={14} />
+                        </button>
+                    </div>
+                ) : (
+                    <select className="mp-filter-select" value={furnishingFilter} onChange={e => { if (e.target.value === '__custom__') { setCustomFurnishing(true); setFurnishingFilter('all'); } else { setFurnishingFilter(e.target.value); } }}>
+                        <option value="all">All Furnishing</option>
+                        <option value="unfurnished">Unfurnished</option>
+                        <option value="semi-furnished">Semi-Furnished</option>
+                        <option value="fully-furnished">Fully Furnished</option>
+                        <option value="__custom__">✏️ Custom...</option>
+                    </select>
+                )}
+
+                {/* Price */}
+                {customPrice ? (
+                    <div className="mp-custom-filter">
+                        <input type="text" placeholder="Max budget e.g. 25000" autoFocus value={priceRange === 'all' ? '' : priceRange} onChange={e => setPriceRange(e.target.value || 'all')} />
+                        <button className="mp-custom-filter-back" onClick={() => { setCustomPrice(false); setPriceRange('all'); }} title="Back to list">
+                            <SlidersHorizontal size={14} />
+                        </button>
+                    </div>
+                ) : (
+                    <select className="mp-filter-select" value={priceRange} onChange={e => { if (e.target.value === '__custom__') { setCustomPrice(true); setPriceRange('all'); } else { setPriceRange(e.target.value); } }}>
+                        <option value="all">Any Price</option>
+                        {typeFilter === 'rent' ? (
+                            <>
+                                <option value="0-15000">Under ₹15K</option>
+                                <option value="15000-30000">₹15K - ₹30K</option>
+                                <option value="30000-50000">₹30K - ₹50K</option>
+                                <option value="50000-0">₹50K+</option>
+                            </>
+                        ) : (
+                            <>
+                                <option value="0-5000000">Under ₹50L</option>
+                                <option value="5000000-10000000">₹50L - ₹1Cr</option>
+                                <option value="10000000-20000000">₹1Cr - ₹2Cr</option>
+                                <option value="20000000-0">₹2Cr+</option>
+                            </>
+                        )}
+                        <option value="__custom__">✏️ Custom...</option>
+                    </select>
+                )}
+
                 <select className="mp-filter-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
                     <option value="newest">Newest First</option>
                     <option value="price_low">Price: Low to High</option>

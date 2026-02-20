@@ -237,7 +237,7 @@
 
 .mp-search input {
     width: 100%;
-    padding: 10px 12px 10px 38px;
+    padding: 10px 12px 10px 44px !important;
     border: 1px solid var(--border, #e2e8f0);
     border-radius: 8px;
     font-size: 14px;
@@ -275,6 +275,55 @@
 .mp-filter-select:focus {
     outline: none;
     border-color: var(--brand-blue, #4F46E5);
+}
+
+/* Custom filter input (replaces select when user picks "Custom") */
+.mp-custom-filter {
+    position: relative;
+    min-width: 140px;
+    max-width: 180px;
+    flex: 0 0 auto;
+}
+
+.mp-custom-filter input {
+    width: 100%;
+    padding: 10px 32px 10px 12px !important;
+    border: 1px solid var(--brand-blue, #4F46E5);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--bg, #f8fafc);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.mp-custom-filter input:focus {
+    outline: none;
+}
+
+.mp-custom-filter-back {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary, #94a3b8);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+    font-size: 0;
+    line-height: 1;
+}
+
+.mp-custom-filter-back:hover {
+    color: var(--text-primary, #334155);
+    background: var(--hover-bg, #f1f5f9);
 }
 
 .mp-toggle-group {

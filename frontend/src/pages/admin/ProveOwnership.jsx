@@ -21,7 +21,7 @@ const ProveOwnership = () => {
     const category = currentLost?.category || '';
     const questions = getAIQuestions(category);
 
-    const [answers, setAnswers] = useState({ q1: '', q2: '', q3: '' });
+    const [answers, setAnswers] = useState({ description: '', lostLocation: '', uniqueMarks: '', notes: '' });
     const [proofImage, setProofImage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,8 +39,8 @@ const ProveOwnership = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (!answers.q1 || !answers.q2 || !answers.q3) {
-            toast.error('Please answer all questions.');
+        if (!answers.description || !answers.lostLocation || !answers.uniqueMarks) {
+            toast.error('Please fill required description, location, and unique marks.');
             return;
         }
         setIsSubmitting(true);
@@ -53,7 +53,7 @@ const ProveOwnership = () => {
             foundId: null,
             item_details: { description: currentLost?.description, category },
             claimant_name: 'Resident (You)',
-            security_answers: [answers.q1, answers.q2, answers.q3],
+            answers: answers,
             proof_image: proofImage,
             confidenceScore: 50 + Math.floor(Math.random() * 40),
             status: 'under_review',
@@ -99,18 +99,50 @@ const ProveOwnership = () => {
                     </div>
 
                     <form onSubmit={handleSubmit} className="traceback-form">
-                        {questions.map((q, idx) => (
-                            <div key={idx} className="traceback-form-group">
-                                <label className="traceback-form-label">{q}</label>
-                                <textarea
-                                    required rows={3}
-                                    value={answers[`q${idx + 1}`]}
-                                    onChange={e => handleChange(`q${idx + 1}`, e.target.value)}
-                                    className="traceback-form-textarea"
-                                    placeholder="Your answer..."
-                                />
-                            </div>
-                        ))}
+                        <div className="traceback-form-group">
+                            <label className="traceback-form-label">Describe the item in detail *</label>
+                            <textarea
+                                required rows={3}
+                                value={answers.description}
+                                onChange={e => handleChange('description', e.target.value)}
+                                className="traceback-form-textarea"
+                                placeholder="E.g., Black leather wallet with a silver zipper..."
+                            />
+                        </div>
+
+                        <div className="traceback-form-group">
+                            <label className="traceback-form-label">Where did you lose it? *</label>
+                            <input
+                                required type="text"
+                                value={answers.lostLocation}
+                                onChange={e => handleChange('lostLocation', e.target.value)}
+                                className="traceback-form-textarea"
+                                style={{ minHeight: 'auto', padding: '10px' }}
+                                placeholder="E.g., Near the clubhouse gym"
+                            />
+                        </div>
+
+                        <div className="traceback-form-group">
+                            <label className="traceback-form-label">What unique marks does it have? *</label>
+                            <textarea
+                                required rows={2}
+                                value={answers.uniqueMarks}
+                                onChange={e => handleChange('uniqueMarks', e.target.value)}
+                                className="traceback-form-textarea"
+                                placeholder="E.g., A scratch on the bottom left corner"
+                            />
+                        </div>
+
+                        <div className="traceback-form-group">
+                            <label className="traceback-form-label">Any additional notes?</label>
+                            <textarea
+                                rows={2}
+                                value={answers.notes}
+                                onChange={e => handleChange('notes', e.target.value)}
+                                className="traceback-form-textarea"
+                                placeholder="Optional extra info..."
+                            />
+                        </div>
 
                         <div className="traceback-form-group">
                             <label className="traceback-form-label">Proof Image (optional)</label>

@@ -17,24 +17,29 @@ const Login = () => {
     const [activeRole, setActiveRole] = useState('admin');
     const [errorMsg, setErrorMsg] = useState('');
     const [demoExpanded, setDemoExpanded] = useState(false);
+    const [autoLoginEnabled, setAutoLoginEnabled] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e, overrideEmail, overridePassword, overrideRole) => {
         e.preventDefault();
 
+        const loginEmail = overrideEmail || email;
+        const loginPassword = overridePassword || password;
+        const loginRole = overrideRole || activeRole;
+
         // Check demo credentials first (demo fallback)
-        const demoUser = demoUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-        
+        const demoUser = demoUsers.find(u => u.email.toLowerCase() === loginEmail.toLowerCase());
+
         if (demoUser) {
             // Validate password
-            if (demoUser.password !== password) {
+            if (demoUser.password !== loginPassword) {
                 alert('❌ Invalid email or password');
                 return;
             }
 
             // Validate role matches selected tab
-            if (demoUser.role !== activeRole) {
-                alert(`❌ This account belongs to ${demoUser.role.toUpperCase()} role, but you selected ${activeRole.toUpperCase()}`);
+            if (demoUser.role !== loginRole) {
+                alert(`❌ This account belongs to ${demoUser.role.toUpperCase()} role, but you selected ${loginRole.toUpperCase()}`);
                 return;
             }
 
@@ -44,14 +49,14 @@ const Login = () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ 
-                        isDemoLogin: true, 
-                        user: { 
+                    body: JSON.stringify({
+                        isDemoLogin: true,
+                        user: {
                             id: 'demo-' + demoUser.role, // Mock ID
-                            email: demoUser.email, 
+                            email: demoUser.email,
                             role: demoUser.role,
                             name: demoUser.name
-                        } 
+                        }
                     })
                 });
             } catch (err) {
@@ -75,28 +80,28 @@ const Login = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email: loginEmail, password: loginPassword })
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 // Fetch full user details if needed, or construct from basic info
-                const userData = { email, role: data.role, name: 'User' }; 
+                const userData = { email: loginEmail, role: data.role, name: 'User' };
                 localStorage.setItem('user', JSON.stringify(userData));
                 setSuccessMsg('✅ Login Successful');
-                
+
                 setTimeout(() => {
                     if (data.role === 'admin') navigate('/admin');
                     else if (data.role === 'security') navigate('/security');
                     else navigate('/resident');
                 }, 600);
             } else {
-                 alert('❌ ' + (data.message || 'Login failed'));
+                alert('❌ ' + (data.message || 'Login failed'));
             }
         } catch (err) {
-             console.error(err);
-             alert('❌ Server connection failed');
+            console.error(err);
+            alert('❌ Server connection failed');
         }
     };
 
@@ -105,6 +110,14 @@ const Login = () => {
         setPassword(p);
         setActiveRole(role);
         setDemoExpanded(false);
+    };
+
+    const handleAutoLogin = (autoEmail, autoPassword, role) => {
+        setEmail(autoEmail);
+        setPassword(autoPassword);
+        setActiveRole(role);
+        // Create a fake event object to pass to handleLogin
+        handleLogin({ preventDefault: () => { }, target: { email: { value: autoEmail }, password: { value: autoPassword } } }, autoEmail, autoPassword, role);
     };
 
     return (
@@ -118,27 +131,42 @@ const Login = () => {
 
                 {/* Role Tabs */}
                 <div className="role-tabs">
-                    <button 
+                    <button
                         className={`role-tab ${activeRole === 'admin' ? 'active' : ''}`}
-                        onClick={() => { setActiveRole('admin'); setEmail(''); setPassword(''); }}
+                        onClick={() => { setActiveRole('admin'); fillCredentials('admin@society.local', 'Admin@12345', 'admin'); if (autoLoginEnabled) handleAutoLogin('admin@society.local', 'Admin@12345', 'admin'); }}
                         type="button"
                     >
                         👨‍💼 Admin
                     </button>
-                    <button 
+                    <button
                         className={`role-tab ${activeRole === 'resident' ? 'active' : ''}`}
-                        onClick={() => { setActiveRole('resident'); setEmail(''); setPassword(''); }}
+                        onClick={() => { setActiveRole('resident'); fillCredentials('resident1@society.local', 'Resident@123', 'resident'); if (autoLoginEnabled) handleAutoLogin('resident1@society.local', 'Resident@123', 'resident'); }}
                         type="button"
                     >
                         👤 Resident
                     </button>
-                    <button 
+                    <button
                         className={`role-tab ${activeRole === 'security' ? 'active' : ''}`}
-                        onClick={() => { setActiveRole('security'); setEmail(''); setPassword(''); }}
+                        onClick={() => { setActiveRole('security'); fillCredentials('security@society.local', 'Security@123', 'security'); if (autoLoginEnabled) handleAutoLogin('security@society.local', 'Security@123', 'security'); }}
                         type="button"
                     >
                         👮 Security
                     </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--primary)', background: 'var(--primary-light, #e0e7ff)', padding: '4px 8px', borderRadius: 4 }}>
+                        Demo Mode Active
+                    </div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                        <input
+                            type="checkbox"
+                            checked={autoLoginEnabled}
+                            onChange={(e) => setAutoLoginEnabled(e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        Auto-Login on Tab Click
+                    </label>
                 </div>
 
                 <form className="login-form" onSubmit={handleLogin}>
@@ -167,7 +195,7 @@ const Login = () => {
                     </div>
 
                     <Button type="submit" variant="primary" style={{ width: '100%', marginTop: '24px' }}>Login</Button>
-                
+
                 </form>
 
                 <div className={`success-message ${successMsg ? 'show' : ''}`}>
@@ -188,8 +216,8 @@ const Login = () => {
                 <div className={`demo-accounts-list ${demoExpanded ? 'expanded' : ''}`}>
                     {demoExpanded && (
                         <>
-                            <div 
-                                className="demo-account-item" 
+                            <div
+                                className="demo-account-item"
                                 onClick={() => fillCredentials('admin@society.local', 'Admin@12345', 'admin')}
                             >
                                 <div className="demo-icon">🧑‍💼</div>
@@ -200,8 +228,8 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <div 
-                                className="demo-account-item" 
+                            <div
+                                className="demo-account-item"
                                 onClick={() => fillCredentials('resident1@society.local', 'Resident@123', 'resident')}
                             >
                                 <div className="demo-icon">🏠</div>
@@ -212,8 +240,8 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <div 
-                                className="demo-account-item" 
+                            <div
+                                className="demo-account-item"
                                 onClick={() => fillCredentials('security@society.local', 'Security@123', 'security')}
                             >
                                 <div className="demo-icon">🛡️</div>

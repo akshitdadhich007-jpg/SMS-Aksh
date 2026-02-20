@@ -13,7 +13,7 @@ const SEED_LISTINGS = [
         price: 8500000, rent: 0, deposit: 0,
         images: [], status: 'approved', featured: true, premium: false,
         views: 34, createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
-        ownerName: 'Rajesh Sharma', ownerFlat: 'A-101', enquiryCount: 3,
+        ownerName: 'Rajesh Sharma', ownerFlat: 'A-101', enquiryCount: 3, customFeatures: [{ label: 'Flooring', value: 'Italian Marble' }]
     },
     {
         id: 'L002', type: 'rent', flatNumber: 'B-204', bedrooms: 2, bathrooms: 2,
@@ -22,7 +22,7 @@ const SEED_LISTINGS = [
         price: 0, rent: 25000, deposit: 75000,
         images: [], status: 'approved', featured: false, premium: false,
         views: 18, createdAt: new Date(Date.now() - 12 * 86400000).toISOString(),
-        ownerName: 'Priya Mehta', ownerFlat: 'B-204', enquiryCount: 1,
+        ownerName: 'Priya Mehta', ownerFlat: 'B-204', enquiryCount: 1, customFeatures: []
     },
     {
         id: 'L003', type: 'sale', flatNumber: 'C-502', bedrooms: 4, bathrooms: 3,
@@ -31,7 +31,7 @@ const SEED_LISTINGS = [
         price: 15000000, rent: 0, deposit: 0,
         images: [], status: 'approved', featured: true, premium: true,
         views: 56, createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-        ownerName: 'Vikram Singh', ownerFlat: 'C-502', enquiryCount: 7,
+        ownerName: 'Vikram Singh', ownerFlat: 'C-502', enquiryCount: 7, customFeatures: [{ label: 'Terrace', value: 'Private Garden' }]
     },
     {
         id: 'L004', type: 'rent', flatNumber: 'A-303', bedrooms: 1, bathrooms: 1,
@@ -40,7 +40,7 @@ const SEED_LISTINGS = [
         price: 0, rent: 12000, deposit: 36000,
         images: [], status: 'pending', featured: false, premium: false,
         views: 4, createdAt: new Date(Date.now() - 1 * 86400000).toISOString(),
-        ownerName: 'Anita Desai', ownerFlat: 'A-303', enquiryCount: 0,
+        ownerName: 'Anita Desai', ownerFlat: 'A-303', enquiryCount: 0, customFeatures: []
     },
     {
         id: 'L005', type: 'sale', flatNumber: 'D-102', bedrooms: 2, bathrooms: 2,
@@ -49,7 +49,7 @@ const SEED_LISTINGS = [
         price: 6200000, rent: 0, deposit: 0,
         images: [], status: 'approved', featured: false, premium: false,
         views: 22, createdAt: new Date(Date.now() - 20 * 86400000).toISOString(),
-        ownerName: 'Sunil Kumar', ownerFlat: 'D-102', enquiryCount: 2,
+        ownerName: 'Sunil Kumar', ownerFlat: 'D-102', enquiryCount: 2, customFeatures: []
     },
     {
         id: 'L006', type: 'rent', flatNumber: 'B-401', bedrooms: 3, bathrooms: 2,
@@ -58,7 +58,7 @@ const SEED_LISTINGS = [
         price: 0, rent: 30000, deposit: 90000,
         images: [], status: 'rejected', featured: false, premium: false,
         views: 8, createdAt: new Date(Date.now() - 15 * 86400000).toISOString(),
-        ownerName: 'Meera Joshi', ownerFlat: 'B-401', enquiryCount: 0,
+        ownerName: 'Meera Joshi', ownerFlat: 'B-401', enquiryCount: 0, customFeatures: []
     },
     {
         id: 'L007', type: 'sale', flatNumber: 'C-201', bedrooms: 3, bathrooms: 2,
@@ -67,7 +67,7 @@ const SEED_LISTINGS = [
         price: 9200000, rent: 0, deposit: 0,
         images: [], status: 'sold', featured: false, premium: false,
         views: 45, createdAt: new Date(Date.now() - 45 * 86400000).toISOString(),
-        ownerName: 'Rohit Patel', ownerFlat: 'C-201', enquiryCount: 5,
+        ownerName: 'Rohit Patel', ownerFlat: 'C-201', enquiryCount: 5, customFeatures: [{ label: 'Vastu', value: 'East Facing' }]
     },
     {
         id: 'L008', type: 'rent', flatNumber: 'D-305', bedrooms: 2, bathrooms: 1,
@@ -76,7 +76,7 @@ const SEED_LISTINGS = [
         price: 0, rent: 20000, deposit: 60000,
         images: [], status: 'approved', featured: false, premium: false,
         views: 12, createdAt: new Date(Date.now() - 8 * 86400000).toISOString(),
-        ownerName: 'Kavita Rao', ownerFlat: 'D-305', enquiryCount: 1,
+        ownerName: 'Kavita Rao', ownerFlat: 'D-305', enquiryCount: 1, customFeatures: []
     },
 ];
 
@@ -119,7 +119,7 @@ function loadState() {
 function reducer(state, action) {
     switch (action.type) {
         case 'ADD_LISTING': {
-            const listing = { ...action.payload, id: generateId('L'), createdAt: new Date().toISOString(), views: 0, enquiryCount: 0 };
+            const listing = { ...action.payload, id: generateId('L'), createdAt: new Date().toISOString(), views: 0, enquiryCount: 0, customFeatures: [] };
             return {
                 ...state,
                 listings: [listing, ...state.listings],

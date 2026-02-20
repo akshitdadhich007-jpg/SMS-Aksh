@@ -5,6 +5,7 @@ import { getTracebackPath } from '../../utils/tracebackHelper';
 import { getDB, saveDB, logAction } from '../../utils/tracebackStorage';
 import { useToast } from '../../components/ui/Toast';
 import TracebackStatusBadge from './traceback/TracebackStatusBadge';
+import { ShieldCheck, CheckCircle2, XCircle, MessageSquare } from 'lucide-react';
 import '../../styles/Traceback.css';
 
 const FinderClaimReview = () => {
@@ -17,7 +18,7 @@ const FinderClaimReview = () => {
 
     // Read from tracebackDB
     const db = getDB();
-    const pendingClaims = db.claims.filter(c => c.status === 'under_review');
+    const pendingClaims = db.claims.filter(c => ['under_review', 'info_requested'].includes(c.status));
     const currentClaim = pendingClaims[0] || null;
 
     // Get the associated items
@@ -71,11 +72,15 @@ const FinderClaimReview = () => {
             }
             logAction(data, 'claim_approved', currentClaim.id, `Approved with token ${token}`, 'admin');
             toast.success('Claim approved! Token generated.');
+        } else if (status === 'info_requested') {
+            data.claims[claimIdx].admin_comment = adminComment || 'Additional information requested.';
+            logAction(data, 'info_requested', currentClaim.id, `Requested more info`, 'admin');
+            toast.info('Requested more info from claimant.');
         }
 
         saveDB(data);
         navigate(getTracebackPath(location.pathname, 'matches'));
-    };
+    }
 
     if (!currentClaim) {
         return (
@@ -128,9 +133,31 @@ const FinderClaimReview = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* Timeline */}
+                    <div style={{ marginTop: 24, padding: 16, background: 'var(--hover-bg)', borderRadius: 8 }}>
+                        <div className="traceback-card-header" style={{ fontSize: 14, marginBottom: 16 }}>Claim Timeline</div>
+                        <div className="claim-timeline" style={{ paddingLeft: 12, borderLeft: '2px solid var(--border)' }}>
+                            <div className="timeline-step" style={{ position: 'relative', marginBottom: 16 }}>
+                                <span className="timeline-dot done" style={{ position: 'absolute', left: -19, top: 4, width: 12, height: 12, borderRadius: '50%', background: 'var(--success)', border: '2px solid white' }} />
+                                <div style={{ fontWeight: 500, fontSize: 13 }}>Item Reported</div>
+                                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>By Finder</div>
+                            </div>
+                            <div className="timeline-step" style={{ position: 'relative', marginBottom: 16 }}>
+                                <span className="timeline-dot done" style={{ position: 'absolute', left: -19, top: 4, width: 12, height: 12, borderRadius: '50%', background: 'var(--success)', border: '2px solid white' }} />
+                                <div style={{ fontWeight: 500, fontSize: 13 }}>Claim Submitted</div>
+                                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{new Date(currentClaim.created_at).toLocaleString()}</div>
+                            </div>
+                            <div className="timeline-step" style={{ position: 'relative', marginBottom: 16 }}>
+                                <span className="timeline-dot active" style={{ position: 'absolute', left: -19, top: 4, width: 12, height: 12, borderRadius: '50%', background: 'var(--primary)', border: '2px solid white' }} />
+                                <div style={{ fontWeight: 500, fontSize: 13 }}>Under Review</div>
+                                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Verification Pending</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Claimant Answers */}
+                {/* Claimant Answers & Actions */}
                 <div className="traceback-card">
                     <div className="traceback-card-header">Claimant's Verification Answers</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
@@ -144,13 +171,23 @@ const FinderClaimReview = () => {
                         </div>
                     </div>
 
-                    <div className="traceback-card-section">
-                        {currentClaim.security_answers?.map((ans, i) => (
-                            <div key={i} className="traceback-answer-box">
-                                <div className="traceback-answer-label">Question {i + 1}</div>
-                                <div className="traceback-answer-text">{ans || 'No response'}</div>
-                            </div>
-                        ))}
+                    <div className="traceback-card-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, background: '#f8fafc', padding: 16, borderRadius: 8 }}>
+                        <div className="traceback-answer-box">
+                            <div className="traceback-answer-label" style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, fontSize: 12 }}>Item Description</div>
+                            <div className="traceback-answer-text" style={{ fontSize: 14 }}>{currentClaim.answers?.description || 'N/A'}</div>
+                        </div>
+                        <div className="traceback-answer-box">
+                            <div className="traceback-answer-label" style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, fontSize: 12 }}>Lost Location</div>
+                            <div className="traceback-answer-text" style={{ fontSize: 14 }}>{currentClaim.answers?.lostLocation || 'N/A'}</div>
+                        </div>
+                        <div className="traceback-answer-box">
+                            <div className="traceback-answer-label" style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, fontSize: 12 }}>Unique Marks</div>
+                            <div className="traceback-answer-text" style={{ fontSize: 14 }}>{currentClaim.answers?.uniqueMarks || 'N/A'}</div>
+                        </div>
+                        <div className="traceback-answer-box">
+                            <div className="traceback-answer-label" style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, fontSize: 12 }}>Additional Notes</div>
+                            <div className="traceback-answer-text" style={{ fontSize: 14 }}>{currentClaim.answers?.notes || 'None'}</div>
+                        </div>
                     </div>
 
                     {/* Proof Image */}
@@ -183,14 +220,23 @@ const FinderClaimReview = () => {
                             />
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <Button variant="secondary" onClick={() => setShowRejectForm(false)} style={{ flex: 1 }}>Cancel</Button>
-                                <Button variant="danger" onClick={() => updateClaimStatus('rejected', rejectReason)} disabled={!rejectReason.trim()} style={{ flex: 1 }}>Confirm Reject</Button>
+                                <Button variant="danger" onClick={() => updateClaimStatus('rejected', rejectReason)} disabled={!rejectReason.trim()} style={{ flex: 1 }}>
+                                    <XCircle size={16} style={{ marginRight: 6 }} /> Confirm Reject
+                                </Button>
                             </div>
                         </div>
                     ) : (
-                        <>
-                            <Button variant="danger" onClick={() => setShowRejectForm(true)}>Reject Claim</Button>
-                            <Button variant="primary" onClick={() => updateClaimStatus('approved')}>Approve & Generate Token</Button>
-                        </>
+                        <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+                            <Button variant="danger" onClick={() => setShowRejectForm(true)} style={{ flex: 1 }}>
+                                <XCircle size={16} style={{ marginRight: 6 }} /> Reject
+                            </Button>
+                            <Button variant="secondary" onClick={() => updateClaimStatus('info_requested')} style={{ flex: 1 }}>
+                                <MessageSquare size={16} style={{ marginRight: 6 }} /> Request More Info
+                            </Button>
+                            <Button variant="primary" onClick={() => updateClaimStatus('approved')} style={{ flex: 1 }}>
+                                <CheckCircle2 size={16} style={{ marginRight: 6 }} /> Approve Claim
+                            </Button>
+                        </div>
                     )}
                 </div>
             </div>
