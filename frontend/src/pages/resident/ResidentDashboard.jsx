@@ -33,11 +33,21 @@ const ResidentDashboard = () => {
             {/* Stats Cards */}
             <div className="cards">
                 {stats.map((stat, index) => (
-                    <Card key={index}>
-                        <div style={{ padding: '4px' }}>
-                            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>{stat.label}</div>
-                            <div style={{ fontSize: '28px', fontWeight: '700', color: stat.color }}>{stat.value}</div>
-                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{stat.trend}</div>
+                    <Card key={index} style={{ borderLeft: `3px solid ${stat.color}` }}>
+                        <div style={{ padding: '4px', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                            <div style={{
+                                width: 42, height: 42, borderRadius: 10,
+                                background: `${stat.color}14`, color: stat.color,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 18, flexShrink: 0, fontWeight: 700
+                            }}>
+                                {stat.label === 'Total Due' ? '💳' : stat.label === 'Last Paid' ? '✅' : stat.label === 'Active Complaints' ? '⚠️' : '📢'}
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>{stat.label}</div>
+                                <div style={{ fontSize: '26px', fontWeight: '700', color: stat.color, lineHeight: 1.2, letterSpacing: '-0.5px' }}>{stat.value}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>{stat.trend}</div>
+                            </div>
                         </div>
                     </Card>
                 ))}
@@ -46,7 +56,7 @@ const ResidentDashboard = () => {
             {/* Quick Actions */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
                 {quickActions.map((action, i) => (
-                    <Button key={i} variant={action.variant} onClick={() => navigate(action.route)} style={{ padding: '12px 20px' }}>
+                    <Button key={i} variant={action.variant} onClick={() => navigate(action.route)} style={{ padding: '12px 22px', fontSize: 14 }}>
                         {action.icon} {action.label}
                     </Button>
                 ))}
@@ -54,13 +64,22 @@ const ResidentDashboard = () => {
 
             {/* Recent Activity */}
             <Card>
-                <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600', color: 'var(--text-secondary)' }}>Recent Activity</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h3 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: '700', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>Recent Activity</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {recentActivity.map((item, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', background: 'var(--bg-light)' }}>
-                            <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                        <div key={i} style={{
+                            display: 'flex', alignItems: 'center', gap: '14px',
+                            padding: '12px 14px', borderRadius: '10px',
+                            transition: 'background 0.15s',
+                            cursor: 'default',
+                            borderLeft: '2px solid transparent'
+                        }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'var(--hover-bg)'; e.currentTarget.style.borderLeftColor = 'var(--brand-blue)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
+                        >
+                            <span style={{ fontSize: '18px', width: 28, textAlign: 'center' }}>{item.icon}</span>
                             <div style={{ flex: 1, fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>{item.text}</div>
-                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{item.time}</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', fontWeight: 500 }}>{item.time}</span>
                         </div>
                     ))}
                 </div>

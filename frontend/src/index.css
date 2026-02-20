@@ -1,39 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 :root {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
-
+  /* Core Colors */
   --bg: #F8FAFC;
   --card: #FFFFFF;
   --text-primary: #0F172A;
   --text-secondary: #475569;
+  --text-muted: #94A3B8;
 
+  /* Brand */
   --brand-blue: #4F46E5;
-
   --brand-dark: #0F172A;
   --brand-hover: #4338ca;
+  --brand-light: #EEF2FF;
 
-
+  /* Semantic Colors */
   --success: #16A34A;
+  --success-bg: #F0FDF4;
   --warning: #D97706;
+  --warning-bg: #FFFBEB;
   --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --info: #2563EB;
+  --info-bg: #EFF6FF;
 
+  /* Borders & Hover */
   --border: #E2E8F0;
+  --border-light: #F1F5F9;
   --hover-bg: #F1F5F9;
 
+  /* Shadows — improved depth system */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-
-  --shadow-card: 0 10px 40px -10px hsl(200 85% 40% / 0.15);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-container: 0 4px 25px -6px hsl(200 95% 50% / 0.25);
-  --shadow-btn: 0 4px 15px -3px hsl(200 95% 50% / 0.45);
-  --shadow-btn-pressed: 0 2px 8px -4px hsl(200 95% 50% / 0.35);
+  --shadow-btn: 0 1px 3px rgba(79, 70, 229, 0.3);
+  --shadow-btn-pressed: 0 1px 2px rgba(79, 70, 229, 0.2);
+  --shadow-btn-hover: 0 4px 12px rgba(79, 70, 229, 0.35);
 
-  --radius-lg: 14px;
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: 12px;
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -42,16 +69,12 @@
   --space-6: 24px;
   --space-7: 32px;
   --space-8: 40px;
-  --transition-fast: 150ms ease;
-  --transition-base: 220ms ease;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.18);
-
-
-
-  --radius: 12px;
-
-  --radius-sm: 10px;
-
 
   color-scheme: light;
   font-synthesis: none;
@@ -83,39 +106,27 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: transparent;
+  color: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all var(--transition-fast);
 }
 
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /* TRACEBACK DASHBOARD STYLES */

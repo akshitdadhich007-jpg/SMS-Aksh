@@ -2,12 +2,18 @@
 /* Applied when data-theme="dark" is set on document root */
 
 [data-theme="dark"] {
-  --bg: #0F172A;
-  --card: #1E293B;
+  --bg: #0B1120;
+  --card: #151E2F;
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
-  --border: #334155;
-  --hover-bg: #1E293B;
+  --text-muted: #64748B;
+  --border: #1E293B;
+  --border-light: #1a2438;
+  --hover-bg: #1a2438;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 4px 10px -5px rgba(0, 0, 0, 0.15);
+  --glass-bg: rgba(21, 30, 47, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] body {
@@ -17,8 +23,9 @@
 
 /* Sidebar in Dark Mode */
 [data-theme="dark"] .sidebar {
-  background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
-  border-right: 1px solid #334155;
+  background: linear-gradient(180deg, #060a14 0%, #0d1526 50%, #111b2e 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: 4px 0 40px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .sidebar-brand {
@@ -41,8 +48,9 @@
 }
 
 [data-theme="dark"] .nav-item.active {
-  background: rgba(79, 70, 229, 0.2);
-  color: #4F46E5;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.25) 0%, rgba(99, 102, 241, 0.15) 100%);
+  color: #a5b4fc;
+  box-shadow: 0 0 25px rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .nav-item.active::before {
@@ -51,8 +59,9 @@
 
 /* Header and Topbar in Dark Mode */
 [data-theme="dark"] .topbar {
-  background: #1E293B;
-  border-bottom-color: #334155;
+  background: linear-gradient(135deg, #312e81 0%, #4338CA 50%, #5b21b6 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .topbar-content {
@@ -62,13 +71,16 @@
 /* Cards and Content Areas in Dark Mode */
 [data-theme="dark"] .content-card,
 [data-theme="dark"] .card {
-  background: #1E293B;
-  border-color: #334155;
+  background: #151E2F;
+  border-color: #1E293B;
   color: #F1F5F9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] .content-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+[data-theme="dark"] .content-card:hover,
+[data-theme="dark"] .card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  border-color: rgba(79, 70, 229, 0.15);
 }
 
 /* Form Elements in Dark Mode */

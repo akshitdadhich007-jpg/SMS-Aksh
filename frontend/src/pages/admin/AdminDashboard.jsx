@@ -35,11 +35,11 @@ const AdminDashboard = () => {
             />
 
             <div className="cards">
-                <StatCard label="Total Flats" value="120" trend={0} />
-                <StatCard label="Total Residents" value="305" trend={2.5} trendLabel="this month" />
-                <StatCard label="Monthly Collection" value="₹ 4.5L" trend={12} trendLabel="vs last month" />
-                <StatCard label="Pending Dues" value="₹ 45k" trend={-5} trendLabel="decreased" />
-                <StatCard label="Total Expenses" value="₹ 2.1L" trend={0} />
+                <StatCard label="Total Flats" value="120" icon="🏢" accentColor="#6366f1" />
+                <StatCard label="Total Residents" value="305" trend={2.5} trendLabel="this month" icon="👥" accentColor="#3b82f6" />
+                <StatCard label="Monthly Collection" value="₹ 4.5L" trend={12} trendLabel="vs last month" icon="💰" accentColor="#10b981" />
+                <StatCard label="Pending Dues" value="₹ 45k" trend={-5} trendLabel="decreased" icon="⏳" accentColor="#f59e0b" />
+                <StatCard label="Total Expenses" value="₹ 2.1L" icon="📊" accentColor="#ef4444" />
             </div>
 
             <div className="analytics">
