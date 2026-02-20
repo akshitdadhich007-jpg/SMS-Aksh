@@ -7,7 +7,7 @@ import '../../styles/Traceback.css';
 const LostAndFoundTraceback = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     return (
         <div className="traceback-page">
             <PageHeader title="Lost & Found - Traceback" subtitle="Privacy-first reporting, matching, and secure returns" />

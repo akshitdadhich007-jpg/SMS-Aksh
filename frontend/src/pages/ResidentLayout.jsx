@@ -18,7 +18,8 @@ import {
     Sun,
     Moon,
     Building,
-    Search
+    Search,
+    Store
 } from 'lucide-react';
 
 const ResidentLayout = () => {
@@ -48,7 +49,8 @@ const ResidentLayout = () => {
         { name: 'Asset Booking', path: '/resident/bookings', icon: <Building size={20} /> },
         { name: 'Lost & Found – Traceback', path: '/resident/traceback', icon: <Search size={20} /> },
         { name: 'Visitor Pre-Approval', path: '/resident/visitor-approval', icon: '👥' },
-        { name: 'My Fines', path: '/resident/fines', icon: '💰' }
+        { name: 'My Fines', path: '/resident/fines', icon: '💰' },
+        { name: 'Marketplace', path: '/resident/marketplace', icon: <Store size={20} /> },
     ];
 
     return (

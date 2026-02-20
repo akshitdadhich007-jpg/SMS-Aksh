@@ -41,6 +41,7 @@ const AdminLayout = () => {
         { name: 'Reports', icon: '📈', path: '/admin/reports' },
         { name: 'CivicGuard AI', icon: '🚨', path: '/admin/surveillance' },
         { name: 'Staff Attendance Logs', icon: '📋', path: '/admin/attendance' },
+        { name: 'Marketplace', icon: '🏘️', path: '/admin/marketplace' },
     ];
 
     return (
