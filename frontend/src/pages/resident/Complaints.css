@@ -260,6 +260,7 @@
 }
 
 @media (max-width: 640px) {
+
   .complaint-form-card,
   .complaints-list-card {
     padding: 20px;
