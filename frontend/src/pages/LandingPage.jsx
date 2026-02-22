@@ -10,11 +10,11 @@ const LandingPage = () => {
                 <div className="hero-left">
                     <div className="hero-overlay"></div>
                     <div className="hero-content">
-                        <h1 className="hero-title">Society Fintech</h1>
+                        <h1 className="hero-title">CIVIORA</h1>
                         <h2 className="hero-tagline">Smart management for modern residential societies</h2>
                         <p className="hero-description">
                             Managing a residential society shouldn’t be chaotic.
-                            Society Fintech brings residents, administrators, and security together on one secure platform.
+                            CIVIORA brings residents, administrators, and security together on one secure platform.
                         </p>
                         <p className="hero-supporting">
                             Designed for gated communities that want clarity, control, and accountability — without complexity.
@@ -64,7 +64,7 @@ const LandingPage = () => {
                 <div className="container">
                     <h2 className="section-title">One platform. Complete control. Total transparency.</h2>
                     <p className="solution-text">
-                        Society Fintech replaces scattered processes with a single, role-based system
+                        CIVIORA replaces scattered processes with a single, role-based system
                         designed specifically for residential communities.
                         From maintenance management and security logs to community notices
                         and lost items, everything stays organized in one place.
@@ -109,7 +109,7 @@ const LandingPage = () => {
 
             <section className="landing-section section-how">
                 <div className="container">
-                    <h2 className="section-title">How Society Fintech works</h2>
+                    <h2 className="section-title">How CIVIORA works</h2>
                     <div className="steps-list">
                         <div className="step-item">
                             <span className="step-number">1</span>
@@ -145,7 +145,7 @@ const LandingPage = () => {
 
 
             <footer className="landing-footer">
-                <p>Society Fintech — simplifying community living through technology.</p>
+                <p>CIVIORA — simplifying community living through technology.</p>
             </footer>
         </div>
     );

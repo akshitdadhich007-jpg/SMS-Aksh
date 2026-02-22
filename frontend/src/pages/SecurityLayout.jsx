@@ -68,7 +68,7 @@ const SecurityLayout = () => {
                         Settings
                     </NavLink>
                 </div>
-                <div className="sidebar-footer">© 2026 Society Fintech</div>
+                <div className="sidebar-footer">© 2026 CIVIORA</div>
             </aside>
 
             <div className="main">
