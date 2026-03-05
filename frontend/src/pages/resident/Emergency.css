@@ -346,6 +346,7 @@
 }
 
 @media (max-width: 640px) {
+
   .emergency-contact-card,
   .emergency-services-card {
     padding: 16px;
