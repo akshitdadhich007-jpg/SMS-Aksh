@@ -11,7 +11,7 @@
   display: flex;
   gap: 8px;
   border-bottom: 2px solid var(--border);
-  background: var(--hover-bg);
+  background: var(--background);
   border-radius: 8px 8px 0 0;
   padding: 0;
   overflow-x: auto;
@@ -19,7 +19,7 @@
 
 .tab-btn {
   flex: 0 0 auto;
-  padding: 14px 20px;
+  padding: 12px 16px;
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -39,22 +39,22 @@
 }
 
 .tab-btn.active {
-  color: #4F46E5;
-  border-bottom-color: #4F46E5;
-  background: var(--card);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: var(--surface);
 }
 
 /* Assets Grid */
 .assets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
 .asset-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 24px;
   text-align: center;
   transition: all 0.2s ease;
@@ -63,7 +63,7 @@
 
 .asset-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: #4F46E5;
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 
@@ -95,11 +95,11 @@
 
 .booking-btn {
   width: 100%;
-  padding: 10px 16px;
-  background: #4F46E5;
+  padding: 8px 16px;
+  background: var(--primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -107,11 +107,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .booking-btn:hover {
-  background: #4338CA;
+  background: var(--primary-hover);
   transform: translateY(-2px);
 }
 
@@ -123,14 +123,14 @@
 }
 
 .booking-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--radius-md);
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 16px;
   transition: all 0.2s ease;
 }
 
@@ -149,12 +149,12 @@
 }
 
 .booking-info p {
-  margin: 6px 0;
+  margin: 4px 0;
   font-size: 14px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .booking-info .purpose {
@@ -169,8 +169,8 @@
 /* Status Badges */
 .status-badge {
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -178,22 +178,22 @@
 
 .status-approved {
   background: rgba(22, 163, 74, 0.15);
-  color: #16A34A;
+  color: #16a34a;
 }
 
 .status-pending {
   background: rgba(217, 119, 6, 0.15);
-  color: #D97706;
+  color: #d97706;
 }
 
 .status-rejected {
   background: rgba(220, 38, 38, 0.15);
-  color: #DC2626;
+  color: #dc2626;
 }
 
 .status-completed {
   background: rgba(59, 130, 246, 0.15);
-  color: #3B82F6;
+  color: var(--primary);
 }
 
 /* Modal */
@@ -213,8 +213,8 @@
 }
 
 .modal-content {
-  background: var(--card);
-  border-radius: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
@@ -242,7 +242,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -266,21 +266,21 @@
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .asset-details {
-  background: var(--hover-bg);
+  background: var(--background);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
 }
 
 .asset-details p {
-  margin: 6px 0;
+  margin: 4px 0;
 }
 
 .form-group {
@@ -291,17 +291,17 @@
 .form-group label {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   color: var(--text-primary);
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
-  padding: 10px;
+  padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
+  border-radius: var(--radius-md);
+  background: var(--background);
   color: var(--text-primary);
   font-size: 14px;
   font-family: inherit;
@@ -312,7 +312,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #4F46E5;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
@@ -325,7 +325,7 @@
 .modal-footer {
   display: flex;
   gap: 12px;
-  padding: 20px;
+  padding: 16px;
   border-top: 1px solid var(--border);
   justify-content: flex-end;
 }
@@ -335,9 +335,9 @@
 .btn-primary,
 .btn-approve,
 .btn-reject {
-  padding: 10px 16px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -345,35 +345,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .btn-cancel {
-  background: var(--hover-bg);
+  background: var(--background);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
 .btn-cancel:hover {
   background: rgba(79, 70, 229, 0.05);
-  border-color: #4F46E5;
+  border-color: var(--primary);
 }
 
 .btn-submit,
 .btn-primary {
-  background: #4F46E5;
+  background: var(--primary);
   color: white;
 }
 
 .btn-submit:hover,
 .btn-primary:hover {
-  background: #4338CA;
+  background: var(--primary-hover);
   transform: translateY(-2px);
 }
 
 .btn-approve {
   background: rgba(22, 163, 74, 0.15);
-  color: #16A34A;
+  color: #16a34a;
 }
 
 .btn-approve:hover {
@@ -382,7 +382,7 @@
 
 .btn-reject {
   background: rgba(220, 38, 38, 0.15);
-  color: #DC2626;
+  color: #dc2626;
 }
 
 .btn-reject:hover {
@@ -391,17 +391,17 @@
 
 /* Admin Section */
 .admin-section {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--radius-md);
+  padding: 16px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .section-header h3 {
@@ -422,7 +422,7 @@
 }
 
 .assets-table thead {
-  background: var(--hover-bg);
+  background: var(--background);
 }
 
 .assets-table th {
@@ -440,31 +440,31 @@
 }
 
 .assets-table tbody tr:hover {
-  background: var(--hover-bg);
+  background: var(--background);
 }
 
 .action-btn {
-  padding: 6px 8px;
+  padding: 4px 8px;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-right: 6px;
+  margin-right: 4px;
 }
 
 .action-btn:hover {
   color: var(--text-primary);
-  border-color: #4F46E5;
+  border-color: var(--primary);
 }
 
 .edit-btn:hover {
-  color: #4F46E5;
+  color: var(--primary);
 }
 
 .delete-btn:hover {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 /* Requests List */
@@ -475,19 +475,19 @@
 }
 
 .request-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: var(--radius-md);
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 16px;
   transition: all 0.2s ease;
 }
 
 .request-card.pending {
-  border-left: 4px solid #D97706;
+  border-left: 4px solid #d97706;
 }
 
 .request-card:hover {
@@ -501,17 +501,17 @@
 }
 
 .request-info p {
-  margin: 6px 0;
+  margin: 4px 0;
   font-size: 14px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .requested-on {
   font-size: 12px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .request-actions {
@@ -528,9 +528,9 @@
 }
 
 .action-buttons button {
-  padding: 8px 14px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -546,7 +546,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 64px 16px;
   color: var(--text-secondary);
 }
 

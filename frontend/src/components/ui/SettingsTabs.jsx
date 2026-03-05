@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../context/ThemeContext';
-import { Moon, Sun } from 'lucide-react';
-import './SettingsTabs.css';
+import React, { useState } from "react";
+import { useTheme } from "../../context/ThemeContext";
+import { Moon, Sun } from "lucide-react";
+import "./SettingsTabs.css";
 
 export default function SettingsTabs({ tabs }) {
   const [activeTab, setActiveTab] = useState(0);
   const { isDarkMode, toggleDarkMode } = useTheme();
 
-  const isAppearanceTab = tabs[activeTab]?.label === 'Appearance';
+  const isAppearanceTab = tabs[activeTab]?.label === "Appearance";
 
   return (
     <div className="settings-container">
@@ -17,7 +17,7 @@ export default function SettingsTabs({ tabs }) {
           <button
             key={index}
             onClick={() => setActiveTab(index)}
-            className={`settings-tab ${activeTab === index ? 'active' : ''}`}
+            className={`settings-tab ${activeTab === index ? "active" : ""}`}
           >
             {tab.icon && <span className="tab-icon">{tab.icon}</span>}
             {tab.label}
@@ -34,10 +34,13 @@ export default function SettingsTabs({ tabs }) {
             <div className="setting-item">
               <div className="setting-info">
                 <h3>Dark Mode</h3>
-                <p>Enable dark theme for better visibility in low-light environments</p>
+                <p>
+                  Enable dark theme for better visibility in low-light
+                  environments
+                </p>
               </div>
               <button
-                className={`theme-toggle ${isDarkMode ? 'active' : ''}`}
+                className={`theme-toggle ${isDarkMode ? "active" : ""}`}
                 onClick={toggleDarkMode}
                 aria-label="Toggle dark mode"
               >
@@ -53,9 +56,7 @@ export default function SettingsTabs({ tabs }) {
 
         {/* Custom Tab Content */}
         {tabs[activeTab]?.content && (
-          <div className="settings-section">
-            {tabs[activeTab].content}
-          </div>
+          <div className="settings-section">{tabs[activeTab].content}</div>
         )}
       </div>
     </div>
