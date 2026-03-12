@@ -13,3 +13,4 @@ export { default as ResidentSettings } from './ResidentSettings';
 export { default as AssetBooking } from './AssetBooking';
 export { default as VisitorPreApproval } from './VisitorPreApproval';
 export { default as MyFines } from './MyFines';
+export { default as MyViolations } from './MyViolations';

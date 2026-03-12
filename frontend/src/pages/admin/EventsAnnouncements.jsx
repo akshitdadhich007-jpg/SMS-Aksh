@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { PageHeader, Card, Button } from '../../components/ui';
+import { PageHeader, Button } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
 import {
     Bell, Calendar as CalendarIcon, Clock, AlertCircle,
-    Wrench, Users, Info, Plus
+    Wrench, Users, Info, Plus, MapPin, Megaphone
 } from 'lucide-react';
-import '../resident/Announcements.css'; // Reusing the identical SaaS stylesheet
+import './EventsAnnouncements.css';
 
 const EventsAnnouncements = () => {
     const toast = useToast();
@@ -56,94 +56,126 @@ const EventsAnnouncements = () => {
     };
 
     return (
-        <div className="ac-page" style={{ padding: '0', background: 'transparent' }}>
+        <div className="ea-dashboard">
             <PageHeader
                 title="Events & Announcements"
-                subtitle="Manage society notices and gatherings"
-                action={<Button variant="primary" onClick={() => setCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={16} /> Create New</Button>}
+                subtitle="Gate logs, registered vehicles, and visitor tracking"
+                action={
+                    <button className="ea-create-btn" onClick={() => setCreateModal(true)}>
+                        <Plus size={16} /> Create New
+                    </button>
+                }
             />
 
-            <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px' }}>
+            <div className="ea-kpis">
+                <div className="ea-kpi-card">
+                    <div className="ea-kpi-icon kpi-violet"><Megaphone size={18} /></div>
+                    <div>
+                        <div className="ea-kpi-value">{announcements.length}</div>
+                        <div className="ea-kpi-label">Active Notices</div>
+                    </div>
+                </div>
+                <div className="ea-kpi-card">
+                    <div className="ea-kpi-icon kpi-blue"><CalendarIcon size={18} /></div>
+                    <div>
+                        <div className="ea-kpi-value">{events.length}</div>
+                        <div className="ea-kpi-label">Upcoming Events</div>
+                    </div>
+                </div>
+                <div className="ea-kpi-card">
+                    <div className="ea-kpi-icon kpi-amber"><Clock size={18} /></div>
+                    <div>
+                        <div className="ea-kpi-value">24/7</div>
+                        <div className="ea-kpi-label">Community Updates</div>
+                    </div>
+                </div>
+            </div>
 
-                {/* Left Col: Notice Board (SaaS Styling) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div className="ac-section-title" style={{ margin: 0, padding: 0 }}>Notice Board</div>
-                        <Button variant="outline" size="sm" onClick={() => {
+            <div className="ea-grid-2">
+
+                <section className="ea-column">
+                    <div className="ea-section-head">
+                        <h2>Notice Board</h2>
+                        <button
+                            className="ea-outline-btn"
+                            onClick={() => {
                             setAnnouncements([]);
                             toast.success('All notices archived successfully!', 'Archived');
-                        }}>Archive All</Button>
+                            }}
+                        >
+                            Archive All
+                        </button>
                     </div>
 
-                    <div className="ac-list">
+                    <div className="ea-list">
                         {announcements.length === 0 ? (
-                            <div className="ac-empty-state">
-                                <div className="ac-empty-icon">
+                            <div className="ea-empty-state">
+                                <div className="ea-empty-icon">
                                     <Bell size={32} />
                                 </div>
                                 <h3>No active notices</h3>
                                 <p>You're all caught up!</p>
                             </div>
                         ) : (
-                            announcements.map((notice) => (
-                                <div key={notice.id} className={`ac-card type-${notice.type || 'info'}`} style={{ padding: '16px 20px' }}>
-                                    <div className="ac-icon-wrap">
+                            announcements.map((notice, index) => (
+                                <article key={notice.id} className={`ea-card ea-type-${notice.type || 'info'}`} style={{ animationDelay: `${index * 45}ms` }}>
+                                    <div className="ea-icon-wrap">
                                         {getIconForType(notice.type)}
                                     </div>
-                                    <div className="ac-content">
-                                        <div className="ac-top-row" style={{ marginBottom: '4px' }}>
-                                            <h3 className="ac-title" style={{ fontSize: '15px' }}>{notice.title}</h3>
-                                            <div className="ac-date-badge">
+                                    <div className="ea-content">
+                                        <div className="ea-top-row">
+                                            <h3 className="ea-title">{notice.title}</h3>
+                                            <div className="ea-date-badge">
                                                 <Clock size={12} /> {notice.date}
                                             </div>
                                         </div>
-                                        <div className="ac-description" style={{ margin: 0, fontSize: '13px' }}>
+                                        <div className="ea-description">
                                             {notice.message}
                                         </div>
                                     </div>
-                                </div>
+                                </article>
                             ))
                         )}
                     </div>
-                </div>
+                </section>
 
-                {/* Right Col: Events Section */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div className="ac-section-title" style={{ margin: 0, padding: 0 }}>Upcoming Events</div>
-                        <Button variant="outline" size="sm" onClick={() => toast.info(`Showing all ${events.length} events`, 'All Events')}>View All</Button>
+                <section className="ea-column">
+                    <div className="ea-section-head">
+                        <h2>Upcoming Events</h2>
+                        <button className="ea-outline-btn" onClick={() => toast.info(`Showing all ${events.length} events`, 'All Events')}>
+                            View All
+                        </button>
                     </div>
 
-                    <div className="ac-list">
-                        {events.map((event) => (
-                            <div key={event.id} className="ac-card type-event" style={{ padding: '16px 20px' }}>
-                                <div className="ac-icon-wrap" style={{ background: 'var(--ac-accent-light)', color: 'var(--ac-accent)' }}>
+                    <div className="ea-list">
+                        {events.map((event, index) => (
+                            <article key={event.id} className="ea-card ea-type-event" style={{ animationDelay: `${index * 60}ms` }}>
+                                <div className="ea-icon-wrap ea-icon-event">
                                     <CalendarIcon size={20} />
                                 </div>
-                                <div className="ac-content">
-                                    <div className="ac-top-row" style={{ marginBottom: '4px' }}>
-                                        <h3 className="ac-title" style={{ fontSize: '15px' }}>{event.title}</h3>
-                                        <div className="ac-date-badge">
+                                <div className="ea-content">
+                                    <div className="ea-top-row">
+                                        <h3 className="ea-title">{event.title}</h3>
+                                        <div className="ea-date-badge">
                                             <Clock size={12} /> {event.date}
                                         </div>
                                     </div>
-                                    <div className="ac-description" style={{ margin: 0, display: 'flex', gap: '16px', fontSize: '13px', paddingTop: '4px' }}>
-                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div className="ea-meta-row">
+                                        <span>
                                             <Clock size={14} /> {event.time}
                                         </span>
-                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            📍 {event.location}
+                                        <span>
+                                            <MapPin size={14} /> {event.location}
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </article>
                         ))}
                     </div>
-                </div>
+                </section>
 
             </div>
 
-            {/* Create Event/Announcement Modal */}
             <Modal isOpen={createModal} title="Create New" onClose={() => setCreateModal(false)}>
                 <form className="modal-form" onSubmit={handleCreate}>
                     <div className="form-group">

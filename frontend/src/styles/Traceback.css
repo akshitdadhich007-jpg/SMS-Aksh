@@ -238,31 +238,39 @@
     border: 1px solid transparent;
     line-height: 1.5;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .traceback-btn-primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     color: white;
-    border-color: var(--primary);
+    border-color: #4f46e5;
+    box-shadow: 0 8px 18px rgba(79, 70, 229, 0.30);
 }
 
 .traceback-btn-primary:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: linear-gradient(135deg, #4338ca 0%, #5b6dff 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 10px 22px rgba(67, 56, 202, 0.35);
 }
 
 .traceback-btn-secondary {
-    background: var(--hover-bg);
-    color: var(--text-primary);
-    border-color: var(--border);
+    background: #ffffff;
+    color: #0f172a;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .traceback-btn-secondary:hover:not(:disabled) {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+    background: #f8fafc;
+    color: #0f172a;
+    border-color: #94a3b8;
     transform: translateY(-1px);
+}
+
+.traceback-btn:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
 }
 
 .traceback-btn-danger {

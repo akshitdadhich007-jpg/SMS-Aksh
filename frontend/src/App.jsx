@@ -111,6 +111,7 @@ function App() {
                                 <Route path="bookings" element={<ResidentPages.AssetBooking />} />
                                 <Route path="visitor-approval" element={<ResidentPages.VisitorPreApproval />} />
                                 <Route path="fines" element={<ResidentPages.MyFines />} />
+                                <Route path="violations" element={<ResidentPages.MyViolations />} />
                                 <Route path="marketplace" element={<MarketplaceList />} />
                                 <Route path="marketplace/create" element={<CreateListing />} />
                                 <Route path="marketplace/:id" element={<ListingDetails />} />

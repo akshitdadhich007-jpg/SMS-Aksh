@@ -56,6 +56,7 @@ const ResidentLayout = () => {
                 { name: 'Pay Maintenance', path: '/resident/pay', icon: <CreditCard size={20} /> },
                 { name: 'Payment History', path: '/resident/history', icon: <History size={20} /> },
                 { name: 'My Fines', path: '/resident/fines', icon: <Receipt size={20} /> },
+                { name: 'My Violations', path: '/resident/violations', icon: <Receipt size={20} /> },
             ]
         },
         {
