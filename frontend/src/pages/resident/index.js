@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export { default as ResidentDashboard } from './ResidentDashboard';
 export { default as MyBills } from './MyBills';
 export { default as PayMaintenance } from './PayMaintenance';
@@ -14,3 +15,20 @@ export { default as AssetBooking } from './AssetBooking';
 export { default as VisitorPreApproval } from './VisitorPreApproval';
 export { default as MyFines } from './MyFines';
 export { default as MyViolations } from './MyViolations';
+=======
+export { default as ResidentDashboard } from "./ResidentDashboard";
+export { default as MyBills } from "./MyBills";
+export { default as PayMaintenance } from "./PayMaintenance";
+export { default as PaymentHistory } from "./PaymentHistory";
+export { default as Complaints } from "./Complaints";
+export { default as Announcements } from "./Announcements";
+export { default as Documents } from "./Documents";
+export { default as Emergency } from "./Emergency";
+export { default as Staff } from "./Staff";
+export { default as Vehicles } from "./Vehicles";
+export { default as Visitors } from "./Visitors";
+export { default as ResidentSettings } from "./ResidentSettings";
+export { default as AssetBooking } from "./AssetBooking";
+export { default as VisitorPreApproval } from "./VisitorPreApproval";
+export { default as MyFines } from "./MyFines";
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f

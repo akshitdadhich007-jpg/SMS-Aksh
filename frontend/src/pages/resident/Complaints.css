@@ -11,17 +11,17 @@
 .complaints-grid {
   display: grid;
   grid-template-columns: minmax(300px, 1fr) 1.5fr;
-  gap: 28px;
+  gap: 24px;
   align-items: start;
 }
 
 /* ===== LEFT SIDE: RAISE A COMPLAINT FORM ===== */
 
 .complaint-form-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-md);
+  padding: 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .form-group label {
@@ -58,28 +58,31 @@
 
 .form-group select,
 .form-group textarea {
-  padding: 12px 14px;
+  padding: 12px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--background);
   color: var(--text-primary);
   font-size: 14px;
   font-family: inherit;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
   line-height: 1.5;
 }
 
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--brand-blue);
+  border-color: var(--primary);
   box-shadow: var(--focus-ring);
 }
 
 .form-group select:hover,
 .form-group textarea:hover {
   border-color: var(--border);
-  background: var(--card);
+  background: var(--surface);
 }
 
 .form-group textarea {
@@ -88,7 +91,7 @@
 }
 
 .form-group textarea::placeholder {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -100,7 +103,7 @@
   font-weight: 600;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--brand-blue);
+  background: var(--primary);
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -113,8 +116,10 @@
 }
 
 .complaint-submit-btn:hover {
-  background: var(--brand-hover);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10), 0 6px 14px rgba(0, 0, 0, 0.08);
+  background: var(--primary-hover);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 6px 14px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -132,10 +137,10 @@
 /* ===== RIGHT SIDE: MY COMPLAINTS LIST ===== */
 
 .complaints-list-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-md);
+  padding: 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
@@ -157,11 +162,11 @@
 }
 
 .complaints-table thead {
-  background: var(--bg);
+  background: var(--background);
 }
 
 .complaints-table thead th {
-  padding: 16px 18px;
+  padding: 16px 16px;
   text-align: left;
   color: var(--text-secondary);
   font-weight: 700;
@@ -178,7 +183,7 @@
 }
 
 .complaints-table tbody tr:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--background);
 }
 
 .complaints-table tbody tr:last-child {
@@ -186,7 +191,7 @@
 }
 
 .complaints-table tbody td {
-  padding: 18px 18px;
+  padding: 16px 16px;
   vertical-align: middle;
   line-height: 1.5;
 }
@@ -194,7 +199,7 @@
 /* Table Cell: Complaint ID */
 .complaint-id {
   font-weight: 700;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 13px;
   color: var(--text-primary);
   white-space: nowrap;
@@ -238,7 +243,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 64px 16px;
   text-align: center;
   color: var(--text-secondary);
   min-height: 200px;
@@ -262,17 +267,17 @@
 @media (max-width: 640px) {
   .complaint-form-card,
   .complaints-list-card {
-    padding: 20px;
+    padding: 16px;
   }
 
   .complaint-form-card h3,
   .complaints-list-card h3 {
     font-size: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .complaint-form {
-    gap: 20px;
+    gap: 16px;
   }
 
   .complaints-table {
@@ -280,12 +285,12 @@
   }
 
   .complaints-table thead th {
-    padding: 12px 14px;
+    padding: 12px 12px;
     font-size: 11px;
   }
 
   .complaints-table tbody td {
-    padding: 14px 12px;
+    padding: 12px 12px;
   }
 
   .complaint-id {

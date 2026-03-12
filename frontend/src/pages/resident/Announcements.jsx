@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import {
     Bell, Calendar, Clock, AlertCircle,
@@ -158,8 +159,26 @@ const Announcements = () => {
             </div>
         );
     }
+=======
+import React, { useState, useEffect } from "react";
+import { PageHeader, Card } from "../../components/ui";
+import "./Announcements.css";
+import api from "../../services/api";
 
+const Announcements = () => {
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("/api/resident/announcements")
+      .then((res) => setAnnouncements(res.data || []))
+      .catch((err) => console.error("Failed to load announcements:", err));
+  }, []);
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
+
+  if (!announcements || announcements.length === 0) {
     return (
+<<<<<<< HEAD
         <div className="ac-page">
             <div className="ac-container">
 
@@ -232,7 +251,41 @@ const Announcements = () => {
 
             </div>
         </div>
+=======
+      <>
+        <PageHeader
+          title="Announcements"
+          subtitle="Updates and news from the society"
+        />
+        <div className="announcements-empty-state">
+          <h3>No announcements at the moment</h3>
+          <p>Check back later for updates.</p>
+        </div>
+      </>
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
     );
+  }
+
+  return (
+    <>
+      <PageHeader
+        title="Announcements"
+        subtitle="Updates and news from the society"
+      />
+
+      <div className="announcements-container">
+        {announcements.map((item) => (
+          <div key={item.id} className="announcement-card">
+            <div className="announcement-header">
+              <h3 className="announcement-title">{item.title}</h3>
+              <span className="announcement-date">{item.date}</span>
+            </div>
+            <p className="announcement-description">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 };
 
 export default Announcements;

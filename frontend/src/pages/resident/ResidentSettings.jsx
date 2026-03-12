@@ -1,37 +1,42 @@
-import React, { useState } from 'react';
-import { Bell, Lock, LogOut, Key } from 'lucide-react';
-import PageHeader from '../../components/ui/PageHeader';
-import SettingsTabs from '../../components/ui/SettingsTabs';
-import Modal from '../../components/ui/Modal';
-import './ResidentSettings.css';
-
+import React, { useState, useEffect } from "react";
+import { Bell, Lock, LogOut, Key } from "lucide-react";
+import PageHeader from "../../components/ui/PageHeader";
+import SettingsTabs from "../../components/ui/SettingsTabs";
+import Modal from "../../components/ui/Modal";
+import "./ResidentSettings.css";
+import api from "../../services/api";
 const ResidentSettings = () => {
-  // Profile State (Read-only for flat number)
   const [profileData, setProfileData] = useState({
-    name: 'Rajesh Kumar',
-    phone: '9876543210',
-    email: 'rajesh@example.com',
-    flatNo: 'A-304',
+    name: "",
+    phone: "",
+    email: "",
+    flatNo: "",
   });
-
-  // Notification Settings State
   const [notificationSettings, setNotificationSettings] = useState({
     maintenanceNotifications: true,
     complaintUpdates: true,
     announcementNotifications: true,
   });
-
-  // Payment Preferences State
   const [paymentPreferences, setPaymentPreferences] = useState({
-    defaultPaymentMode: 'upi',
+    defaultPaymentMode: "upi",
     autoReminder: true,
   });
-
-  // Security State
   const [securityData, setSecurityData] = useState({
-    lastPasswordChange: '2025-12-15',
-    lastLogin: 'Today at 10:45 AM',
+    lastPasswordChange: "--",
+    lastLogin: "--",
   });
+  useEffect(() => {
+    api
+      .get("/api/resident/settings")
+      .then((res) => {
+        const d = res.data || {};
+        if (d.profile) setProfileData(d.profile);
+        if (d.notifications) setNotificationSettings(d.notifications);
+        if (d.payment) setPaymentPreferences(d.payment);
+        if (d.security) setSecurityData(d.security);
+      })
+      .catch((err) => console.error("Failed to load settings:", err));
+  }, []);
 
   // Modal States
   const [modals, setModals] = useState({
@@ -41,92 +46,107 @@ const ResidentSettings = () => {
 
   // Password Form State
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   // Handlers
   const handleProfileChange = (key, value) => {
-    setProfileData(prev => ({ ...prev, [key]: value }));
+    setProfileData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
-
   const handleNotificationChange = (key) => {
-    setNotificationSettings(prev => ({
+    setNotificationSettings((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
-
   const handlePaymentChange = (key, value) => {
-    setPaymentPreferences(prev => ({
+    setPaymentPreferences((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
-
   const handleSaveProfile = () => {
     // In production: API call to save profile
-    console.log('Profile saved:', profileData);
+    console.log("Profile saved:", profileData);
     // Show success message
   };
-
   const handleSaveNotifications = () => {
     // In production: API call
-    console.log('Notification settings saved:', notificationSettings);
+    console.log("Notification settings saved:", notificationSettings);
   };
-
   const handleSavePaymentPreferences = () => {
     // In production: API call
-    console.log('Payment preferences saved:', paymentPreferences);
+    console.log("Payment preferences saved:", paymentPreferences);
   };
-
   const openChangePasswordModal = () => {
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    setModals(prev => ({ ...prev, changePassword: true }));
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setModals((prev) => ({
+      ...prev,
+      changePassword: true,
+    }));
   };
-
   const handleChangePassword = () => {
     // Validation
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-      alert('All fields are required');
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
+      alert("All fields are required");
       return;
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert('New passwords do not match');
+      alert("New passwords do not match");
       return;
     }
     if (passwordForm.newPassword.length < 8) {
-      alert('Password must be at least 8 characters');
+      alert("Password must be at least 8 characters");
       return;
     }
 
     // In production: API call
-    console.log('Password change request:', {
+    console.log("Password change request:", {
       currentPassword: passwordForm.currentPassword,
       newPassword: passwordForm.newPassword,
     });
-    
-    alert('Password changed successfully');
-    setModals(prev => ({ ...prev, changePassword: false }));
-    setSecurityData(prev => ({
+    alert("Password changed successfully");
+    setModals((prev) => ({
       ...prev,
-      lastPasswordChange: new Date().toLocaleDateString()
+      changePassword: false,
+    }));
+    setSecurityData((prev) => ({
+      ...prev,
+      lastPasswordChange: new Date().toLocaleDateString(),
     }));
   };
-
   const handleLogoutAllDevices = () => {
     // In production: API call
-    console.log('Logging out from all devices');
-    alert('You have been logged out from all devices. Please login again.');
+    console.log("Logging out from all devices");
+    alert("You have been logged out from all devices. Please login again.");
     // Redirect to login
-    window.location.href = '/';
+    window.location.href = "/";
   };
-
   const tabs = [
     {
-      label: 'Profile',
-      icon: <span style={{ fontSize: '16px' }}>👤</span>,
+      label: "Profile",
+      icon: (
+        <span
+          style={{
+            fontSize: "16px",
+          }}
+        >
+          👤
+        </span>
+      ),
       content: (
         <div>
           <h2>Personal Information</h2>
@@ -137,7 +157,7 @@ const ResidentSettings = () => {
                 type="text"
                 className="settings-input"
                 value={profileData.name}
-                onChange={(e) => handleProfileChange('name', e.target.value)}
+                onChange={(e) => handleProfileChange("name", e.target.value)}
               />
             </div>
             <div>
@@ -146,7 +166,7 @@ const ResidentSettings = () => {
                 type="tel"
                 className="settings-input"
                 value={profileData.phone}
-                onChange={(e) => handleProfileChange('phone', e.target.value)}
+                onChange={(e) => handleProfileChange("phone", e.target.value)}
                 placeholder="10-digit mobile number"
               />
             </div>
@@ -156,7 +176,7 @@ const ResidentSettings = () => {
                 type="email"
                 className="settings-input"
                 value={profileData.email}
-                onChange={(e) => handleProfileChange('email', e.target.value)}
+                onChange={(e) => handleProfileChange("email", e.target.value)}
               />
             </div>
             <div className="grid-full">
@@ -166,15 +186,27 @@ const ResidentSettings = () => {
                 className="settings-input"
                 value={profileData.flatNo}
                 disabled
-                style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                style={{
+                  opacity: 0.6,
+                  cursor: "not-allowed",
+                }}
               />
-              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-secondary)",
+                }}
+                className="mt-16"
+              >
                 This field cannot be changed. Contact administrator to update.
               </p>
             </div>
           </div>
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary" onClick={handleSaveProfile}>
+            <button
+              className="settings-button settings-button-primary"
+              onClick={handleSaveProfile}
+            >
               Save Profile
             </button>
             <button className="settings-button settings-button-secondary">
@@ -185,53 +217,69 @@ const ResidentSettings = () => {
       ),
     },
     {
-      label: 'Notifications',
+      label: "Notifications",
       icon: <Bell size={18} />,
       content: (
         <div>
           <h2>Notification Preferences</h2>
           <div className="settings-alert settings-alert-info">
             <span>ℹ️</span>
-            <span>Control which notifications you receive from the society</span>
+            <span>
+              Control which notifications you receive from the society
+            </span>
           </div>
           <div className="settings-item">
             <div className="setting-info">
               <h3>Maintenance Notifications</h3>
-              <p>Get notified about maintenance billing, due dates, and payment reminders</p>
+              <p>
+                Get notified about maintenance billing, due dates, and payment
+                reminders
+              </p>
             </div>
             <input
               type="checkbox"
               className="settings-checkbox"
               checked={notificationSettings.maintenanceNotifications}
-              onChange={() => handleNotificationChange('maintenanceNotifications')}
+              onChange={() =>
+                handleNotificationChange("maintenanceNotifications")
+              }
             />
           </div>
           <div className="settings-item">
             <div className="setting-info">
               <h3>Complaint Updates</h3>
-              <p>Receive updates when your complaints are updated or resolved</p>
+              <p>
+                Receive updates when your complaints are updated or resolved
+              </p>
             </div>
             <input
               type="checkbox"
               className="settings-checkbox"
               checked={notificationSettings.complaintUpdates}
-              onChange={() => handleNotificationChange('complaintUpdates')}
+              onChange={() => handleNotificationChange("complaintUpdates")}
             />
           </div>
           <div className="settings-item">
             <div className="setting-info">
               <h3>Announcements</h3>
-              <p>Get notified about important society announcements and notices</p>
+              <p>
+                Get notified about important society announcements and notices
+              </p>
             </div>
             <input
               type="checkbox"
               className="settings-checkbox"
               checked={notificationSettings.announcementNotifications}
-              onChange={() => handleNotificationChange('announcementNotifications')}
+              onChange={() =>
+                handleNotificationChange("announcementNotifications")
+              }
             />
           </div>
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary" onClick={handleSaveNotifications}>
+            <button
+              className="settings-button settings-button-primary"
+              onClick={handleSaveNotifications}
+            >
               Save Preferences
             </button>
           </div>
@@ -239,8 +287,16 @@ const ResidentSettings = () => {
       ),
     },
     {
-      label: 'Payment',
-      icon: <span style={{ fontSize: '16px' }}>💳</span>,
+      label: "Payment",
+      icon: (
+        <span
+          style={{
+            fontSize: "16px",
+          }}
+        >
+          💳
+        </span>
+      ),
       content: (
         <div>
           <h2>Payment Preferences</h2>
@@ -253,7 +309,9 @@ const ResidentSettings = () => {
             <select
               className="settings-select"
               value={paymentPreferences.defaultPaymentMode}
-              onChange={(e) => handlePaymentChange('defaultPaymentMode', e.target.value)}
+              onChange={(e) =>
+                handlePaymentChange("defaultPaymentMode", e.target.value)
+              }
             >
               <option value="upi">UPI (Google Pay, PhonePe, PayTM)</option>
               <option value="card">Credit/Debit Card</option>
@@ -265,17 +323,27 @@ const ResidentSettings = () => {
           <div className="settings-item">
             <div className="setting-info">
               <h3>Auto Payment Reminder</h3>
-              <p>Receive automatic reminders 3 days before maintenance due date</p>
+              <p>
+                Receive automatic reminders 3 days before maintenance due date
+              </p>
             </div>
             <button
-              className={`toggle-switch ${paymentPreferences.autoReminder ? 'active' : ''}`}
-              onClick={() => handlePaymentChange('autoReminder', !paymentPreferences.autoReminder)}
+              className={`toggle-switch ${paymentPreferences.autoReminder ? "active" : ""}`}
+              onClick={() =>
+                handlePaymentChange(
+                  "autoReminder",
+                  !paymentPreferences.autoReminder,
+                )
+              }
             >
               <span className="toggle-slider"></span>
             </button>
           </div>
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary" onClick={handleSavePaymentPreferences}>
+            <button
+              className="settings-button settings-button-primary"
+              onClick={handleSavePaymentPreferences}
+            >
               Save Payment Settings
             </button>
           </div>
@@ -283,7 +351,7 @@ const ResidentSettings = () => {
       ),
     },
     {
-      label: 'Security',
+      label: "Security",
       icon: <Lock size={18} />,
       content: (
         <div>
@@ -292,8 +360,8 @@ const ResidentSettings = () => {
             <span>ℹ️</span>
             <span>Manage your account security and active sessions</span>
           </div>
-          
-          <h3 style={{ marginTop: '24px', marginBottom: '16px' }}>Password</h3>
+
+          <h3 className="mt-24 mb-16">Password</h3>
           <div className="settings-item">
             <div className="setting-info">
               <h3>Change Password</h3>
@@ -309,13 +377,15 @@ const ResidentSettings = () => {
 
           <div className="settings-divider"></div>
 
-          <h3 style={{ marginTop: 0, marginBottom: '16px' }}>Active Sessions</h3>
+          <h3 className="mb-16">Active Sessions</h3>
           <div className="session-info">
             <div className="session-item">
               <div className="session-details">
                 <h4>Current Device</h4>
                 <p>Chrome on Windows</p>
-                <span className="session-meta">Last active: {securityData.lastLogin}</span>
+                <span className="session-meta">
+                  Last active: {securityData.lastLogin}
+                </span>
               </div>
               <span className="session-badge active">Active</span>
             </div>
@@ -330,7 +400,12 @@ const ResidentSettings = () => {
             </div>
             <button
               className="settings-button settings-button-danger"
-              onClick={() => setModals(prev => ({ ...prev, logoutDevices: true }))}
+              onClick={() =>
+                setModals((prev) => ({
+                  ...prev,
+                  logoutDevices: true,
+                }))
+              }
             >
               Logout All
             </button>
@@ -339,15 +414,22 @@ const ResidentSettings = () => {
       ),
     },
     {
-      label: 'Appearance',
-      icon: <span style={{ fontSize: '16px' }}>🎨</span>,
+      label: "Appearance",
+      icon: (
+        <span
+          style={{
+            fontSize: "16px",
+          }}
+        >
+          🎨
+        </span>
+      ),
     },
   ];
-
   return (
     <div className="resident-settings-page">
-      <PageHeader 
-        title="Settings" 
+      <PageHeader
+        title="Settings"
         subtitle="Manage your profile, preferences, and account security"
       />
       <div className="settings-wrapper">
@@ -358,7 +440,12 @@ const ResidentSettings = () => {
       <Modal
         isOpen={modals.changePassword}
         title="Change Password"
-        onClose={() => setModals(prev => ({ ...prev, changePassword: false }))}
+        onClose={() =>
+          setModals((prev) => ({
+            ...prev,
+            changePassword: false,
+          }))
+        }
       >
         <div className="modal-form">
           <div>
@@ -367,7 +454,12 @@ const ResidentSettings = () => {
               type="password"
               className="settings-input"
               value={passwordForm.currentPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({
+                  ...prev,
+                  currentPassword: e.target.value,
+                }))
+              }
               placeholder="Enter your current password"
             />
           </div>
@@ -377,7 +469,12 @@ const ResidentSettings = () => {
               type="password"
               className="settings-input"
               value={passwordForm.newPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({
+                  ...prev,
+                  newPassword: e.target.value,
+                }))
+              }
               placeholder="Enter new password (min. 8 characters)"
             />
           </div>
@@ -387,20 +484,40 @@ const ResidentSettings = () => {
               type="password"
               className="settings-input"
               value={passwordForm.confirmPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({
+                  ...prev,
+                  confirmPassword: e.target.value,
+                }))
+              }
               placeholder="Confirm new password"
             />
           </div>
-          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '12px', marginBottom: '0' }}>
-            Password must be at least 8 characters long and contain a mix of uppercase, lowercase, and numbers for security.
+          <p
+            style={{
+              fontSize: "12px",
+              color: "var(--text-secondary)",
+            }}
+            className="mt-16"
+          >
+            Password must be at least 8 characters long and contain a mix of
+            uppercase, lowercase, and numbers for security.
           </p>
-          <div className="settings-button-group" style={{ marginTop: '20px' }}>
-            <button className="settings-button settings-button-primary" onClick={handleChangePassword}>
+          <div className="settings-button-group mt-16">
+            <button
+              className="settings-button settings-button-primary"
+              onClick={handleChangePassword}
+            >
               Change Password
             </button>
             <button
               className="settings-button settings-button-secondary"
-              onClick={() => setModals(prev => ({ ...prev, changePassword: false }))}
+              onClick={() =>
+                setModals((prev) => ({
+                  ...prev,
+                  changePassword: false,
+                }))
+              }
             >
               Cancel
             </button>
@@ -412,21 +529,37 @@ const ResidentSettings = () => {
       <Modal
         isOpen={modals.logoutDevices}
         title="Confirm Logout"
-        onClose={() => setModals(prev => ({ ...prev, logoutDevices: false }))}
+        onClose={() =>
+          setModals((prev) => ({
+            ...prev,
+            logoutDevices: false,
+          }))
+        }
       >
         <div className="modal-form">
           <div className="settings-alert settings-alert-warning">
             <span>⚠️</span>
-            <span>You will be logged out from all devices. You'll need to login again.</span>
+            <span>
+              You will be logged out from all devices. You'll need to login
+              again.
+            </span>
           </div>
           <p>Are you sure you want to logout from all active sessions?</p>
-          <div className="settings-button-group" style={{ marginTop: '20px' }}>
-            <button className="settings-button settings-button-danger" onClick={handleLogoutAllDevices}>
+          <div className="settings-button-group mt-16">
+            <button
+              className="settings-button settings-button-danger"
+              onClick={handleLogoutAllDevices}
+            >
               Yes, Logout All
             </button>
             <button
               className="settings-button settings-button-secondary"
-              onClick={() => setModals(prev => ({ ...prev, logoutDevices: false }))}
+              onClick={() =>
+                setModals((prev) => ({
+                  ...prev,
+                  logoutDevices: false,
+                }))
+              }
             >
               Cancel
             </button>
@@ -436,5 +569,4 @@ const ResidentSettings = () => {
     </div>
   );
 };
-
 export default ResidentSettings;

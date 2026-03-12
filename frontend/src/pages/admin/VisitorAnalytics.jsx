@@ -1,11 +1,27 @@
+<<<<<<< HEAD
 import React, { useEffect, useMemo, useState } from 'react';
 import { Download, AlertTriangle, TrendingUp, Users, Clock, DivideCircle } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import '../resident/VisitorPreApproval.css';
+=======
+import React, { useState, useEffect } from "react";
+import api from "../../services/api";
+import {
+  Download,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  Clock,
+  DivideCircle,
+} from "lucide-react";
+import PageHeader from "../../components/ui/PageHeader";
+import "../resident/VisitorPreApproval.css";
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
 
 const VisitorAnalytics = () => {
+<<<<<<< HEAD
   const [dateRange, setDateRange] = useState('30days'); // '30days', '90days', 'all'
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -35,12 +51,36 @@ const VisitorAnalytics = () => {
       setAnalyticsPayload(payload.data || {});
     } catch (err) {
       setError(err.message || 'Failed to fetch analytics');
+=======
+  const [dateRange, setDateRange] = useState("30days");
+  const [isLoading, setIsLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState({
+    totalVisitors: 0,
+    totalVehicles: 0,
+    dailyVisitors: {},
+    dailyVehicles: {}
+  });
+
+  const fetchAnalytics = async (range) => {
+    try {
+      setIsLoading(true);
+      const { data } = await api.get(`/api/admin/visitor-analytics?range=${range}`);
+      setAnalyticsData(data || {
+        totalVisitors: 0,
+        totalVehicles: 0,
+        dailyVisitors: {},
+        dailyVehicles: {}
+      });
+    } catch (err) {
+      console.error("Failed to fetch analytics", err);
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     fetchAnalytics(dateRange);
   }, [dateRange]);
 
@@ -102,10 +142,18 @@ const VisitorAnalytics = () => {
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
+=======
+    fetchAnalytics(dateRange.replace('days', ''));
+  }, [dateRange]);
+
+  const handleRangeChange = (range) => {
+    setDateRange(range);
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
   };
 
   // Export to CSV
   const handleExportCSV = () => {
+<<<<<<< HEAD
     const headers = ['Visitor Name', 'Mobile', 'Resident', 'Flat', 'Purpose', 'Date', 'Approval Code', 'Entry Time', 'Exit Time', 'Status'];
     const rows = filteredData.map(a => [
       a.visitor_name,
@@ -118,23 +166,35 @@ const VisitorAnalytics = () => {
       a.check_in_at ? new Date(a.check_in_at).toLocaleString() : '',
       a.check_out_at ? new Date(a.check_out_at).toLocaleString() : '',
       a.status,
+=======
+    const headers = ["Date", "Visitors", "Vehicles"];
+
+    // Merge dates
+    const dates = new Set([...Object.keys(analyticsData.dailyVisitors || {}), ...Object.keys(analyticsData.dailyVehicles || {})]);
+
+    const rows = Array.from(dates).sort().map(date => [
+      date,
+      analyticsData.dailyVisitors[date] || 0,
+      analyticsData.dailyVehicles[date] || 0
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
     ]);
 
     const csv = [headers, ...rows]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
 
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `visitor-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `visitor-analytics-${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   };
 
+<<<<<<< HEAD
   const topVisitors = getTopVisitors();
   const purposeDistribution = getPurposeDistribution();
   const topResidents = getTopResidents();
@@ -148,6 +208,8 @@ const VisitorAnalytics = () => {
     });
   }, [filteredData]);
 
+=======
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
   return (
     <div className="admin-visitor-analytics-page">
       <PageHeader
@@ -157,53 +219,74 @@ const VisitorAnalytics = () => {
       />
 
       <div className="analytics-container">
-        {/* Controls */}
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {['30days', '90days', 'all'].map(range => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          className="gap-16"
+        >
+          <div
+            style={{
+              display: "flex",
+            }}
+            className="gap-16"
+          >
+            {["30days", "90days", "all"].map((range) => (
               <button
                 key={range}
-                onClick={() => setDateRange(range)}
+                onClick={() => handleRangeChange(range)}
                 style={{
-                  padding: '8px 14px',
-                  background: dateRange === range ? '#4F46E5' : 'var(--hover-bg)',
-                  color: dateRange === range ? 'white' : 'var(--text-primary)',
-                  border: `1px solid ${dateRange === range ? '#4F46E5' : 'var(--border)'}`,
-                  borderRadius: '6px',
-                  fontSize: '13px',
+                  padding: "8px 14px",
+                  background:
+                    dateRange === range
+                      ? "var(--primary)"
+                      : "var(--background)",
+                  color: dateRange === range ? "white" : "var(--text-primary)",
+                  border: `1px solid ${dateRange === range ? "var(--primary)" : "var(--border)"}`,
+                  borderRadius: "var(--radius-md)",
+                  fontSize: "13px",
                   fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
                 }}
               >
-                {range === '30days' ? 'Last 30 Days' : range === '90days' ? 'Last 90 Days' : 'All Time'}
+                {range === "30days"
+                  ? "Last 30 Days"
+                  : range === "90days"
+                    ? "Last 90 Days"
+                    : "All Time"}
               </button>
             ))}
           </div>
           <button
             onClick={handleExportCSV}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              background: '#4F46E5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '13px',
+              display: "flex",
+              alignItems: "center",
+              padding: "8px 14px",
+              background: "var(--primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "var(--radius-md)",
+              fontSize: "13px",
               fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              cursor: "pointer",
+              transition: "all 0.2s ease",
             }}
-            onMouseEnter={(e) => e.target.style.background = '#4338CA'}
-            onMouseLeave={(e) => e.target.style.background = '#4F46E5'}
+            onMouseEnter={(e) =>
+              (e.target.style.background = "var(--primary-hover)")
+            }
+            onMouseLeave={(e) => (e.target.style.background = "var(--primary)")}
+            className="gap-16"
           >
             <Download size={16} />
             Export CSV
           </button>
         </div>
 
+<<<<<<< HEAD
         {isLoading && (
           <div style={{ marginTop: '12px', color: 'var(--text-secondary)' }}>Loading analytics...</div>
         )}
@@ -217,82 +300,54 @@ const VisitorAnalytics = () => {
             <div className="stat-icon">👥</div>
             <div className="stat-value">{filteredAnalytics.totalApprovals}</div>
             <div className="stat-label">Total Approvals</div>
+=======
+        {isLoading ? (
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--text-secondary)" }}>
+            Loading analytics...
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
           </div>
+        ) : (
+          <div className="analytics-grid">
+            <div className="stat-card">
+              <div className="stat-icon">👥</div>
+              <div className="stat-value">{analyticsData?.totalApprovals || 0}</div>
+              <div className="stat-label">Total Approvals</div>
+            </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">✅</div>
-            <div className="stat-value">{filteredAnalytics.entriesCompleted}</div>
-            <div className="stat-label">Entries Completed</div>
-          </div>
+            <div className="stat-card">
+              <div className="stat-icon">✅</div>
+              <div className="stat-value">
+                {analyticsData?.entriesCompleted || 0}
+              </div>
+              <div className="stat-label">Entries Completed</div>
+            </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">📈</div>
-            <div className="stat-value">{conversionRate}%</div>
-            <div className="stat-label">Conversion Rate</div>
-          </div>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-value">{analyticsData?.conversionRate || 0}%</div>
+              <div className="stat-label">Conversion Rate</div>
+            </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">⏱️</div>
-            <div className="stat-value">{avgStayTime}m</div>
-            <div className="stat-label">Avg Stay Time</div>
-          </div>
+            <div className="stat-card">
+              <div className="stat-icon">⏱️</div>
+              <div className="stat-value">{analyticsData?.avgStayTime || 0}m</div>
+              <div className="stat-label">Avg Stay Time</div>
+            </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">✓</div>
-            <div className="stat-value">{filteredAnalytics.approvedCount}</div>
-            <div className="stat-label">Approved</div>
-          </div>
+            <div className="stat-card">
+              <div className="stat-icon">✓</div>
+              <div className="stat-value">{analyticsData?.approvedCount || 0}</div>
+              <div className="stat-label">Approved</div>
+            </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">✗</div>
-            <div className="stat-value">{filteredAnalytics.cancelledCount}</div>
-            <div className="stat-label">Cancelled</div>
-          </div>
-        </div>
-
-        {/* Purpose Distribution */}
-        {purposeDistribution.length > 0 && (
-          <div className="chart-container">
-            <h3 className="chart-title">📊 Visitor Purpose Distribution</h3>
-            <table className="analytics-table">
-              <thead>
-                <tr>
-                  <th>Purpose</th>
-                  <th>Count</th>
-                  <th>Percentage</th>
-                  <th>Visual</th>
-                </tr>
-              </thead>
-              <tbody>
-                {purposeDistribution.map((item, idx) => {
-                  const percentage = Math.round((item.count / filteredAnalytics.totalApprovals) * 100);
-                  return (
-                    <tr key={idx}>
-                      <td>{item.purpose}</td>
-                      <td style={{ fontWeight: 600 }}>{item.count}</td>
-                      <td>{percentage}%</td>
-                      <td>
-                        <div style={{
-                          background: 'var(--hover-bg)',
-                          height: '8px',
-                          borderRadius: '4px',
-                          overflow: 'hidden',
-                        }}>
-                          <div style={{
-                            width: `${percentage}%`,
-                            height: '100%',
-                            background: '#4F46E5',
-                            transition: 'width 0.3s ease',
-                          }} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="stat-card">
+              <div className="stat-icon">✗</div>
+              <div className="stat-value">{analyticsData?.cancelledCount || 0}</div>
+              <div className="stat-label">Cancelled</div>
+            </div>
           </div>
         )}
+<<<<<<< HEAD
 
         {/* Top Visitors */}
         {topVisitors.length > 0 && (
@@ -461,9 +516,10 @@ const VisitorAnalytics = () => {
             </div>
           </div>
         </div>
+=======
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
       </div>
     </div>
   );
 };
-
 export default VisitorAnalytics;

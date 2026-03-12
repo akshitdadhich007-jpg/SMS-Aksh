@@ -1,0 +1,118 @@
+/* 1️⃣ EXACT CONTAINER RULE */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* 3️⃣ EXACT SECTION SYSTEM */
+.section {
+  padding-top: 96px;
+  padding-bottom: 96px;
+}
+
+.section-sm {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+/* 5️⃣ ROW LAYOUT STRUCTURE */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* 6️⃣ BUTTON STANDARDIZATION */
+.btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* 7️⃣ CARD STRUCTURE */
+.card {
+  padding: 32px;
+  border-radius: 12px;
+}
+
+/* 8️⃣ IMAGE SYSTEM */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* MARGIN PRESETS */
+.mt-16 {
+  margin-top: 16px !important;
+}
+.mt-24 {
+  margin-top: 24px !important;
+}
+.mt-32 {
+  margin-top: 32px !important;
+}
+.mb-16 {
+  margin-bottom: 16px !important;
+}
+.mb-24 {
+  margin-bottom: 24px !important;
+}
+.mb-32 {
+  margin-bottom: 32px !important;
+}
+
+/* 🔟 RESPONSIVE RULE */
+@media (max-width: 992px) {
+  .row {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .section {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+}
+
+/* 4️⃣ TYPOGRAPHY SYSTEM */
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.6;
+  color: #212529;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 16px;
+}

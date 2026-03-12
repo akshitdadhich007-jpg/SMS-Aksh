@@ -8,10 +8,10 @@
  * @returns {string} Base path like '/admin', '/resident', or '/security'
  */
 export const getTracebackBasePath = (pathname) => {
-    if (pathname.startsWith('/admin')) return '/admin';
-    if (pathname.startsWith('/resident')) return '/resident';
-    if (pathname.startsWith('/security')) return '/security';
-    return '/admin'; // default fallback
+  if (pathname.startsWith("/admin")) return "/admin";
+  if (pathname.startsWith("/resident")) return "/resident";
+  if (pathname.startsWith("/security")) return "/security";
+  return "/admin"; // default fallback
 };
 
 /**
@@ -20,8 +20,8 @@ export const getTracebackBasePath = (pathname) => {
  * @param {string} subPath - like 'report-lost', 'matches', etc.
  * @returns {string} Full path like '/admin/traceback/report-lost'
  */
-export const getTracebackPath = (pathname, subPath = '') => {
-    const basePath = getTracebackBasePath(pathname);
-    if (!subPath) return `${basePath}/traceback`;
-    return `${basePath}/traceback/${subPath}`;
+export const getTracebackPath = (pathname, subPath = "") => {
+  const basePath = getTracebackBasePath(pathname);
+  if (!subPath) return `${basePath}/traceback`;
+  return `${basePath}/traceback/${subPath}`;
 };

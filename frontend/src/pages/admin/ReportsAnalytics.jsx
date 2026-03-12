@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useMemo, useState } from 'react';
 import { PageHeader } from '../../components/ui';
 import {
@@ -385,6 +386,21 @@ const ReportsAnalytics = () => {
             </SectionCard>
         </div>
     );
+=======
+import React from "react";
+import { PageHeader, Card } from "../../components/ui";
+
+const ReportsAnalytics = () => {
+  return (
+    <>
+      <PageHeader title="Reports & Analytics" subtitle="Detailed insights" />
+      <Card className="p-8 text-center">
+        <h3 className="text-xl font-semibold text-gray-700">Data Center</h3>
+        <p className="text-gray-500 mt-2">Feature coming soon.</p>
+      </Card>
+    </>
+  );
+>>>>>>> 6eb47e31e63a89bdd20e5de1af2183e3c3c4e38f
 };
 
 export default ReportsAnalytics;

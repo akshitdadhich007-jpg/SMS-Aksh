@@ -11,22 +11,24 @@
 .emergency-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 28px;
+  gap: 24px;
   width: 100%;
 }
 
 /* ===== PRIMARY CONTACT CARDS ===== */
 
 .emergency-contact-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-md);
+  padding: 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 24px;
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
   min-height: 0;
 }
 
@@ -49,14 +51,14 @@
 .emergency-contact-header {
   display: flex;
   align-items: flex-start;
-  gap: 18px;
+  gap: 16px;
 }
 
 /* Contact Icon Container */
 .emergency-icon-container {
   width: 56px;
   height: 56px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,7 +79,7 @@
 
 .emergency-contact-card:not(.security) .emergency-icon-container {
   background: rgba(79, 70, 229, 0.1);
-  color: var(--brand-blue);
+  color: var(--primary);
 }
 
 /* Contact Info */
@@ -113,10 +115,10 @@
 
 /* Contact Action Button */
 .emergency-contact-button {
-  padding: 13px 18px;
+  padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   border: none;
   color: white;
   cursor: pointer;
@@ -141,7 +143,9 @@
 
 .emergency-contact-card.security .emergency-contact-button:hover {
   background: #ea580c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10), 0 6px 14px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 6px 14px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -151,12 +155,14 @@
 }
 
 .emergency-contact-card:not(.security) .emergency-contact-button {
-  background: var(--brand-blue);
+  background: var(--primary);
 }
 
 .emergency-contact-card:not(.security) .emergency-contact-button:hover {
-  background: var(--brand-hover);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10), 0 6px 14px rgba(0, 0, 0, 0.08);
+  background: var(--primary-hover);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 6px 14px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -170,7 +176,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
   font-size: 20px;
   font-weight: 700;
@@ -185,15 +191,17 @@
 /* ===== LOCAL EMERGENCY SERVICES CARD ===== */
 
 .emergency-services-card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-md);
+  padding: 24px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 24px;
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
   min-height: 0;
 }
 
@@ -222,7 +230,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--border);
   transition: background-color var(--transition-fast);
 }
@@ -233,12 +241,12 @@
 }
 
 .emergency-service-item:hover {
-  background-color: var(--hover-bg);
+  background-color: var(--background);
   padding-left: 8px;
   padding-right: 8px;
   margin-left: -8px;
   margin-right: -8px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
 }
 
@@ -246,7 +254,7 @@
 .emergency-service-info {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex: 1;
 }
 
@@ -297,13 +305,13 @@
 @media (max-width: 768px) {
   .emergency-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 
   .emergency-contact-card,
   .emergency-services-card {
     padding: 24px;
-    gap: 20px;
+    gap: 16px;
   }
 
   .emergency-contact-header {
@@ -340,12 +348,12 @@
 @media (max-width: 640px) {
   .emergency-contact-card,
   .emergency-services-card {
-    padding: 20px;
-    gap: 18px;
+    padding: 16px;
+    gap: 16px;
   }
 
   .emergency-contact-header {
-    gap: 14px;
+    gap: 12px;
   }
 
   .emergency-icon-container {
@@ -358,13 +366,13 @@
   }
 
   .emergency-contact-button {
-    padding: 11px 16px;
+    padding: 12px 16px;
     font-size: 13px;
   }
 
   .emergency-contact-phone {
     font-size: 16px;
-    padding-top: 14px;
+    padding-top: 12px;
   }
 
   .emergency-service-info {

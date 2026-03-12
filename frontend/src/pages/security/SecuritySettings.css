@@ -21,24 +21,26 @@
 .settings-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
 .settings-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   font-size: 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--card);
+  border-radius: var(--radius-md);
+  background: var(--surface);
   color: var(--text-primary);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-input:focus {
   outline: none;
-  border-color: #4F46E5;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
@@ -74,19 +76,19 @@
   align-items: center;
   width: 50px;
   height: 28px;
-  background: var(--hover-bg);
+  background: var(--background);
   border: 2px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 2px;
+  padding: 4px;
   position: relative;
   flex-shrink: 0;
 }
 
 .toggle-switch.active {
-  background: #4F46E5;
-  border-color: #4F46E5;
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .toggle-slider {
@@ -107,14 +109,14 @@
 .settings-button-group {
   display: flex;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .settings-button {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: var(--card);
+  background: var(--surface);
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
@@ -123,18 +125,18 @@
 }
 
 .settings-button:hover {
-  background: var(--hover-bg);
+  background: var(--background);
 }
 
 .settings-button-primary {
-  background: #4F46E5;
-  border-color: #4F46E5;
+  background: var(--primary);
+  border-color: var(--primary);
   color: white;
 }
 
 .settings-button-primary:hover {
-  background: #4338CA;
-  border-color: #4338CA;
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .settings-button-secondary {
@@ -145,18 +147,18 @@
 .settings-alert {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  margin: 12px 0 18px;
+  gap: 8px;
+  padding: 12px 12px;
+  border-radius: var(--radius-md);
+  margin: 12px 0 16px;
   font-size: 13px;
   border-left: 4px solid transparent;
 }
 
 .settings-alert-info {
   background: rgba(59, 130, 246, 0.1);
-  color: #3B82F6;
-  border-left-color: #3B82F6;
+  color: var(--primary);
+  border-left-color: var(--primary);
 }
 
 /* Responsive Design */
