@@ -2,16 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/Login.css';
 import { Button } from '../ui';
-import { supabase } from '../../utils/supabaseClient';
 import {
-    getOrCreateProfile,
-    getProfileByEmail,
     getDashboardPathByRole,
-    isProfileApproved,
     normalizeRole,
 } from '../../utils/authUtils';
 
-const LOGIN_TIMEOUT_MS = 12000;
 const SELECTED_ROLE_STORAGE_KEY = 'selectedRole';
 
 const DEMO_USERS = {
@@ -33,15 +28,6 @@ const DEMO_USERS = {
         name: 'Demo Security',
         id: 'demo-security',
     },
-};
-
-const withTimeout = (promise, timeoutMs, timeoutMessage) => {
-    return Promise.race([
-        promise,
-        new Promise((_, reject) => {
-            setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
-        }),
-    ]);
 };
 
 const Login = () => {
@@ -73,64 +59,13 @@ const Login = () => {
         return true;
     };
 
-    const finalizeAuthenticatedUser = async (session, preferredRole = null) => {
-        const sessionUser = session?.user;
-        const email = sessionUser?.email?.toLowerCase?.() || '';
-
-        if (!sessionUser || !email) return;
-
-        const profile = await getOrCreateProfile(sessionUser);
-        if (!profile) {
-            await supabase.auth.signOut();
-            setErrorMsg('Unable to create your profile. Please contact your society admin.');
-            return;
-        }
-
-        if (!isProfileApproved(profile)) {
-            await supabase.auth.signOut();
-            setErrorMsg('Your account is pending approval from the society administrator.');
-            return;
-        }
-
-        const selectedRole = localStorage.getItem(SELECTED_ROLE_STORAGE_KEY);
-        const finalRole = normalizeRole(preferredRole || selectedRole || activeRole || profile.role);
-
-        localStorage.setItem('user', JSON.stringify({
-            id: sessionUser.id,
-            email,
-            name: profile.name || sessionUser.user_metadata?.full_name || sessionUser.user_metadata?.name || sessionUser.email,
-            role: finalRole,
-        }));
-
-        localStorage.removeItem(SELECTED_ROLE_STORAGE_KEY);
-        navigate(getDashboardPathByRole(finalRole), { replace: true });
+    const finalizeAuthenticatedUser = async (_session, _preferredRole = null) => {
+        // TODO: Firebase - handle post-auth user profile lookup and redirect
+        console.warn('finalizeAuthenticatedUser: Firebase not yet configured');
     };
 
     useEffect(() => {
-        let active = true;
-
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-
-            if (session && active) {
-                console.log('User logged in:', session.user);
-                await finalizeAuthenticatedUser(session);
-            }
-        };
-
-        checkSession();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (session && active) {
-                console.log('User authenticated:', session.user);
-                await finalizeAuthenticatedUser(session);
-            }
-        });
-
-        return () => {
-            active = false;
-            authListener?.subscription?.unsubscribe();
-        };
+        // TODO: Firebase - check current user with onAuthStateChanged here
     }, []);
 
     const handleLogin = async (e) => {
@@ -148,25 +83,8 @@ const Login = () => {
                 return;
             }
 
-            const { data, error } = await withTimeout(
-                supabase.auth.signInWithPassword({
-                    email: normalizedEmail,
-                    password,
-                }),
-                LOGIN_TIMEOUT_MS,
-                'Login request timed out. Please check your internet and try again.'
-            );
-
-            if (error) {
-                setErrorMsg(error.message || 'Login failed');
-                setIsLoading(false);
-                return;
-            }
-
-            setSuccessMsg('✅ Login successful');
-            if (data?.session) {
-                await finalizeAuthenticatedUser(data.session, activeRole);
-            }
+            // TODO: Firebase - signInWithEmailAndPassword(auth, normalizedEmail, password)
+            setErrorMsg('Invalid credentials. Use demo accounts or configure Firebase.');
         } catch (err) {
             console.error(err);
             setErrorMsg('Server connection failed');
@@ -189,25 +107,8 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            localStorage.setItem(SELECTED_ROLE_STORAGE_KEY, activeRole);
-            const { error } = await withTimeout(
-                supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin,
-                        queryParams: {
-                            prompt: 'select_account',
-                        },
-                    },
-                }),
-                LOGIN_TIMEOUT_MS,
-                'Google sign-in is taking too long. Please try again.'
-            );
-
-            if (error) {
-                console.error('Google login error:', error.message);
-                setErrorMsg(error.message || 'Google login failed');
-            }
+            // TODO: Firebase - signInWithPopup(auth, new GoogleAuthProvider())
+            setErrorMsg('Google sign-in not yet configured. Please use demo accounts.');
         } catch (err) {
             console.error('Google login error:', err?.message || err);
             setErrorMsg('Google login failed');

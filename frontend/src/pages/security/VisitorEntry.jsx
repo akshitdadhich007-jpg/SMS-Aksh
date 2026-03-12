@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { PageHeader, Card, Button, CardHeader, CardContent, StatusBadge } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3002';
+// TODO: Replace fetchVisitors, handleCheckIn, handleCheckOut with Firebase calls
 
 const VisitorEntry = () => {
     const toast = useToast();
@@ -11,16 +11,8 @@ const VisitorEntry = () => {
     const [form, setForm] = useState({ name: '', purpose: '', flat: '' });
 
     const fetchVisitors = async () => {
-        try {
-            const res = await fetch(`${API_BASE}/api/security/visitors`);
-            const payload = await res.json();
-            if (!res.ok || !payload.success) {
-                throw new Error(payload.message || 'Failed to fetch visitors');
-            }
-            setVisitors(payload.data || []);
-        } catch (error) {
-            toast.error(error.message || 'Failed to fetch visitors', 'Error');
-        }
+        // TODO: Load visitor entries from Firebase
+        setVisitors([]);
     };
 
     useEffect(() => {
@@ -29,44 +21,16 @@ const VisitorEntry = () => {
 
     const handleCheckIn = async (e) => {
         e.preventDefault();
-
-        try {
-            const res = await fetch(`${API_BASE}/api/security/visitor/checkin`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
-            });
-            const payload = await res.json();
-            if (!res.ok || !payload.success) {
-                throw new Error(payload.message || 'Check-in failed');
-            }
-
-            toast.success(`${form.name} checked in for flat ${form.flat}!`, 'Visitor Checked In');
-            setForm({ name: '', purpose: '', flat: '' });
-            fetchVisitors();
-        } catch (error) {
-            toast.error(error.message || 'Check-in failed', 'Error');
-        }
+        // TODO: Write visitor check-in to Firebase
+        toast.success(`${form.name} checked in for flat ${form.flat}! (Firebase pending)`, 'Visitor Checked In');
+        setForm({ name: '', purpose: '', flat: '' });
     };
 
     const handleCheckOut = async (id) => {
         const visitor = visitors.find(v => v.id === id);
-        try {
-            const res = await fetch(`${API_BASE}/api/security/visitor/checkout`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
-            const payload = await res.json();
-            if (!res.ok || !payload.success) {
-                throw new Error(payload.message || 'Checkout failed');
-            }
-
-            toast.info(`${visitor.visitor_name} checked out`, 'Visitor Left');
-            fetchVisitors();
-        } catch (error) {
-            toast.error(error.message || 'Checkout failed', 'Error');
-        }
+        // TODO: Update visitor checkout in Firebase
+        toast.info(`${visitor?.visitor_name || 'Visitor'} checked out (Firebase pending)`, 'Visitor Left');
+        setVisitors(prev => prev.filter(v => v.id !== id));
     };
 
     return (

@@ -34,15 +34,11 @@ const SecurityLayout = () => {
                 { name: 'Dashboard', path: '/security', icon: <LayoutDashboard size={20} />, end: true },
                 { name: 'Visitor Entry', path: '/security/visitors', icon: <Users size={20} /> },
                 { name: 'Pre-Approved Entry', path: '/security/preapproved', icon: <ShieldCheck size={20} /> },
-                { name: 'Vehicle Logs', path: '/security/vehicles', icon: <Car size={20} /> },
-                { name: 'Deliveries', path: '/security/deliveries', icon: <Package size={20} /> },
             ]
         },
         {
             title: "Logs & Incidents",
             items: [
-                { name: 'Emergency Logs', path: '/security/emergency', icon: <Phone size={20} /> },
-                { name: 'Lost & Found', path: '/security/traceback', icon: <Search size={20} /> },
                 { name: 'Staff Attendance', path: '/security/attendance', icon: <ClipboardCheck size={20} /> },
             ]
         }

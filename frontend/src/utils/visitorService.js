@@ -1,4 +1,5 @@
-import { supabase } from './supabaseClient';
+// visitorService.js — localStorage-only implementation
+// TODO: Firebase - replace all localStorage operations with Firestore CRUD + Realtime listeners
 
 export const VISITOR_STATUS = {
   INSIDE: 'inside',
@@ -52,72 +53,57 @@ export const getResidentFlat = () => {
   );
 };
 
+const LS_VISITORS = 'civiora_visitors';
+const LS_SETTINGS = 'civiora_visitor_settings';
+const LS_BLACKLIST = 'civiora_visitor_blacklist';
+
+const lsGetVisitors = () => { try { return JSON.parse(localStorage.getItem(LS_VISITORS)) || []; } catch { return []; } };
+const lsSetVisitors = (v) => localStorage.setItem(LS_VISITORS, JSON.stringify(v));
+
+const lsGetBlacklist = () => { try { return JSON.parse(localStorage.getItem(LS_BLACKLIST)) || []; } catch { return []; } };
+const lsSetBlacklist = (b) => localStorage.setItem(LS_BLACKLIST, JSON.stringify(b));
+
 const ensureSettingsRow = async () => {
-  const { data, error } = await supabase
-    .from('visitor_settings')
-    .select('*')
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (data) return data;
-
-  const insert = await supabase
-    .from('visitor_settings')
-    .insert(DEFAULT_SETTINGS)
-    .select('*')
-    .single();
-
-  if (insert.error) throw insert.error;
-  return insert.data;
+  // TODO: Firebase - fetch from Firestore visitor_settings collection
+  try {
+    const stored = localStorage.getItem(LS_SETTINGS);
+    if (stored) return { id: 'local', ...JSON.parse(stored) };
+  } catch { /* ignore */ }
+  localStorage.setItem(LS_SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
+  return { id: 'local', ...DEFAULT_SETTINGS };
 };
 
 export const getVisitorSettings = async () => ensureSettingsRow();
 
 export const updateVisitorSettings = async (updates) => {
+  // TODO: Firebase - update Firestore visitor_settings document
   const current = await ensureSettingsRow();
-  const { data, error } = await supabase
-    .from('visitor_settings')
-    .update(updates)
-    .eq('id', current.id)
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data;
+  const merged = { ...current, ...updates };
+  localStorage.setItem(LS_SETTINGS, JSON.stringify(merged));
+  return { ...merged, id: 'local' };
 };
 
 const addVisitorLog = async ({ visitorId, action, role, actorId }) => {
-  const { error } = await supabase.from('visitor_logs').insert({
-    visitor_id: visitorId,
-    action,
-    performed_by_role: role,
-    performed_by_id: actorId || null,
-  });
-  if (error) throw error;
+  // TODO: Firebase - insert into Firestore visitor_logs collection
+  console.log(`[VisitorLog] visitor=${visitorId} action=${action} role=${role} actor=${actorId}`);
 };
 
 export const getBlacklistByPhone = async (phone) => {
-  const { data, error } = await supabase
-    .from('visitor_blacklist')
-    .select('*')
-    .eq('phone_number', String(phone || '').trim())
-    .maybeSingle();
-  if (error) throw error;
-  return data;
+  // TODO: Firebase - query Firestore visitor_blacklist by phone_number
+  const list = lsGetBlacklist();
+  return list.find(b => b.phone_number === String(phone || '').trim()) || null;
 };
 
 export const addToBlacklist = async (payload) => {
-  const { data, error } = await supabase
-    .from('visitor_blacklist')
-    .upsert(payload, { onConflict: 'phone_number' })
-    .select('*')
-    .single();
-  if (error) throw error;
-  return data;
+  // TODO: Firebase - upsert Firestore visitor_blacklist document
+  const list = lsGetBlacklist().filter(b => b.phone_number !== payload.phone_number);
+  const record = { id: `bl-${Date.now()}`, ...payload };
+  lsSetBlacklist([record, ...list]);
+  return record;
 };
 
 export const createVisitorCheckIn = async (formData) => {
+  // TODO: Firebase - write to Firestore visitors collection
   const settings = await ensureSettingsRow();
   const user = getCurrentUser();
 
@@ -127,13 +113,12 @@ export const createVisitorCheckIn = async (formData) => {
     throw new Error('This visitor is blacklisted and cannot be checked in.');
   }
 
-  const { count } = await supabase
-    .from('visitors')
-    .select('id', { count: 'exact', head: true })
-    .eq('flat_number', formData.flat_number)
-    .in('status', [VISITOR_STATUS.INSIDE, VISITOR_STATUS.WAITING]);
-
-  if ((count || 0) >= Number(settings.max_visitors_per_flat || 0)) {
+  const visitors = lsGetVisitors();
+  const flatActive = visitors.filter(
+    v => v.flat_number === formData.flat_number &&
+    [VISITOR_STATUS.INSIDE, VISITOR_STATUS.WAITING].includes(v.status)
+  ).length;
+  if (flatActive >= Number(settings.max_visitors_per_flat || 5)) {
     throw new Error('Max visitor limit reached for this flat.');
   }
 
@@ -142,6 +127,7 @@ export const createVisitorCheckIn = async (formData) => {
   const requiresApproval = Boolean(settings.require_resident_approval) && !autoApproved;
 
   const row = {
+    id: `v-${Date.now()}`,
     visitor_name: formData.visitor_name,
     phone_number: phone,
     purpose: formData.purpose,
@@ -150,6 +136,7 @@ export const createVisitorCheckIn = async (formData) => {
     visitor_photo: formData.visitor_photo || '',
     visitor_type: formData.visitor_type || 'Guest',
     entry_time: new Date().toISOString(),
+    created_at: new Date().toISOString(),
     status: requiresApproval ? VISITOR_STATUS.WAITING : VISITOR_STATUS.INSIDE,
     approved: !requiresApproval,
     approval_method: autoApproved ? 'auto' : (requiresApproval ? 'resident' : 'admin'),
@@ -157,128 +144,71 @@ export const createVisitorCheckIn = async (formData) => {
     created_by_security: user.id || null,
   };
 
-  const { data, error } = await supabase.from('visitors').insert(row).select('*').single();
-  if (error) throw error;
+  lsSetVisitors([row, ...visitors]);
+  await addVisitorLog({ visitorId: row.id, action: 'created', role: 'security', actorId: user.id || null });
 
-  await addVisitorLog({
-    visitorId: data.id,
-    action: 'created',
-    role: 'security',
-    actorId: user.id || null,
-  });
-
-  return { visitor: data, settings };
+  return { visitor: row, settings };
 };
 
 export const markVisitorExit = async (visitorId) => {
+  // TODO: Firebase - update Firestore visitor document
   const user = getCurrentUser();
-  const { data, error } = await supabase
-    .from('visitors')
-    .update({ status: VISITOR_STATUS.EXITED, exit_time: new Date().toISOString() })
-    .eq('id', visitorId)
-    .select('*')
-    .single();
-
-  if (error) throw error;
-
-  await addVisitorLog({
-    visitorId,
-    action: 'exited',
-    role: 'security',
-    actorId: user.id || null,
-  });
-
-  return data;
+  const visitors = lsGetVisitors();
+  const updated = visitors.map(v =>
+    v.id === visitorId ? { ...v, status: VISITOR_STATUS.EXITED, exit_time: new Date().toISOString() } : v
+  );
+  lsSetVisitors(updated);
+  await addVisitorLog({ visitorId, action: 'exited', role: 'security', actorId: user.id || null });
+  return updated.find(v => v.id === visitorId);
 };
 
 export const approveVisitor = async (visitorId) => {
+  // TODO: Firebase - update Firestore visitor document
   const user = getCurrentUser();
   const role = getCurrentRole();
   const by = role === 'admin' ? 'admin' : 'resident';
 
-  const { data, error } = await supabase
-    .from('visitors')
-    .update({
-      approved: true,
-      status: VISITOR_STATUS.INSIDE,
-      approval_method: by,
-      approved_by: user.name || by,
-    })
-    .eq('id', visitorId)
-    .select('*')
-    .single();
-
-  if (error) throw error;
-
-  await addVisitorLog({
-    visitorId,
-    action: 'approved',
-    role: by,
-    actorId: user.id || null,
-  });
-
-  return data;
+  const visitors = lsGetVisitors();
+  const updated = visitors.map(v =>
+    v.id === visitorId
+      ? { ...v, approved: true, status: VISITOR_STATUS.INSIDE, approval_method: by, approved_by: user.name || by }
+      : v
+  );
+  lsSetVisitors(updated);
+  await addVisitorLog({ visitorId, action: 'approved', role: by, actorId: user.id || null });
+  return updated.find(v => v.id === visitorId);
 };
 
 export const rejectVisitor = async (visitorId) => {
+  // TODO: Firebase - update Firestore visitor document
   const user = getCurrentUser();
   const role = getCurrentRole();
   const by = role === 'admin' ? 'admin' : 'resident';
 
-  const { data, error } = await supabase
-    .from('visitors')
-    .update({
-      approved: false,
-      status: VISITOR_STATUS.CANCELLED,
-      approval_method: by,
-      approved_by: user.name || by,
-    })
-    .eq('id', visitorId)
-    .select('*')
-    .single();
-
-  if (error) throw error;
-
-  await addVisitorLog({
-    visitorId,
-    action: 'rejected',
-    role: by,
-    actorId: user.id || null,
-  });
-
-  return data;
+  const visitors = lsGetVisitors();
+  const updated = visitors.map(v =>
+    v.id === visitorId
+      ? { ...v, approved: false, status: VISITOR_STATUS.CANCELLED, approval_method: by, approved_by: user.name || by }
+      : v
+  );
+  lsSetVisitors(updated);
+  await addVisitorLog({ visitorId, action: 'rejected', role: by, actorId: user.id || null });
+  return updated.find(v => v.id === visitorId);
 };
 
 export const listVisitors = async () => {
-  const { data, error } = await supabase
-    .from('visitors')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data || [];
+  // TODO: Firebase - query Firestore visitors collection ordered by created_at desc
+  return lsGetVisitors().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 };
 
 export const listVisitorsForFlat = async (flatNumber) => {
-  const { data, error } = await supabase
-    .from('visitors')
-    .select('*')
-    .eq('flat_number', flatNumber)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data || [];
+  // TODO: Firebase - query Firestore visitors where flat_number == flatNumber
+  return lsGetVisitors().filter(v => v.flat_number === flatNumber);
 };
 
 export const listPendingApprovalsForFlat = async (flatNumber) => {
-  const { data, error } = await supabase
-    .from('visitors')
-    .select('*')
-    .eq('flat_number', flatNumber)
-    .eq('status', VISITOR_STATUS.WAITING)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data || [];
+  // TODO: Firebase - query Firestore visitors where flat_number == flatNumber && status == WAITING
+  return lsGetVisitors().filter(v => v.flat_number === flatNumber && v.status === VISITOR_STATUS.WAITING);
 };
 
 export const computeVisitorAnalytics = (rows, range = '7') => {
@@ -372,14 +302,8 @@ export const downloadTextFile = (fileName, content, mimeType) => {
 };
 
 export const subscribeVisitorRealtime = (onChange) => {
-  const channel = supabase
-    .channel(`visitors-realtime-${Date.now()}`)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'visitors' }, onChange)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'visitor_settings' }, onChange)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'visitor_logs' }, onChange)
-    .subscribe();
-
-  return () => {
-    supabase.removeChannel(channel);
-  };
+  // TODO: Firebase - subscribe to Firestore visitors/settings/logs with onSnapshot
+  const handler = () => onChange({ eventType: 'localStorage' });
+  window.addEventListener('civiora-visitors-updated', handler);
+  return () => window.removeEventListener('civiora-visitors-updated', handler);
 };

@@ -53,17 +53,11 @@ const ResidentLayout = () => {
             title: "Finance",
             items: [
                 { name: 'My Bills', path: '/resident/bills', icon: <Receipt size={20} /> },
-                { name: 'Pay Maintenance', path: '/resident/pay', icon: <CreditCard size={20} /> },
-                { name: 'Payment History', path: '/resident/history', icon: <History size={20} /> },
-                { name: 'My Fines', path: '/resident/fines', icon: <Receipt size={20} /> },
-                { name: 'My Violations', path: '/resident/violations', icon: <Receipt size={20} /> },
             ]
         },
         {
             title: "Community",
             items: [
-                { name: 'Marketplace', path: '/resident/marketplace', icon: <Store size={20} /> },
-                { name: 'Asset Booking', path: '/resident/bookings', icon: <Calendar size={20} /> },
                 { name: 'Settings', path: '/resident/settings', icon: <Settings size={20} /> },
             ]
         }

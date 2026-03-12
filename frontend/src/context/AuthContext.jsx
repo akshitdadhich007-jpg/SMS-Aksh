@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase } from '../utils/supabaseClient';
-import { profileService } from '../services/supabaseService';
 
 const AuthContext = createContext(null);
 
@@ -48,27 +46,9 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Listen for Supabase auth state changes
+  // Set loading false on mount (no Supabase session check needed)
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        // Only clear if no demo user is active
-        const stored = localStorage.getItem('user');
-        if (stored) {
-          try {
-            const parsed = JSON.parse(stored);
-            if (!parsed.id?.startsWith('demo-')) {
-              localStorage.removeItem('user');
-              setUser(null);
-            }
-          } catch { /* ignore */ }
-        }
-      }
-      setLoading(false);
-    });
-
     setLoading(false);
-    return () => subscription?.unsubscribe();
   }, []);
 
   const signIn = useCallback(async (email, password) => {
@@ -83,50 +63,25 @@ export function AuthProvider({ children }) {
       return { user: userData, error: null };
     }
 
-    // Real Supabase auth
-    const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
-    if (error) return { user: null, error };
-
-    const sessionUser = data.session?.user;
-    if (sessionUser) {
-      const { data: profile } = await profileService.getByEmail(normalizedEmail);
-      const userData = {
-        id: sessionUser.id,
-        email: normalizedEmail,
-        name: profile?.name || sessionUser.user_metadata?.full_name || normalizedEmail,
-        role: profile?.role || 'resident',
-        flat_number: profile?.flat_number || '',
-        phone: profile?.phone || '',
-        avatar_url: profile?.avatar_url || '',
-      };
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      return { user: userData, error: null };
-    }
-
-    return { user: null, error: { message: 'No session returned' } };
+    // TODO: Firebase - signInWithEmailAndPassword(auth, email, password)
+    return { user: null, error: { message: 'Invalid credentials. Use demo accounts or configure Firebase.' } };
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } },
-    });
-    return { error };
+    // TODO: Firebase - signInWithPopup(auth, new GoogleAuthProvider())
+    return { error: { message: 'Google sign-in not yet configured. Please use demo accounts.' } };
   }, []);
 
   const signOut = useCallback(async () => {
     localStorage.removeItem('user');
     setUser(null);
-    await supabase.auth.signOut().catch(() => {});
+    // TODO: Firebase - signOut(auth)
   }, []);
 
   const updateProfile = useCallback(async (updates) => {
     if (!user?.id) return;
     try {
-      if (!user.id.startsWith('demo-')) {
-        await profileService.update(user.id, updates);
-      }
+      // TODO: Firebase - update Firestore user document
       const newUser = { ...user, ...updates };
       localStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);

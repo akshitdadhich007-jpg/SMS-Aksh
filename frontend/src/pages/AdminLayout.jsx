@@ -56,7 +56,6 @@ const AdminLayout = () => {
             items: [
                 { name: 'Residents', icon: <Users size={20} />, path: '/admin/residents' },
                 { name: 'Staff & Roles', icon: <UserCog size={20} />, path: '/admin/staff' },
-                { name: 'Committee', icon: <Building size={20} />, path: '/admin/committee' },
                 { name: 'Shops Area', icon: <Store size={20} />, path: '/admin/shops' },
             ]
         },
@@ -64,19 +63,12 @@ const AdminLayout = () => {
             title: "Operations",
             items: [
                 { name: 'Maintenance', icon: <FileText size={20} />, path: '/admin/maintenance' },
-                { name: 'Payments', icon: <BadgeIndianRupee size={20} />, path: '/admin/payments' },
-                { name: 'Expenses', icon: <BadgeIndianRupee size={20} />, path: '/admin/expenses' },
                 { name: 'Complaints', icon: <MailWarning size={20} />, path: '/admin/complaints' },
-                { name: 'Lost & Found', icon: <Compass size={20} />, path: '/admin/traceback' },
-                { name: 'Asset Bookings', icon: <Calendar size={20} />, path: '/admin/bookings' },
-                { name: 'Marketplace', icon: <ShoppingBagIcon size={20} />, path: '/admin/marketplace' },
             ]
         },
         {
             title: "Security Logs",
             items: [
-                { name: 'CivicGuard AI', icon: <ShieldAlert size={20} />, path: '/admin/surveillance' },
-                { name: 'Visitor Analytics', icon: <BarChart size={20} />, path: '/admin/visitor-analytics' },
                 { name: 'Staff Attendance', icon: <FileText size={20} />, path: '/admin/attendance' },
                 { name: 'Vehicles', icon: <Package size={20} />, path: '/admin/vehicles' },
                 { name: 'Deliveries', icon: <Package size={20} />, path: '/admin/deliveries' },
