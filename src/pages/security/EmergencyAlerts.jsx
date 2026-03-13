@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { PageHeader, Card, Button, StatusBadge } from '../../components/ui';
+import { useToast } from '../../components/ui/Toast';
 import { useAuth } from '../../context/AuthContext';
 import {
     subscribeToActiveEmergencies,
@@ -17,8 +18,11 @@ import {
 
 const EmergencyAlerts = () => {
     const { user } = useAuth();
+    const toast = useToast();
     const [activeAlerts, setActiveAlerts] = useState([]);
     const [history, setHistory] = useState([]);
+    const [hasBootstrapped, setHasBootstrapped] = useState(false);
+    const [lastActiveCount, setLastActiveCount] = useState(0);
     const societyId = user?.societyId || 'default-society';
 
     useEffect(() => {
@@ -29,6 +33,24 @@ const EmergencyAlerts = () => {
             unsubHistory && unsubHistory();
         };
     }, [societyId]);
+
+    useEffect(() => {
+        if (!hasBootstrapped) {
+            setLastActiveCount(activeAlerts.length);
+            setHasBootstrapped(true);
+            return;
+        }
+
+        if (activeAlerts.length > lastActiveCount) {
+            const latestAlert = activeAlerts[0];
+            toast.warning(
+                `${latestAlert?.title || 'Emergency alert'} received${latestAlert?.location ? ` at ${latestAlert.location}` : ''}.`,
+                'New SOS Alert'
+            );
+        }
+
+        setLastActiveCount(activeAlerts.length);
+    }, [activeAlerts, hasBootstrapped, lastActiveCount, toast]);
 
     const stats = useMemo(() => {
         const total = history.length;

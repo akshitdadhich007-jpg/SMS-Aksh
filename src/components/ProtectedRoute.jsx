@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { normalizeRole } from '../utils/authUtils';
 
 /**
  * ProtectedRoute - wraps a route to require auth + optional role check.
@@ -26,10 +27,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         return <Navigate to="/" replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
+    const sessionRole = normalizeRole(user.role);
+
+    if (allowedRoles && !allowedRoles.includes(sessionRole)) {
         // Redirect to their own dashboard if wrong role
         const roleRedirects = { admin: '/admin', resident: '/resident', security: '/security' };
-        return <Navigate to={roleRedirects[user.role] || '/'} replace />;
+        return <Navigate to={roleRedirects[sessionRole] || '/'} replace />;
     }
 
     return children;

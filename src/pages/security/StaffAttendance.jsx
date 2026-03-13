@@ -30,14 +30,6 @@ export default function StaffAttendance() {
     const videoRef = useRef(null);
     const { user } = useAuth();
 
-    // 🔹 Society Location (CHANGE to your real location)
-    const societyLocation = {
-        lat: 26.3515,
-        lng: 73.0502,
-    };
-
-    const allowedRadius = 200; // meters
-
     const formatLocationLabel = (address = {}, fallback = "") => {
         const landmark = [
             address.amenity,
@@ -105,26 +97,6 @@ export default function StaffAttendance() {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
-
-    // 🔹 Distance Formula
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371e3;
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-        const a =
-            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) *
-            Math.cos(φ2) *
-            Math.sin(Δλ / 2) *
-            Math.sin(Δλ / 2);
-
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    };
 
     // 🔹 Get GPS
     const getLocation = () => {
@@ -211,18 +183,6 @@ export default function StaffAttendance() {
             return;
         }
 
-        const distance = calculateDistance(
-            societyLocation.lat,
-            societyLocation.lng,
-            location.lat,
-            location.lng
-        );
-
-        if (distance > allowedRadius) {
-            alert("❌ Outside society boundary. Attendance denied.");
-            return;
-        }
-
         try {
             await markStaffIn(user?.id || user?.uid || "security-guard", user?.societyId || "default-society", {
                 staffName: user?.name || "Security Guard",
@@ -239,22 +199,11 @@ export default function StaffAttendance() {
         }
     };
 
-    // ── UI Helpers ──
-    const getDistance = () => {
-        if (!location) return null;
-        return Math.floor(calculateDistance(societyLocation.lat, societyLocation.lng, location.lat, location.lng));
-    };
-
-    const isLocationVerified = () => {
-        const d = getDistance();
-        return d !== null && d <= allowedRadius;
-    };
-
     return (
         <div className="sa-container">
             <div className="sa-header">
                 <h1><ShieldCheck size={32} color="#10b981" /> Security Gateway</h1>
-                <p>GPS-Verified Staff Check-in Panel</p>
+                <p>Camera Verified Staff Check-in Panel</p>
             </div>
 
             {/* ── Status Cards ── */}
@@ -274,7 +223,7 @@ export default function StaffAttendance() {
                     <div className="sa-status-info">
                         <div className="sa-status-label">Location Status</div>
                         <div className="sa-status-value">
-                            {!location ? "Awaiting GPS..." : (isLocationVerified() ? "Verified in Zone" : "Out of Bounds")}
+                            {!location ? "Awaiting GPS..." : (isResolvingLocation ? "Resolving address..." : "Location Captured")}
                         </div>
                     </div>
                 </div>
@@ -320,8 +269,8 @@ export default function StaffAttendance() {
                         {location ? (
                             <>
                                 <span>{locationName || location.name || `${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`}</span>
-                                <span className={`sa-location-badge ${isLocationVerified() ? 'verified' : 'denied'}`}>
-                                    {isLocationVerified() ? 'Verified' : 'Too Far'}
+                                <span className="sa-location-badge verified">
+                                    Captured
                                 </span>
                             </>
                         ) : (

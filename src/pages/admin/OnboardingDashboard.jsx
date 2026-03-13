@@ -487,7 +487,7 @@ const OnboardingDashboard = () => {
             <p className="onb-step-desc">Everything is set up. Your residents and staff can now log in.</p>
 
             <ul className="onb-checklist">
-                {flatsCreated && <li>✅ Flats created in Firestore</li>}
+                {flatsCreated && <li>✅ Flats setup completed</li>}
                 {generatedCreds.length > 0 && <li>✅ {generatedCreds.length} resident credentials generated</li>}
                 {staffAdded && staffList.length > 0 && <li>✅ {staffList.length} staff members added</li>}
             </ul>

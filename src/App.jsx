@@ -16,6 +16,7 @@ import * as SecurityPages from './pages/security/index';
 import * as ResidentPages from './pages/resident/index';
 
 import { ToastProvider } from './components/ui/Toast';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import './App.css';
 
@@ -32,13 +33,27 @@ function App() {
                             <Route path="/" element={<LandingPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/signup/create-society" element={<CreateSocietyPage />} />
-                            <Route path="/admin/onboarding" element={<OnboardingDashboard />} />
+                            <Route
+                                path="/admin/onboarding"
+                                element={
+                                    <ProtectedRoute allowedRoles={['admin']}>
+                                        <OnboardingDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
 
                             {/* Legacy redirects */}
                             <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
                             <Route path="/resident-dashboard" element={<Navigate to="/resident/dashboard" replace />} />
                             <Route path="/security-dashboard" element={<Navigate to="/security/dashboard" replace />} />
-                            <Route path="/admin" element={<AdminLayout />}>
+                            <Route
+                                path="/admin"
+                                element={
+                                    <ProtectedRoute allowedRoles={['admin']}>
+                                        <AdminLayout />
+                                    </ProtectedRoute>
+                                }
+                            >
                                 <Route index element={<Navigate to="dashboard" replace />} />
                                 <Route path="dashboard" element={<AdminPages.AdminDashboard />} />
                                 <Route path="residents" element={<AdminPages.ResidentManagement />} />
@@ -55,7 +70,14 @@ function App() {
                             </Route>
 
                             {/* Resident Nested Routes */}
-                            <Route path="/resident" element={<ResidentLayout />}>
+                            <Route
+                                path="/resident"
+                                element={
+                                    <ProtectedRoute allowedRoles={['resident']}>
+                                        <ResidentLayout />
+                                    </ProtectedRoute>
+                                }
+                            >
                                 <Route index element={<Navigate to="dashboard" replace />} />
                                 <Route path="dashboard" element={<ResidentPages.ResidentDashboard />} />
                                 <Route path="bills" element={<ResidentPages.MyBills />} />
@@ -67,7 +89,14 @@ function App() {
                                 <Route path="visitor-approval" element={<ResidentPages.VisitorPreApproval />} />
                             </Route>
 
-                            <Route path="/security" element={<SecurityLayout />}>
+                            <Route
+                                path="/security"
+                                element={
+                                    <ProtectedRoute allowedRoles={['security']}>
+                                        <SecurityLayout />
+                                    </ProtectedRoute>
+                                }
+                            >
                                 <Route index element={<Navigate to="dashboard" replace />} />
                                 <Route path="dashboard" element={<SecurityPages.SecurityDashboard />} />
                                 <Route path="visitors" element={<SecurityPages.VisitorEntry />} />

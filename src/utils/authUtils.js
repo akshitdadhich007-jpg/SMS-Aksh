@@ -9,7 +9,19 @@ export const ROLE_PATHS = {
 export const normalizeRole = (role) => {
   const roleValue = String(role || '').toLowerCase().trim();
   if (roleValue === 'admin') return 'admin';
-  if (roleValue === 'security' || roleValue === 'guard' || roleValue === 'staff' || roleValue === 'maintenance') return 'security';
+  if (
+    roleValue === 'security' ||
+    roleValue === 'guard' ||
+    roleValue === 'staff' ||
+    roleValue === 'maintenance' ||
+    roleValue.includes('security') ||
+    roleValue.includes('guard') ||
+    roleValue.includes('staff')
+  ) {
+    return 'security';
+  }
+  if (roleValue.includes('admin')) return 'admin';
+  if (roleValue.includes('resident') || roleValue.includes('tenant')) return 'resident';
   return 'resident';
 };
 

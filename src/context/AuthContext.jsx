@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { getOrCreateUserProfile, updateUserProfile } from '../firebase/userService';
+import { normalizeRole } from '../utils/authUtils';
 
 const AuthContext = createContext(null);
 
@@ -32,7 +33,7 @@ export function AuthProvider({ children }) {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             name: profile.name || firebaseUser.displayName || firebaseUser.email,
-            role: profile.role,
+            role: normalizeRole(profile.role),
             flatNumber: profile.flatNumber || null,
             societyId: profile.societyId || null,
           });
@@ -57,7 +58,7 @@ export function AuthProvider({ children }) {
       const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
       const profile = await getOrCreateUserProfile(credential.user);
       return {
-        user: { id: credential.user.uid, email: credential.user.email, role: profile.role, name: profile.name },
+        user: { id: credential.user.uid, email: credential.user.email, role: normalizeRole(profile.role), name: profile.name },
         error: null,
       };
     } catch (err) {
@@ -75,7 +76,7 @@ export function AuthProvider({ children }) {
       const credential = await signInWithPopup(auth, provider);
       const profile = await getOrCreateUserProfile(credential.user);
       return {
-        user: { id: credential.user.uid, email: credential.user.email, role: profile.role, name: profile.name },
+        user: { id: credential.user.uid, email: credential.user.email, role: normalizeRole(profile.role), name: profile.name },
         error: null,
       };
     } catch (err) {

@@ -21,6 +21,15 @@ const SecurityLayout = () => {
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
     const { signOut, user } = useAuth();
+    const securityDisplayName = user?.name || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Security');
+    const securityInitials = securityDisplayName
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase() || 'S';
+    const securityContact = user?.phone || user?.phoneNumber || user?.mobile || 'No contact number';
 
     useEffect(() => {
         if (!user?.societyId) {
@@ -140,10 +149,14 @@ const SecurityLayout = () => {
 
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>
-                                <div className="profile-avatar" style={{ background: 'linear-gradient(135deg, #1E40AF, #3B82F6)' }}>S</div>
-                                Security
+                                <div className="profile-avatar" style={{ background: 'linear-gradient(135deg, #1E40AF, #3B82F6)' }}>{securityInitials}</div>
+                                {securityDisplayName}
                             </button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
+                                <div style={{ padding: '6px 10px 10px', fontSize: 12, color: 'var(--text-secondary)' }}>
+                                    {securityDisplayName} • {securityContact}
+                                </div>
+                                <hr />
                                 <a href="#" onClick={(e) => { e.preventDefault(); setProfileOpen(false); navigate('/security/settings'); }}>
                                     <Settings size={16} /> Settings
                                 </a>

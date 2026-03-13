@@ -1,10 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '../../components/ui';
 import {
     Users, IndianRupee, Wallet, Wrench, UserCheck, Search,
     Download, FileSpreadsheet, FileText, Sparkles, ArrowUpRight,
     ArrowDownRight, Clock3, ShieldAlert, BarChart3
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { subscribeToResidents } from '../../firebase/residentService';
+import { subscribeToAllBills } from '../../firebase/billService';
+import { subscribeToAllComplaints } from '../../firebase/complaintService';
+import { subscribeToStaff } from '../../firebase/staffService';
+import { db } from '../../firebase/config';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import {
     ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid,
     Tooltip, PieChart, Pie, Cell, LineChart, Line, Legend
@@ -12,34 +19,6 @@ import {
 import './ReportsAnalytics.css';
 
 const COLORS = ['#5B6CFF', '#7C3AED', '#22C55E', '#F59E0B', '#06B6D4', '#EF4444'];
-
-const paymentByRange = {
-    week: {
-        monthlyCollection: [],
-        paidPending: [],
-        growth: [],
-    },
-    month: {
-        monthlyCollection: [],
-        paidPending: [],
-        growth: [],
-    },
-    year: {
-        monthlyCollection: [],
-        paidPending: [],
-        growth: [],
-    },
-};
-
-const maintenanceRows = [];
-
-const visitorTrend = [];
-
-const visitedTowers = [];
-
-const lostFoundRows = [];
-
-const complaintBreakdown = [];
 
 const SectionCard = ({ title, subtitle, action, children }) => (
     <section className="ra-card">
@@ -55,16 +34,330 @@ const SectionCard = ({ title, subtitle, action, children }) => (
 );
 
 const ReportsAnalytics = () => {
+    const { user } = useAuth();
     const [range, setRange] = useState('month');
+    const societyId = user?.societyId || null;
 
-    const paymentData = useMemo(() => paymentByRange[range], [range]);
+    const [residents, setResidents] = useState([]);
+    const [bills, setBills] = useState([]);
+    const [complaints, setComplaints] = useState([]);
+    const [staff, setStaff] = useState([]);
+    const [visitors, setVisitors] = useState([]);
+
+    useEffect(() => {
+        if (!societyId) {
+            setResidents([]);
+            setBills([]);
+            setComplaints([]);
+            setStaff([]);
+            setVisitors([]);
+            return () => {};
+        }
+
+        const unsubs = [
+            subscribeToResidents(societyId, setResidents),
+            subscribeToAllBills(societyId, setBills),
+            subscribeToAllComplaints(societyId, setComplaints),
+            subscribeToStaff(societyId, setStaff),
+        ];
+
+        const visitorsQuery = query(collection(db, 'visitors'), where('societyId', '==', societyId));
+        const unsubVisitors = onSnapshot(visitorsQuery, (snapshot) => {
+            setVisitors(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        }, () => setVisitors([]));
+
+        unsubs.push(unsubVisitors);
+
+        return () => {
+            unsubs.forEach((unsub) => unsub && unsub());
+        };
+    }, [societyId]);
+
+    const getDateFromTimestamp = (value) => {
+        if (!value) return null;
+        if (value?.toDate) return value.toDate();
+        if (value instanceof Date) return value;
+        if (typeof value === 'string') {
+            const parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        }
+        return null;
+    };
+
+    const getBillDate = (bill) => {
+        if (bill?.billMonth && bill?.billYear) {
+            const parsed = new Date(`${bill.billMonth} 1, ${bill.billYear}`);
+            if (!Number.isNaN(parsed.getTime())) return parsed;
+        }
+        return getDateFromTimestamp(bill?.createdAt) || new Date();
+    };
+
+    const totalCollected = useMemo(() => (
+        bills.reduce((sum, bill) => {
+            const paid = (bill.payments || []).reduce((acc, payment) => {
+                const amount = Number(payment.amount || 0);
+                return payment.status === 'Paid' ? acc + amount : acc;
+            }, 0);
+            return sum + paid;
+        }, 0)
+    ), [bills]);
+
+    const totalPendingAmount = useMemo(() => (
+        bills.reduce((sum, bill) => {
+            const totalAmount = Number(bill.totalAmount || 0);
+            const paid = (bill.payments || []).reduce((acc, payment) => {
+                const amount = Number(payment.amount || 0);
+                return payment.status === 'Paid' ? acc + amount : acc;
+            }, 0);
+            return sum + Math.max(totalAmount - paid, 0);
+        }, 0)
+    ), [bills]);
+
+    const totalPendingBills = useMemo(() => (
+        bills.filter((bill) => {
+            const totalAmount = Number(bill.totalAmount || 0);
+            const paid = (bill.payments || []).reduce((acc, payment) => {
+                const amount = Number(payment.amount || 0);
+                return payment.status === 'Paid' ? acc + amount : acc;
+            }, 0);
+            return totalAmount - paid > 0;
+        }).length
+    ), [bills]);
+
+    const openComplaints = useMemo(
+        () => complaints.filter((item) => (item.status || '').toLowerCase() !== 'resolved').length,
+        [complaints]
+    );
+
+    const paymentByRange = useMemo(() => {
+        const now = new Date();
+        const dayStart = new Date(now);
+        dayStart.setHours(0, 0, 0, 0);
+
+        const buildWeekSeries = () => {
+            const labels = [];
+            for (let i = 6; i >= 0; i -= 1) {
+                const date = new Date(dayStart);
+                date.setDate(dayStart.getDate() - i);
+                labels.push({
+                    key: date.toISOString().slice(0, 10),
+                    label: date.toLocaleDateString('en-IN', { weekday: 'short' }),
+                    value: 0,
+                });
+            }
+            const map = new Map(labels.map((row) => [row.key, row]));
+            bills.forEach((bill) => {
+                const date = getBillDate(bill);
+                const key = date.toISOString().slice(0, 10);
+                if (!map.has(key)) return;
+                const paid = (bill.payments || []).reduce((acc, payment) => (
+                    payment.status === 'Paid' ? acc + Number(payment.amount || 0) : acc
+                ), 0);
+                map.get(key).value += paid;
+            });
+            return labels.map((row) => ({ label: row.label, value: Math.round(row.value) }));
+        };
+
+        const buildMonthSeries = () => {
+            const month = now.getMonth();
+            const year = now.getFullYear();
+            const weeks = [
+                { label: 'W1', value: 0 },
+                { label: 'W2', value: 0 },
+                { label: 'W3', value: 0 },
+                { label: 'W4', value: 0 },
+                { label: 'W5', value: 0 },
+            ];
+
+            bills.forEach((bill) => {
+                const date = getBillDate(bill);
+                if (date.getMonth() !== month || date.getFullYear() !== year) return;
+                const weekIndex = Math.min(4, Math.floor((date.getDate() - 1) / 7));
+                const paid = (bill.payments || []).reduce((acc, payment) => (
+                    payment.status === 'Paid' ? acc + Number(payment.amount || 0) : acc
+                ), 0);
+                weeks[weekIndex].value += paid;
+            });
+
+            return weeks.map((row) => ({ ...row, value: Math.round(row.value) }));
+        };
+
+        const buildYearSeries = () => {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const year = now.getFullYear();
+            const rows = months.map((label) => ({ label, value: 0 }));
+
+            bills.forEach((bill) => {
+                const date = getBillDate(bill);
+                if (date.getFullYear() !== year) return;
+                const paid = (bill.payments || []).reduce((acc, payment) => (
+                    payment.status === 'Paid' ? acc + Number(payment.amount || 0) : acc
+                ), 0);
+                rows[date.getMonth()].value += paid;
+            });
+
+            return rows.map((row) => ({ ...row, value: Math.round(row.value) }));
+        };
+
+        const weekSeries = buildWeekSeries();
+        const monthSeries = buildMonthSeries();
+        const yearSeries = buildYearSeries();
+
+        const toGrowthSeries = (series) => {
+            let running = 0;
+            return series.map((row) => {
+                running += row.value;
+                return { label: row.label, value: running };
+            });
+        };
+
+        const paidPending = [
+            { name: 'Paid', value: Math.round(totalCollected) },
+            { name: 'Pending', value: Math.round(totalPendingAmount) },
+        ];
+
+        return {
+            week: {
+                monthlyCollection: weekSeries,
+                paidPending,
+                growth: toGrowthSeries(weekSeries),
+            },
+            month: {
+                monthlyCollection: monthSeries,
+                paidPending,
+                growth: toGrowthSeries(monthSeries),
+            },
+            year: {
+                monthlyCollection: yearSeries,
+                paidPending,
+                growth: toGrowthSeries(yearSeries),
+            },
+        };
+    }, [bills, totalCollected, totalPendingAmount]);
+
+    const paymentData = useMemo(() => paymentByRange[range], [paymentByRange, range]);
+
+    const maintenanceRows = useMemo(() => (
+        complaints
+            .slice()
+            .sort((a, b) => {
+                const at = getDateFromTimestamp(a.createdAt)?.getTime() || 0;
+                const bt = getDateFromTimestamp(b.createdAt)?.getTime() || 0;
+                return bt - at;
+            })
+            .slice(0, 8)
+            .map((item) => ({
+                issue: item.category || item.title || 'Complaint',
+                resident: item.residentName || 'Resident',
+                tower: item.residentFlat || item.flatNumber || '-',
+                status: item.status || 'Pending',
+                date: item.displayDate || getDateFromTimestamp(item.createdAt)?.toLocaleDateString('en-IN') || '-',
+                staff: item.assignedTo || 'Pending assignment',
+            }))
+    ), [complaints]);
+
+    const visitorStats = useMemo(() => {
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfWeek = new Date(startOfToday);
+        startOfWeek.setDate(startOfWeek.getDate() - 6);
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        let today = 0;
+        let week = 0;
+        let month = 0;
+
+        visitors.forEach((visitor) => {
+            const date = getDateFromTimestamp(visitor.createdAt) || getDateFromTimestamp(visitor.entryTime);
+            if (!date) return;
+            if (date >= startOfToday) today += 1;
+            if (date >= startOfWeek) week += 1;
+            if (date >= startOfMonth) month += 1;
+        });
+
+        return { today, week, month };
+    }, [visitors]);
+
+    const visitorTrend = useMemo(() => {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const rows = [];
+        for (let i = 6; i >= 0; i -= 1) {
+            const date = new Date(start);
+            date.setDate(start.getDate() - i);
+            rows.push({
+                key: date.toISOString().slice(0, 10),
+                day: date.toLocaleDateString('en-IN', { weekday: 'short' }),
+                visitors: 0,
+            });
+        }
+        const map = new Map(rows.map((row) => [row.key, row]));
+        visitors.forEach((visitor) => {
+            const date = getDateFromTimestamp(visitor.createdAt) || getDateFromTimestamp(visitor.entryTime);
+            if (!date) return;
+            const key = date.toISOString().slice(0, 10);
+            if (map.has(key)) {
+                map.get(key).visitors += 1;
+            }
+        });
+        return rows;
+    }, [visitors]);
+
+    const visitedTowers = useMemo(() => {
+        const counts = new Map();
+        visitors.forEach((visitor) => {
+            const label = visitor.flatNumber || visitor.residentFlat || 'Unknown';
+            counts.set(label, (counts.get(label) || 0) + 1);
+        });
+        return Array.from(counts.entries())
+            .map(([name, visits]) => ({ name, visits }))
+            .sort((a, b) => b.visits - a.visits)
+            .slice(0, 6);
+    }, [visitors]);
+
+    const complaintBreakdown = useMemo(() => {
+        const counts = new Map();
+        complaints.forEach((item) => {
+            const key = item.category || 'Other';
+            counts.set(key, (counts.get(key) || 0) + 1);
+        });
+        return Array.from(counts.entries()).map(([name, value]) => ({ name, value }));
+    }, [complaints]);
+
+    const resolutionHours = useMemo(() => {
+        const resolved = complaints.filter((item) => (item.status || '').toLowerCase() === 'resolved');
+        if (!resolved.length) return 0;
+
+        const total = resolved.reduce((sum, item) => {
+            const start = getDateFromTimestamp(item.createdAt);
+            const end = getDateFromTimestamp(item.updatedAt);
+            if (!start || !end) return sum;
+            return sum + Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60));
+        }, 0);
+
+        return resolved.length ? Math.round(total / resolved.length) : 0;
+    }, [complaints]);
+
+    const lastSynced = useMemo(() => {
+        const candidates = [
+            ...bills.map((b) => getDateFromTimestamp(b.updatedAt) || getDateFromTimestamp(b.createdAt)),
+            ...complaints.map((c) => getDateFromTimestamp(c.updatedAt) || getDateFromTimestamp(c.createdAt)),
+            ...visitors.map((v) => getDateFromTimestamp(v.updatedAt) || getDateFromTimestamp(v.createdAt)),
+        ].filter(Boolean);
+
+        if (!candidates.length) return 'Not available';
+        const latest = candidates.sort((a, b) => b.getTime() - a.getTime())[0];
+        return latest.toLocaleString('en-IN');
+    }, [bills, complaints, visitors]);
+
+    const maintenanceRowsCount = maintenanceRows.length;
 
     const analyticsCards = [
-        { label: 'Total Residents', value: '0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: Users },
-        { label: 'Total Payments Collected', value: 'Rs 0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: IndianRupee },
-        { label: 'Pending Payments', value: '0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: Wallet },
-        { label: 'Maintenance Requests', value: '0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: Wrench },
-        { label: 'Visitors Today', value: '0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: UserCheck },
+        { label: 'Total Residents', value: String(residents.length), subtitle: residents.length ? 'Live resident count' : 'No data yet', trend: 'Live', trendUp: true, icon: Users },
+        { label: 'Total Payments Collected', value: `Rs ${Math.round(totalCollected).toLocaleString('en-IN')}`, subtitle: totalCollected > 0 ? 'Realtime billing collection' : 'No data yet', trend: 'Live', trendUp: true, icon: IndianRupee },
+        { label: 'Pending Payments', value: String(totalPendingBills), subtitle: totalPendingBills > 0 ? 'Bills with pending amount' : 'No pending bills', trend: 'Live', trendUp: totalPendingBills === 0, icon: Wallet },
+        { label: 'Maintenance Requests', value: String(openComplaints), subtitle: openComplaints > 0 ? 'Open complaints' : 'No open complaints', trend: 'Live', trendUp: openComplaints === 0, icon: Wrench },
+        { label: 'Visitors Today', value: String(visitorStats.today), subtitle: visitorStats.today > 0 ? 'Entries today' : 'No entries yet', trend: 'Live', trendUp: true, icon: UserCheck },
         { label: 'Lost & Found Items', value: '0', subtitle: 'No data yet', trend: '0%', trendUp: true, icon: Search },
     ];
 
@@ -178,10 +471,10 @@ const ReportsAnalytics = () => {
 
             <SectionCard title="Maintenance Reports" subtitle="Operational status and request lifecycle">
                 <div className="ra-quick-stats">
-                    <div><span>Total Requests</span><strong>0</strong></div>
-                    <div><span>Completed Requests</span><strong>0</strong></div>
-                    <div><span>Pending Requests</span><strong>0</strong></div>
-                    <div><span>Average Resolution Time</span><strong>0 hrs</strong></div>
+                    <div><span>Total Requests</span><strong>{complaints.length}</strong></div>
+                    <div><span>Completed Requests</span><strong>{complaints.filter((item) => (item.status || '').toLowerCase() === 'resolved').length}</strong></div>
+                    <div><span>Pending Requests</span><strong>{openComplaints}</strong></div>
+                    <div><span>Average Resolution Time</span><strong>{resolutionHours} hrs</strong></div>
                 </div>
                 <div className="ra-table-wrap">
                     <table>
@@ -218,9 +511,9 @@ const ReportsAnalytics = () => {
             <div className="ra-split-grid">
                 <SectionCard title="Visitor Analytics" subtitle="Footfall and tower traffic intelligence">
                     <div className="ra-quick-stats ra-quick-stats-3">
-                        <div><span>Visitors Today</span><strong>0</strong></div>
-                        <div><span>Visitors This Week</span><strong>0</strong></div>
-                        <div><span>Visitors This Month</span><strong>0</strong></div>
+                        <div><span>Visitors Today</span><strong>{visitorStats.today}</strong></div>
+                        <div><span>Visitors This Week</span><strong>{visitorStats.week}</strong></div>
+                        <div><span>Visitors This Month</span><strong>{visitorStats.month}</strong></div>
                     </div>
                     <div className="ra-chart-grid ra-chart-grid-2">
                         <div className="ra-chart-box">
@@ -315,9 +608,11 @@ const ReportsAnalytics = () => {
                             <h4>AI Insights</h4>
                         </div>
                         <ul>
-                            <li><BarChart3 size={14} /> No data yet.</li>
+                            <li><BarChart3 size={14} /> {openComplaints > 0 ? `${openComplaints} complaints need active attention.` : 'No pending complaints right now.'}</li>
+                            <li><ShieldAlert size={14} /> {staff.length} staff members currently configured for this society.</li>
+                            <li><Users size={14} /> {maintenanceRowsCount} recent maintenance entries visible in live feed.</li>
                         </ul>
-                        <div className="ra-ai-footnote"><Clock3 size={14} /> Last synced: Not available</div>
+                        <div className="ra-ai-footnote"><Clock3 size={14} /> Last synced: {lastSynced}</div>
                     </article>
                 </div>
             </SectionCard>

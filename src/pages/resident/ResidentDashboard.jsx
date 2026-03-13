@@ -46,6 +46,14 @@ const ResidentDashboard = () => {
     const [pendingBills, setPendingBills] = useState(0);
     const [activeComplaints, setActiveComplaints] = useState(0);
     const [announcementCount, setAnnouncementCount] = useState(0);
+    const residentDisplayName = user?.name || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Resident');
+    const residentInitials = residentDisplayName
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase() || 'R';
 
     useEffect(() => {
         const id = setTimeout(() => setIsLoading(false), 850);
@@ -131,10 +139,10 @@ const ResidentDashboard = () => {
                 transition={{ duration: 0.35 }}
             >
                 <div>
-                    <h1>Welcome back, Resident</h1>
+                    <h1>Welcome back, {residentDisplayName}</h1>
                     <p>Here is an overview of your society activity</p>
                 </div>
-                <div className="rd-welcome-avatar">RK</div>
+                <div className="rd-welcome-avatar">{residentInitials}</div>
             </motion.section>
 
             <motion.section

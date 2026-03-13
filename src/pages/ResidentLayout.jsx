@@ -21,6 +21,14 @@ const ResidentLayout = () => {
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
     const { signOut, user } = useAuth();
+    const residentDisplayName = user?.name || user?.displayName || (user?.email ? user.email.split('@')[0] : 'Resident');
+    const residentInitials = residentDisplayName
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase() || 'R';
 
     useEffect(() => {
         const handleResize = () => {
@@ -162,8 +170,8 @@ const ResidentLayout = () => {
 
                         <div className="profile">
                             <button id="profileBtn" className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>
-                                <div className="profile-avatar resident-profile-avatar">R</div>
-                                <span className="profile-name">Resident</span>
+                                <div className="profile-avatar resident-profile-avatar">{residentInitials}</div>
+                                <span className="profile-name">{residentDisplayName}</span>
                                 <ChevronDown size={14} className={`profile-chevron ${profileOpen ? 'open' : ''}`} />
                             </button>
                             <div id="profileMenu" className={`profile-menu ${profileOpen ? 'show' : ''}`}>
