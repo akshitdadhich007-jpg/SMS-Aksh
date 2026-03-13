@@ -1,5 +1,5 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -26,21 +26,11 @@ let auth = null;
 let db = null;
 
 if (hasRequiredFirebaseConfig && hasValidApiKeyFormat) {
-  try {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-
-    // browserSessionPersistence stores auth state in sessionStorage, which is:
-    //   ✅ Tab-scoped  → each tab keeps its own logged-in user independently
-    //   ✅ Survives refresh → sessionStorage is cleared only when the TAB/window
-    //      is closed, NOT on page reload
-    //   ✅ New tab starts fresh → no shared auth confusion between admin/resident/security
-    //   ✅ Single Firebase app instance → no Firestore internal assertion errors
-    setPersistence(auth, browserSessionPersistence).catch(console.error);
-  } catch (error) {
-    console.error('Firebase initialization failed:', error);
-  }
+  // Reuse existing [DEFAULT] app on HMR / hot reload — prevents "App already exists" crash
+  // that sets db = null and silently kills all Firestore subscriptions.
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
 } else {
   console.warn('Firebase config is missing or invalid. Add VITE_FIREBASE_* values in your .env file.');
 }
