@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHeader, Card, StatusBadge, Button } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
+import { useAuth } from '../../context/AuthContext';
+import {
+    subscribeToStaff,
+    createStaff,
+    updateStaff,
+} from '../../firebase/staffService';
 
 const StaffManagement = () => {
     const toast = useToast();
-    const [staffList, setStaffList] = useState([
-        { id: 1, name: 'Ramesh Patil', role: 'Security Guard', salary: 15000, status: 'Paid' },
-        { id: 2, name: 'Suresh Kumar', role: 'Housekeeping', salary: 12000, status: 'Paid' },
-        { id: 3, name: 'Mahesh Yadav', role: 'Gardener', salary: 10000, status: 'Pending' },
-        { id: 4, name: 'Kishore Singh', role: 'Electrician', salary: 18000, status: 'Paid' },
-        { id: 5, name: 'Anita Das', role: 'Cleaner', salary: 9000, status: 'Processing' },
-    ]);
+    const { user } = useAuth();
+    const societyId = user?.societyId || 'default-society';
+
+    const [staffList, setStaffList] = useState([]);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingStaff, setEditingStaff] = useState(null);
@@ -29,16 +32,31 @@ const StaffManagement = () => {
         setModalOpen(true);
     };
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        const unsubscribe = subscribeToStaff(societyId, setStaffList);
+        return () => unsubscribe && unsubscribe();
+    }, [societyId]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (editingStaff) {
-            setStaffList(prev => prev.map(s => s.id === editingStaff.id ? { ...s, ...form, salary: parseInt(form.salary) } : s));
-            toast.success(`${form.name}'s details updated!`, 'Staff Updated');
-        } else {
-            setStaffList(prev => [...prev, { id: Date.now(), ...form, salary: parseInt(form.salary) }]);
-            toast.success(`${form.name} added as ${form.role}!`, 'Employee Added');
+        try {
+            const payload = {
+                ...form,
+                salary: parseInt(form.salary, 10) || 0,
+                societyId,
+            };
+            if (editingStaff) {
+                await updateStaff(editingStaff.id, payload);
+                toast.success(`${form.name}'s details updated!`, 'Staff Updated');
+            } else {
+                await createStaff(payload);
+                toast.success(`${form.name} added as ${form.role}!`, 'Employee Added');
+            }
+            setModalOpen(false);
+        } catch (err) {
+            console.error('Staff save failed', err);
+            toast.error('Unable to save staff details. Please try again.', 'Error');
         }
-        setModalOpen(false);
     };
 
     return (

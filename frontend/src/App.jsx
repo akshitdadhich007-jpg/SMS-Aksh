@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { VisitorProvider } from './context/VisitorContext';
+import { AuthProvider } from './context/AuthContext';
 
 import LandingPage from './pages/LandingPage';
 import AdminLayout from './pages/AdminLayout';
@@ -20,9 +21,10 @@ function App() {
 
     return (
         <ThemeProvider>
-            <VisitorProvider>
-                <ToastProvider>
-                    <Router>
+            <AuthProvider>
+                <VisitorProvider>
+                    <ToastProvider>
+                        <Router>
                         <Routes>
                             <Route path="/" element={<LandingPage />} />
                             <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
@@ -32,14 +34,10 @@ function App() {
                                 <Route index element={<Navigate to="dashboard" replace />} />
                                 <Route path="dashboard" element={<AdminPages.AdminDashboard />} />
                                 <Route path="residents" element={<AdminPages.ResidentManagement />} />
-                                <Route path="shops" element={<AdminPages.ShopManagement />} />
                                 <Route path="maintenance" element={<AdminPages.BillManagement />} />
                                 <Route path="staff" element={<AdminPages.StaffManagement />} />
-                                <Route path="vehicles" element={<AdminPages.VehicleVisitorLog />} />
-                                <Route path="deliveries" element={<AdminPages.DeliveryLog />} />
                                 <Route path="complaints" element={<AdminPages.ComplaintManagement />} />
                                 <Route path="notices" element={<AdminPages.EventsAnnouncements />} />
-                                <Route path="documents" element={<AdminPages.DocumentRepo />} />
                                 <Route path="emergency" element={<AdminPages.EmergencyManagement />} />
                                 <Route path="reports" element={<AdminPages.ReportsAnalytics />} />
                                 <Route path="settings" element={<AdminPages.AdminSettings />} />
@@ -56,8 +54,7 @@ function App() {
                                 <Route path="complaints" element={<ResidentPages.Complaints />} />
                                 <Route path="announcements" element={<ResidentPages.Announcements />} />
                                 <Route path="documents" element={<ResidentPages.Documents />} />
-                                <Route path="emergency" element={<ResidentPages.Emergency />} />
-                                <Route path="staff" element={<ResidentPages.Staff />} />
+                                <Route path="emergency-sos" element={<ResidentPages.EmergencySOS />} />
                                 <Route path="settings" element={<ResidentPages.ResidentSettings />} />
                                 <Route path="visitor-approval" element={<ResidentPages.VisitorPreApproval />} />
                             </Route>
@@ -69,11 +66,13 @@ function App() {
                                 <Route path="settings" element={<SecurityPages.SecuritySettings />} />
                                 <Route path="preapproved" element={<SecurityPages.PreApprovedVisitors />} />
                                 <Route path="attendance" element={<SecurityPages.StaffAttendance />} />
+                                <Route path="emergency-alerts" element={<SecurityPages.EmergencyAlerts />} />
                             </Route>
                         </Routes>
                     </Router>
                 </ToastProvider>
             </VisitorProvider>
+            </AuthProvider>
         </ThemeProvider>
     );
 }

@@ -1,35 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageHeader, Card, Button, StatusBadge } from '../../components/ui';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { submitComplaint, subscribeToResidentComplaints } from '../../firebase/complaintService';
 import './Complaints.css';
 
 const Complaints = () => {
-    // Mock Data
-    const [complaints] = useState([
-        { id: 'CMP-2026-001', category: 'Plumbing', description: 'Leaking tap in master bathroom', status: 'Pending', date: '04 Feb 2026' },
-        { id: 'CMP-2026-002', category: 'Electrical', description: 'Corridor light not working near flat A-101', status: 'Resolved', date: '20 Jan 2026' },
-    ]);
+    const { user } = useAuth();
+    const toast = useToast();
+    const [complaints, setComplaints] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({ category: 'Plumbing', description: '' });
 
-    const handleSubmit = (e) => {
+    // Subscribe to resident's complaints
+    useEffect(() => {
+        if (!user?.uid) return;
+        const unsub = subscribeToResidentComplaints(user.uid, (data) => {
+            setComplaints(data);
+            setLoading(false);
+        });
+        return () => unsub();
+    }, [user?.uid]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('Complaint raised successfully! (Demo only)');
+        if (!formData.description.trim()) {
+            toast.error('Please describe your complaint', 'Error');
+            return;
+        }
+        setSubmitting(true);
+        try {
+            await submitComplaint({
+                category: formData.category,
+                description: formData.description,
+                residentUid: user.uid,
+                residentName: user.name || 'Resident',
+                residentFlat: user.flatNumber || 'N/A',
+            });
+            toast.success('Complaint submitted successfully!', 'Complaint Raised');
+            setFormData({ category: 'Plumbing', description: '' });
+        } catch (err) {
+            toast.error('Failed to submit complaint', 'Error');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
         <>
-            <PageHeader title="Complaints" subtitle="Raise issues and track their status" />
+            <PageHeader title="Complaints" subtitle="Raise issues and track their status — updates in real-time" />
 
             <div className="complaints-grid">
-                {/* Section 1: Raise Complaint */}
+                {/* Section 1: Raise Complaint Form */}
                 <div className="complaint-form-card">
                     <h3>Raise a Complaint</h3>
                     <form onSubmit={handleSubmit} className="complaint-form">
                         <div className="form-group">
                             <label>Category</label>
-                            <select>
+                            <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
                                 <option>Plumbing</option>
                                 <option>Electrical</option>
                                 <option>Security</option>
                                 <option>Housekeeping</option>
+                                <option>Maintenance</option>
                                 <option>Other</option>
                             </select>
                         </div>
@@ -37,54 +71,45 @@ const Complaints = () => {
                         <div className="form-group">
                             <label>Description</label>
                             <textarea
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 placeholder="Describe the issue in detail..."
+                                rows={5}
                             ></textarea>
                         </div>
 
-                        <Button type="submit" className="complaint-submit-btn">Submit Complaint</Button>
+                        <Button type="submit" disabled={submitting} className="complaint-submit-btn">
+                            {submitting ? 'Submitting...' : 'Submit Complaint'}
+                        </Button>
                     </form>
                 </div>
 
-                {/* Section 2: My Complaints */}
+                {/* Section 2: My Complaints List */}
                 <div className="complaints-list-card">
                     <h3>My Complaints</h3>
-                    {complaints.length === 0 ? (
+                    {loading ? (
+                        <div className="complaints-loading">
+                            <p>Loading your complaints...</p>
+                        </div>
+                    ) : complaints.length === 0 ? (
                         <div className="complaints-empty-state">
-                            <p>No complaints raised yet.</p>
+                            <p>No complaints raised yet. Submit one above to get started!</p>
                         </div>
                     ) : (
-                        <div style={{ overflowX: 'auto' }}>
-                            <table className="complaints-table">
-                                <colgroup>
-                                    <col style={{ width: '140px' }} />
-                                    <col />
-                                    <col style={{ width: '130px' }} />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Details</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {complaints.map((item) => (
-                                        <tr key={item.id}>
-                                            <td className="complaint-id">{item.id}</td>
-                                            <td>
-                                                <div className="complaint-details">
-                                                    <div className="complaint-category">{item.category}</div>
-                                                    <div className="complaint-description">{item.description}</div>
-                                                    <div className="complaint-date">{item.date}</div>
-                                                </div>
-                                            </td>
-                                            <td className="complaint-status-cell">
-                                                <StatusBadge status={item.status} />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="complaint-cards-list">
+                            {complaints.map((item) => (
+                                <div key={item.id} className="complaint-card">
+                                    <div className="complaint-card-header">
+                                        <span className="complaint-category-badge">{item.category}</span>
+                                        <StatusBadge status={item.status} />
+                                    </div>
+                                    <p className="complaint-card-desc">{item.description}</p>
+                                    <div className="complaint-card-footer">
+                                        <span className="complaint-card-id">#{item.id.substring(0, 8).toUpperCase()}</span>
+                                        <span className="complaint-card-date">{item.displayDate}</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>

@@ -1016,3 +1016,202 @@
     width: 100%;
   }
 }
+
+/* ===== FIREBASE VERSION STYLES ===== */
+
+/* Stats Grid */
+.vpa-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+/* Pre-Approval List */
+.vpa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vpa-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vpa-card:hover {
+  border-color: var(--brand-blue, #3b82f6);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.vpa-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.vpa-card-header h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.vpa-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.vpa-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.vpa-detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.vpa-detail-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.vpa-detail-value.monospace {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  background: var(--hover-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.vpa-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vpa-card-actions button {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.vpa-delete-btn {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 10px 12px !important;
+  flex: none !important;
+}
+
+.vpa-delete-btn:hover {
+  background: #fee2e2 !important;
+}
+
+/* Form Styling */
+.vpa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vpa-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vpa-form .form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vpa-form .form-group input,
+.vpa-form .form-group select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg);
+  transition: border-color 0.2s ease;
+}
+
+.vpa-form .form-group input:focus,
+.vpa-form .form-group select:focus {
+  outline: none;
+  border-color: var(--brand-blue, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 900px) {
+  .vpa-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vpa-detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 540px) {
+  .vpa-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vpa-card {
+    padding: 16px;
+  }
+
+  .vpa-card-header {
+    flex-direction: column;
+  }
+
+  .vpa-card-actions {
+    flex-direction: column;
+  }
+
+  .vpa-card-actions button {
+    width: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

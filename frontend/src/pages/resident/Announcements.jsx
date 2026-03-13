@@ -1,63 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Bell, Calendar, Clock, AlertCircle,
     Wrench, Users, Info, ChevronDown, ChevronUp,
-    Check, CheckCircle2
+    Check, CheckCircle2, Loader2
 } from 'lucide-react';
+import { subscribeToAnnouncements } from '../../firebase/announcementService';
 import './Announcements.css';
 
 const Announcements = () => {
-    // ── Enhanced Mock Data ──
-    // Added type, isPinned, and isRead to support the new UI
-    const [announcements, setAnnouncements] = useState([
-        {
-            id: 1,
-            title: 'Annual General Meeting',
-            type: 'meeting',
-            date: '15 Feb 2026',
-            description: 'The AGM will be held at the Community Hall at 10:00 AM. All members are requested to attend. Agenda includes election of new committee members and approval of annual budget.',
-            isPinned: true,
-            isRead: false
-        },
-        {
-            id: 2,
-            title: 'Water Supply Interruption',
-            type: 'alert',
-            date: '12 Feb 2026',
-            description: 'Emergency repair work on the main pipeline. Water supply will be suspended in Block A and B between 2 PM and 6 PM today.',
-            isPinned: false,
-            isRead: false
-        },
-        {
-            id: 3,
-            title: 'Swimming Pool Maintenance',
-            type: 'maintenance',
-            date: '10 Feb 2026',
-            description: 'The swimming pool will be closed for quarterly deep-cleaning and maintenance from 10th Feb to 12th Feb. We apologize for the inconvenience.',
-            isPinned: false,
-            isRead: true
-        },
-        {
-            id: 4,
-            title: 'Ganesh Chaturthi Celebrations',
-            type: 'event',
-            date: '02 Feb 2026',
-            description: 'Join us for the Ganesh Chaturthi celebrations starting from 5th Feb. Detailed schedule has been mailed to all residents. Please contact the cultural committee for participation.',
-            isPinned: false,
-            isRead: true
-        },
-        {
-            id: 5,
-            title: 'New Visitor Parking Rules',
-            type: 'info',
-            date: '28 Jan 2026',
-            description: 'Effective immediately, all visitor vehicles must be parked in the designated V-Zone. Maximum allowed duration without prior approval is 6 hours.',
-            isPinned: false,
-            isRead: true
-        }
-    ]);
-
+    const [announcements, setAnnouncements] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [expandedIds, setExpandedIds] = useState([]);
+    const [readIds, setReadIds] = useState(new Set());
+
+    useEffect(() => {
+        const unsub = subscribeToAnnouncements((items) => {
+            // Map Firestore fields to UI shape
+            const mapped = items.map(item => ({
+                id: item.id,
+                title: item.title,
+                type: item.type || 'info',
+                date: item.displayDate,
+                description: item.message || '',
+                isPinned: false,
+            }));
+            setAnnouncements(mapped);
+            setLoading(false);
+        });
+        return () => unsub();
+    }, []);
 
     // ── Handlers ──
     const toggleExpand = (id) => {
@@ -67,29 +38,40 @@ const Announcements = () => {
     };
 
     const markAsRead = (id) => {
-        setAnnouncements(prev =>
-            prev.map(ann => ann.id === id ? { ...ann, isRead: true } : ann)
-        );
+        setReadIds(prev => new Set([...prev, id]));
     };
 
     const markAllAsRead = () => {
-        setAnnouncements(prev => prev.map(ann => ({ ...ann, isRead: true })));
+        setReadIds(new Set(announcements.map(a => a.id)));
     };
 
     // ── Derived Data ──
-    const unreadCount = announcements.filter(a => !a.isRead).length;
-    const pinnedAnnouncements = announcements.filter(a => a.isPinned);
-    const recentAnnouncements = announcements.filter(a => !a.isPinned && !a.isRead);
-    const olderAnnouncements = announcements.filter(a => !a.isPinned && a.isRead);
+    const enriched = announcements.map(a => ({ ...a, isRead: readIds.has(a.id) }));
+    const unreadCount = enriched.filter(a => !a.isRead).length;
+    const pinnedAnnouncements = enriched.filter(a => a.isPinned);
+    const recentAnnouncements = enriched.filter(a => !a.isPinned && !a.isRead);
+    const olderAnnouncements = enriched.filter(a => !a.isPinned && a.isRead);
 
-    // ── Helper ──
+    // ── Helpers ──
     const getIconForType = (type) => {
         switch (type) {
-            case 'meeting': return <Users size={20} />;
-            case 'maintenance': return <Wrench size={20} />;
-            case 'event': return <Calendar size={20} />;
-            case 'alert': return <AlertCircle size={20} />;
-            case 'info': default: return <Info size={20} />;
+            case 'meeting':     return <Users size={22} />;
+            case 'maintenance': return <Wrench size={22} />;
+            case 'event':       return <Calendar size={22} />;
+            case 'alert':       return <AlertCircle size={22} />;
+            case 'notice':      return <Bell size={22} />;
+            case 'info': default: return <Info size={22} />;
+        }
+    };
+
+    const getTypeLabel = (type) => {
+        switch (type) {
+            case 'meeting':     return { emoji: '✅', label: 'Meeting' };
+            case 'maintenance': return { emoji: '🔧', label: 'Maintenance' };
+            case 'event':       return { emoji: '📅', label: 'Event' };
+            case 'alert':       return { emoji: '⚠️', label: 'Alert' };
+            case 'notice':      return { emoji: '📋', label: 'Notice' };
+            case 'info': default: return { emoji: 'ℹ️', label: 'Info' };
         }
     };
 
@@ -97,6 +79,7 @@ const Announcements = () => {
     const AnnouncementCard = ({ item }) => {
         const isExpanded = expandedIds.includes(item.id);
         const isLongText = item.description.length > 100;
+        const { emoji, label } = getTypeLabel(item.type);
 
         return (
             <div className={`ac-card type-${item.type} ${!item.isRead ? 'unread' : ''}`}>
@@ -110,9 +93,13 @@ const Announcements = () => {
                     <div className="ac-top-row">
                         <h3 className="ac-title">{item.title}</h3>
                         <div className="ac-date-badge">
-                            <Clock size={12} /> {item.date}
+                            <Clock size={11} /> {item.date}
                         </div>
                     </div>
+
+                    <span className="ac-type-badge">
+                        <span>{emoji}</span> {label}
+                    </span>
 
                     <div className={`ac-description ${!isExpanded ? 'collapsed' : ''}`}>
                         {item.description}
@@ -121,7 +108,7 @@ const Announcements = () => {
                     <div className="ac-actions">
                         {isLongText && (
                             <button className="ac-btn-text" onClick={() => toggleExpand(item.id)}>
-                                {isExpanded ? 'Show less' : 'Read more'}
+                                {isExpanded ? <><ChevronUp size={14} /> Show less</> : <><ChevronDown size={14} /> Read more</>}
                             </button>
                         )}
                         {!item.isRead && (
@@ -134,6 +121,29 @@ const Announcements = () => {
             </div>
         );
     };
+
+    // ── Loading State ──
+    if (loading) {
+        return (
+            <div className="ac-page">
+                <div className="ac-container">
+                    <div className="ac-header">
+                        <div className="ac-title-wrap">
+                            <h1><Bell size={28} /> Announcements</h1>
+                            <p>Updates and news from the society</p>
+                        </div>
+                    </div>
+                    <div className="ac-empty-state">
+                        <div className="ac-empty-icon">
+                            <Loader2 size={32} style={{ animation: 'spin 1s linear infinite' }} />
+                        </div>
+                        <h3>Loading announcements...</h3>
+                        <p>Connecting to real-time updates</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     // ── Empty State ──
     if (!announcements || announcements.length === 0) {

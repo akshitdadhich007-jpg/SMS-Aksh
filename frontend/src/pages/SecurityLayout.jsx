@@ -3,6 +3,7 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import NotificationPanel from '../components/ui/NotificationPanel';
 import { useToast } from '../components/ui/Toast';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import '../styles/admin-style.css';
 import {
     ShieldCheck, Users, Car, Package, Phone, Search,
@@ -17,10 +18,11 @@ const SecurityLayout = () => {
     const location = useLocation();
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const { signOut } = useAuth();
 
-    const handleLogout = (e) => {
+    const handleLogout = async (e) => {
         e.preventDefault();
-        localStorage.removeItem('user');
+        await signOut();
         navigate('/');
     };
 
@@ -34,6 +36,7 @@ const SecurityLayout = () => {
                 { name: 'Dashboard', path: '/security', icon: <LayoutDashboard size={20} />, end: true },
                 { name: 'Visitor Entry', path: '/security/visitors', icon: <Users size={20} /> },
                 { name: 'Pre-Approved Entry', path: '/security/preapproved', icon: <ShieldCheck size={20} /> },
+                { name: 'Emergency Alerts', path: '/security/emergency-alerts', icon: <ShieldCheck size={20} /> },
             ]
         },
         {

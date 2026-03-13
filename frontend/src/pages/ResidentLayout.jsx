@@ -3,10 +3,11 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import NotificationPanel from '../components/ui/NotificationPanel';
 import { useToast } from '../components/ui/Toast';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import '../styles/admin-style.css';
 import {
     LayoutDashboard, Receipt, CreditCard, History, MessageSquare,
-    Bell, Settings,
+    Bell, Settings, UserCheck,
     Building, Search, Store, Calendar, X, ChevronDown
 } from 'lucide-react';
 
@@ -17,6 +18,7 @@ const ResidentLayout = () => {
     const location = useLocation();
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const { signOut } = useAuth();
 
     useEffect(() => {
         const handleResize = () => {
@@ -31,9 +33,9 @@ const ResidentLayout = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleLogout = (e) => {
+    const handleLogout = async (e) => {
         e.preventDefault();
-        localStorage.removeItem('user');
+        await signOut();
         navigate('/');
     };
 
@@ -58,6 +60,8 @@ const ResidentLayout = () => {
         {
             title: "Community",
             items: [
+                { name: 'Visitor Pre-Approval', path: '/resident/visitor-approval', icon: <UserCheck size={20} /> },
+                { name: 'Emergency SOS', path: '/resident/emergency-sos', icon: <Bell size={20} /> },
                 { name: 'Settings', path: '/resident/settings', icon: <Settings size={20} /> },
             ]
         }

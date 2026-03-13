@@ -1,0 +1,149 @@
+/* ===== BILL MANAGEMENT PAGE ===== */
+
+/* Stats Grid */
+.bill-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+/* Bill Table */
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.bill-table thead {
+  background: var(--bg);
+}
+
+.bill-table thead th {
+  padding: 16px;
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+.bill-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
+}
+
+.bill-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.bill-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.bill-table tbody td {
+  padding: 16px;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+/* Table Row Hover */
+.bill-table-row {
+  transition: background-color 0.15s ease;
+}
+
+.bill-table-row:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Form Styling in Modal */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 900px) {
+  .bill-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .bill-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-table {
+    font-size: 12px;
+  }
+
+  .bill-table thead th {
+    padding: 12px;
+    font-size: 11px;
+  }
+
+  .bill-table tbody td {
+    padding: 12px;
+  }
+}
+
+/* ===== DARK MODE ===== */
+
+@media (prefers-color-scheme: dark) {
+  .bill-table tbody tr:hover {
+    background-color: #1e293b !important;
+  }
+}

@@ -9,6 +9,7 @@ import {
     MailWarning, Compass, BarChart, Store, Calendar
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import '../styles/admin-style.css';
 
 const AdminLayout = () => {
@@ -18,6 +19,7 @@ const AdminLayout = () => {
     const location = useLocation();
     const toast = useToast();
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const { signOut } = useAuth();
 
     useEffect(() => {
         const handleResize = () => {
@@ -32,9 +34,9 @@ const AdminLayout = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleLogout = (e) => {
+    const handleLogout = async (e) => {
         e.preventDefault();
-        localStorage.removeItem('user');
+        await signOut();
         navigate('/');
     };
 
@@ -56,7 +58,6 @@ const AdminLayout = () => {
             items: [
                 { name: 'Residents', icon: <Users size={20} />, path: '/admin/residents' },
                 { name: 'Staff & Roles', icon: <UserCog size={20} />, path: '/admin/staff' },
-                { name: 'Shops Area', icon: <Store size={20} />, path: '/admin/shops' },
             ]
         },
         {
@@ -70,8 +71,6 @@ const AdminLayout = () => {
             title: "Security Logs",
             items: [
                 { name: 'Staff Attendance', icon: <FileText size={20} />, path: '/admin/attendance' },
-                { name: 'Vehicles', icon: <Package size={20} />, path: '/admin/vehicles' },
-                { name: 'Deliveries', icon: <Package size={20} />, path: '/admin/deliveries' },
                 { name: 'Emergency', icon: <ShieldAlert size={20} />, path: '/admin/emergency' },
             ]
         }

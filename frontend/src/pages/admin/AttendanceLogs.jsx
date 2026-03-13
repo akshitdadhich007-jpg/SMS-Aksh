@@ -6,6 +6,8 @@ import {
     MapPin, Camera, Shield, CalendarDays,
     CheckCircle2, XCircle, ExternalLink
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { subscribeToTodayAttendance } from "../../firebase/attendanceService";
 import "../../styles/AttendanceLogs.css";
 
 export default function AttendanceLogs() {
@@ -14,6 +16,8 @@ export default function AttendanceLogs() {
     const [statusFilter, setStatusFilter] = useState("All");
     const [lightboxImg, setLightboxImg] = useState(null);
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const societyId = user?.societyId || "default-society";
 
     const formatLocationLabel = (address = {}, fallback = "") => {
         const landmark = [
@@ -58,48 +62,19 @@ export default function AttendanceLogs() {
     };
 
     useEffect(() => {
-        const syncRecords = async () => {
-            const stored = JSON.parse(localStorage.getItem("attendance")) || [];
-            if (!stored.length) {
-                setRecords([]);
-                return;
-            }
-
-            const updatedRecords = await Promise.all(stored.map(async (record) => {
-                const hasName = record?.location?.name && record.location.name !== 'Location name unavailable';
-                const lat = record?.location?.lat;
-                const lng = record?.location?.lng;
-
-                if (hasName || typeof lat !== 'number' || typeof lng !== 'number') {
-                    return record;
-                }
-
-                const resolvedName = await resolveLocationName(lat, lng);
-                return {
-                    ...record,
-                    location: {
-                        ...record.location,
-                        name: resolvedName,
-                    },
-                };
-            }));
-
-            localStorage.setItem("attendance", JSON.stringify(updatedRecords));
-            setRecords(updatedRecords);
-        };
-
-        syncRecords();
-    }, []);
+        const unsub = subscribeToTodayAttendance(societyId, setRecords);
+        return () => unsub && unsub();
+    }, [societyId]);
 
     const clearLogs = () => {
-        localStorage.removeItem("attendance");
+        // clearing is destructive; for now simply no-op on Firestore and clear local view
         setRecords([]);
     };
 
     // ── Derived stats ──
     const stats = useMemo(() => {
         const total = records.length;
-        const present = records.filter(r => r.status?.toLowerCase() === "present" || r.status?.toLowerCase() === "checked in").length;
+        const present = records.filter(r => (r.status || '').toLowerCase() === "present" || (r.status || '').toLowerCase() === "checked in").length;
         const absent = records.filter(r => r.status?.toLowerCase() === "absent").length;
         const late = records.filter(r => r.status?.toLowerCase() === "late").length;
         return { total, present: present || total, absent, late };

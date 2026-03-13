@@ -1,0 +1,57 @@
+/* ===== COMPLAINT MANAGEMENT PAGE ===== */
+
+/* Stats Grid — override existing inline style */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+/* Stat Cards — colored top border per card type */
+.cm-stat-total    { border-top: 4px solid #3b82f6 !important; }
+.cm-stat-pending  { border-top: 4px solid #f59e0b !important; }
+.cm-stat-progress { border-top: 4px solid #6366f1 !important; }
+.cm-stat-resolved { border-top: 4px solid #10b981 !important; }
+
+/* Remove the overflow:hidden from the inline style so the top border shows */
+.cm-stat-total,
+.cm-stat-pending,
+.cm-stat-progress,
+.cm-stat-resolved {
+  overflow: visible !important;
+  /* Compensate: shift border-radius on the top to follow the border */
+  border-radius: 0 0 12px 12px !important;
+}
+
+/* Table row hover — replaces broken Tailwind class */
+.cm-table-row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+}
+
+.cm-table-row:hover {
+  background-color: #f8fafc !important;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== DARK MODE ===== */
+
+@media (prefers-color-scheme: dark) {
+  .cm-table-row:hover {
+    background-color: #1e293b !important;
+  }
+}

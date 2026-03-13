@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHeader, Card, StatusBadge, Button } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 import Modal from '../../components/ui/Modal';
+import { useAuth } from '../../context/AuthContext';
+import {
+    subscribeToResidents,
+    createResident,
+    updateResident,
+} from '../../firebase/residentService';
 
 const ResidentManagement = () => {
     const toast = useToast();
-    const [residents, setResidents] = useState([
-        { id: 1, name: 'Raj Kumar', flat: 'A-101', email: 'raj.k@example.com', phone: '9876543210', status: 'Active' },
-        { id: 2, name: 'Anita Desai', flat: 'B-205', email: 'anita.d@example.com', phone: '9898989898', status: 'Active' },
-        { id: 3, name: 'Vikram Singh', flat: 'C-304', email: 'vikram.s@example.com', phone: '9123456789', status: 'Inactive' },
-        { id: 4, name: 'Suresh Raina', flat: 'A-202', email: 'suresh.r@example.com', phone: '8765432109', status: 'Active' },
-    ]);
+    const { user } = useAuth();
+    const societyId = user?.societyId || 'default-society';
+
+    const [residents, setResidents] = useState([]);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingResident, setEditingResident] = useState(null);
@@ -28,17 +32,29 @@ const ResidentManagement = () => {
         setModalOpen(true);
     };
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        const unsubscribe = subscribeToResidents(societyId, setResidents);
+        return () => unsubscribe && unsubscribe();
+    }, [societyId]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (editingResident) {
-            setResidents(prev => prev.map(r => r.id === editingResident.id ? { ...r, ...form } : r));
-            toast.success(`${form.name}'s details updated successfully!`, 'Resident Updated');
-        } else {
-            const newResident = { id: Date.now(), ...form };
-            setResidents(prev => [...prev, newResident]);
-            toast.success(`${form.name} added to flat ${form.flat}!`, 'Resident Added');
+        try {
+            if (editingResident) {
+                await updateResident(editingResident.id, form);
+                toast.success(`${form.name}'s details updated successfully!`, 'Resident Updated');
+            } else {
+                await createResident({
+                    ...form,
+                    societyId,
+                });
+                toast.success(`${form.name} added to flat ${form.flat}!`, 'Resident Added');
+            }
+            setModalOpen(false);
+        } catch (err) {
+            console.error('Resident save failed', err);
+            toast.error('Unable to save resident. Please try again.', 'Error');
         }
-        setModalOpen(false);
     };
 
     if (!residents || residents.length === 0) {

@@ -1,22 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { PageHeader, Card, StatusBadge, Button } from '../../components/ui';
 import { Search, Filter, Download, Eye, CheckCircle, Clock, AlertCircle, MessageSquare, MoreVertical, Trash2 } from 'lucide-react';
+import { useToast } from '../../components/ui/Toast';
+import { subscribeToAllComplaints, updateComplaintStatus, deleteComplaint } from '../../firebase/complaintService';
 import Modal from '../../components/ui/Modal.jsx';
+import './ComplaintManagement.css';
 
 const ComplaintManagement = () => {
-    // Mock Data
-    const [complaints, setComplaints] = useState([
-        { id: 'CMP-2026-001', resident: 'Raj Kumar (A-101)', category: 'Plumbing', description: 'Leaking pipe in master bedroom bathroom causing dampness on wall.', status: 'Pending', date: '2026-02-10', priority: 'High' },
-        { id: 'CMP-2026-002', resident: 'Anita Desai (B-205)', category: 'Electrical', description: 'Corridor light flickering outside unit constantly.', status: 'Resolved', date: '2026-02-08', priority: 'Medium' },
-        { id: 'CMP-2026-003', resident: 'Vikram Singh (C-304)', category: 'Noise', description: 'Loud music from club house late night yesterday.', status: 'Resolved', date: '2026-02-05', priority: 'Low' },
-        { id: 'CMP-2026-004', resident: 'Suresh Raina (A-202)', category: 'Cleanliness', description: 'Staircase not swept for 2 days. Dust accumulating.', status: 'In Progress', date: '2026-02-11', priority: 'Medium' },
-        { id: 'CMP-2026-005', resident: 'Meera Iyer (D-101)', category: 'Security', description: 'Unknown person tailgating through main gate.', status: 'Pending', date: '2026-02-12', priority: 'High' },
-    ]);
-
+    const toast = useToast();
+    const [complaints, setComplaints] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [statusUpdate, setStatusUpdate] = useState('');
+
+    // Subscribe to all complaints from Firestore
+    useEffect(() => {
+        const unsub = subscribeToAllComplaints((data) => {
+            setComplaints(data);
+            setLoading(false);
+        });
+        return () => unsub();
+    }, []);
 
     // Calculate Stats
     const stats = useMemo(() => {
@@ -31,7 +38,7 @@ const ComplaintManagement = () => {
     const filteredComplaints = useMemo(() => {
         return complaints.filter(c => {
             const matchesSearch = 
-                c.resident.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                c.residentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 c.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 c.category.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
@@ -41,6 +48,7 @@ const ComplaintManagement = () => {
 
     const handleViewDetails = (complaint) => {
         setSelectedComplaint(complaint);
+        setStatusUpdate(complaint.status);
         setIsModalOpen(true);
     };
 
@@ -49,14 +57,31 @@ const ComplaintManagement = () => {
         setSelectedComplaint(null);
     };
 
-    const handleDelete = (id) => {
-        if(window.confirm('Are you sure you want to delete this complaint?')) {
-            setComplaints(prev => prev.filter(c => c.id !== id));
+    const handleStatusChange = async () => {
+        if (!selectedComplaint || !statusUpdate) return;
+        try {
+            await updateComplaintStatus(selectedComplaint.id, statusUpdate);
+            toast.success(`Complaint status updated to ${statusUpdate}`, 'Status Updated');
+            handleCloseModal();
+        } catch (err) {
+            toast.error('Failed to update status', 'Error');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this complaint?')) {
+            try {
+                await deleteComplaint(id);
+                toast.success('Complaint deleted successfully', 'Deleted');
+            } catch (err) {
+                toast.error('Failed to delete complaint', 'Error');
+            }
         }
     };
 
     const getPriorityColor = (priority) => {
-        switch(priority) {
+        // Default priority is 'Medium' if not specified
+        switch(priority || 'Medium') {
             case 'High': return '#ef4444';
             case 'Medium': return '#f59e0b';
             case 'Low': return '#10b981';
@@ -208,7 +233,7 @@ const ComplaintManagement = () => {
 
             {/* Stats Dashboard */}
             <div className="stats-grid" style={styles.statsGrid}>
-                <div style={styles.statCard}>
+                <div className="cm-stat-total" style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#3b82f6')}><MessageSquare size={24} /></div>
                         <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>+2 this week</span>
@@ -218,7 +243,7 @@ const ComplaintManagement = () => {
                         <h3 style={styles.statValue}>{stats.total}</h3>
                     </div>
                 </div>
-                <div style={styles.statCard}>
+                <div className="cm-stat-pending" style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#f59e0b')}><AlertCircle size={24} /></div>
                         <span style={{ fontSize: '12px', color: '#f59e0b', fontWeight: '500' }}>Requires attention</span>
@@ -228,7 +253,7 @@ const ComplaintManagement = () => {
                         <h3 style={styles.statValue}>{stats.pending}</h3>
                     </div>
                 </div>
-                <div style={styles.statCard}>
+                <div className="cm-stat-progress" style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#6366f1')}><Clock size={24} /></div>
                         <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: '500' }}>Active resolutions</span>
@@ -238,7 +263,7 @@ const ComplaintManagement = () => {
                         <h3 style={styles.statValue}>{stats.inProgress}</h3>
                     </div>
                 </div>
-                <div style={styles.statCard}>
+                <div className="cm-stat-resolved" style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#10b981')}><CheckCircle size={24} /></div>
                         <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '500' }}>{Math.round((stats.resolved / stats.total) * 100 || 0)}% completed</span>
@@ -294,8 +319,11 @@ const ComplaintManagement = () => {
             <div style={styles.tableContainer}>
                 <div style={styles.tableHeader}>
                     <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#111827' }}>All Complaints</h3>
-                    <span style={{ fontSize: '13px', color: '#6b7280' }}>Showing {filteredComplaints.length} entries</span>
+                    <span style={{ fontSize: '13px', color: '#6b7280' }}>Showing {loading ? 'Loading...' : filteredComplaints.length} entries</span>
                 </div>
+                {loading ? (
+                    <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading complaints...</div>
+                ) : (
                 <div style={{ overflowX: 'auto' }}>
                     <table className="table" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
                         <thead>
@@ -312,19 +340,19 @@ const ComplaintManagement = () => {
                         <tbody>
                             {filteredComplaints.length > 0 ? (
                                 filteredComplaints.map((complaint) => (
-                                    <tr key={complaint.id} style={{ borderBottom: '1px solid #f3f4f6', transition: 'background-color 0.15s' }} className="hover:bg-gray-50">
+                                    <tr key={complaint.id} className="cm-table-row" style={{ transition: 'background-color 0.15s' }}>
                                         <td style={{ padding: '16px 24px', verticalAlign: 'middle' }}>
-                                            <div style={{ fontWeight: '600', color: '#111827' }}>{complaint.id}</div>
-                                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>{complaint.date}</div>
+                                            <div style={{ fontWeight: '600', color: '#111827' }}>{complaint.id.substring(0, 8).toUpperCase()}</div>
+                                            <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>{complaint.displayDate}</div>
                                         </td>
                                         <td style={{ padding: '16px 24px', verticalAlign: 'middle' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '12px' }}>
-                                                    {complaint.resident.charAt(0)}
+                                                    {complaint.residentName.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <div style={{ fontWeight: '500', color: '#374151' }}>{complaint.resident.split('(')[0]}</div>
-                                                    <div style={{ fontSize: '12px', color: '#6b7280' }}>{complaint.resident.match(/\((.*?)\)/)?.[1] || ''}</div>
+                                                    <div style={{ fontWeight: '500', color: '#374151' }}>{complaint.residentName}</div>
+                                                    <div style={{ fontSize: '12px', color: '#6b7280' }}>{complaint.residentFlat}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -347,8 +375,8 @@ const ComplaintManagement = () => {
                                         </td>
                                         <td style={{ padding: '16px 24px', verticalAlign: 'middle' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: getPriorityColor(complaint.priority) }}></div>
-                                                <span style={{ fontSize: '13px', color: '#374151' }}>{complaint.priority}</span>
+                                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: getPriorityColor('Medium') }}></div>
+                                                <span style={{ fontSize: '13px', color: '#374151' }}>Medium</span>
                                             </div>
                                         </td>
                                         <td style={{ padding: '16px 24px', textAlign: 'center', verticalAlign: 'middle' }}>
@@ -387,6 +415,7 @@ const ComplaintManagement = () => {
                         </tbody>
                     </table>
                 </div>
+                )}
             </div>
 
             {/* Detail Modal */}
@@ -399,8 +428,8 @@ const ComplaintManagement = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f3f4f6', paddingBottom: '16px' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '18px', color: '#111827' }}>#{selectedComplaint.id}</h3>
-                                <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '14px' }}>Posted on {selectedComplaint.date}</p>
+                                <h3 style={{ margin: 0, fontSize: '18px', color: '#111827' }}>#{selectedComplaint.id.substring(0, 8).toUpperCase()}</h3>
+                                <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '14px' }}>Posted on {selectedComplaint.displayDate}</p>
                             </div>
                             <StatusBadge status={selectedComplaint.status} />
                         </div>
@@ -408,18 +437,15 @@ const ComplaintManagement = () => {
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                             <div>
                                 <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '11px', color: '#9ca3af', fontWeight: '600', marginBottom: '4px', letterSpacing: '0.05em' }}>Resident</label>
-                                <div style={{ fontWeight: '500', color: '#111827' }}>{selectedComplaint.resident}</div>
+                                <div style={{ fontWeight: '500', color: '#111827' }}>{selectedComplaint.residentName}</div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '11px', color: '#9ca3af', fontWeight: '600', marginBottom: '4px', letterSpacing: '0.05em' }}>Category</label>
                                 <div style={{ fontWeight: '500', color: '#111827' }}>{selectedComplaint.category}</div>
                             </div>
                             <div>
-                                <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '11px', color: '#9ca3af', fontWeight: '600', marginBottom: '4px', letterSpacing: '0.05em' }}>Priority</label>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: getPriorityColor(selectedComplaint.priority) }}></div>
-                                    <span style={{ fontWeight: '500', color: '#374151' }}>{selectedComplaint.priority}</span>
-                                </div>
+                                <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '11px', color: '#9ca3af', fontWeight: '600', marginBottom: '4px', letterSpacing: '0.05em' }}>Flat Number</label>
+                                <div style={{ fontWeight: '500', color: '#111827' }}>{selectedComplaint.residentFlat}</div>
                             </div>
                         </div>
 
@@ -428,9 +454,22 @@ const ComplaintManagement = () => {
                             <p style={{ margin: 0, color: '#374151', lineHeight: '1.5' }}>{selectedComplaint.description}</p>
                         </div>
 
+                        <div>
+                            <label style={{ display: 'block', textTransform: 'uppercase', fontSize: '11px', color: '#9ca3af', fontWeight: '600', marginBottom: '8px', letterSpacing: '0.05em' }}>Update Status</label>
+                            <select 
+                                value={statusUpdate} 
+                                onChange={(e) => setStatusUpdate(e.target.value)}
+                                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px' }}
+                            >
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                            </select>
+                        </div>
+
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
-                            <Button variant="outline" onClick={handleCloseModal}>Close</Button>
-                            <Button variant="primary">Update Status</Button>
+                            <Button variant="outline" onClick={handleCloseModal}>Cancel</Button>
+                            <Button variant="primary" onClick={handleStatusChange}>Save Changes</Button>
                         </div>
                     </div>
                 )}

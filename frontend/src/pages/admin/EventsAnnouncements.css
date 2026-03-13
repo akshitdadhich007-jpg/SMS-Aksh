@@ -142,7 +142,7 @@
 
 .ea-card {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: start;
   border: 1px solid #ecf1f8;
@@ -324,4 +324,29 @@
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* Delete button on each card */
+.ea-card {
+  position: relative;
+}
+
+.ea-delete-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+  align-self: flex-start;
+}
+
+.ea-delete-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
 }

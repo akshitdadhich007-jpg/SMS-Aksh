@@ -1,27 +1,24 @@
-import React, { useState } from 'react';
-import { PageHeader, Card, Button } from '../../components/ui';
+import React, { useEffect, useMemo, useState } from 'react';
+import { PageHeader, Card, Button, StatusBadge } from '../../components/ui';
 import { 
     AlertTriangle, Ambulance, Flame, ShieldAlert, Phone, MapPin, 
     Clock, CheckCircle, Radio, Megaphone, User, Activity, Siren, 
     Stethoscope, PhoneCall, Edit2
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import {
+    subscribeToActiveEmergencies,
+    subscribeToAllEmergencies,
+    triggerEmergency,
+    updateEmergencyStatus,
+} from '../../firebase/emergencyService';
 
 const EmergencyManagement = () => {
-    // Mock Data
-    const [stats] = useState({
-        activeSOS: 3,
-        medical: 1,
-        fire: 0,
-        security: 2
-    });
+    const { user } = useAuth();
+    const societyId = user?.societyId || 'default-society';
 
-    const [alerts, setAlerts] = useState([
-        { id: 'SOS-2026-89', type: 'Medical', reporter: 'Sarah Jenkins (B-402)', location: 'Tower B, 4th Floor', time: '10:42 AM', status: 'Active' },
-        { id: 'SOS-2026-88', type: 'Security', reporter: 'Guard Post 1', location: 'Main Gate', time: '09:15 AM', status: 'Resolved' },
-        { id: 'SOS-2026-87', type: 'Fire', reporter: 'System Sensor', location: 'Basement Parking', time: 'Yesterday', status: 'Resolved' },
-        { id: 'SOS-2026-86', type: 'Medical', reporter: 'Rajiv Malhotra (A-101)', location: 'Clubhouse', time: 'Yesterday', status: 'Resolved' },
-        { id: 'SOS-2026-85', type: 'Security', reporter: 'Anonymous', location: 'Park Area', time: '2 days ago', status: 'Resolved' },
-    ]);
+    const [activeAlerts, setActiveAlerts] = useState([]);
+    const [alerts, setAlerts] = useState([]);
 
     const [contacts] = useState([
         { name: 'Ambulance', number: '108', type: 'Medical', icon: Ambulance, color: '#ef4444' },
@@ -34,9 +31,26 @@ const EmergencyManagement = () => {
 
     const [broadcastMessage, setBroadcastMessage] = useState('');
 
-    const handleResolve = (id) => {
+    useEffect(() => {
+        const unsubActive = subscribeToActiveEmergencies(societyId, setActiveAlerts);
+        const unsubAll = subscribeToAllEmergencies(societyId, setAlerts);
+        return () => {
+            unsubActive && unsubActive();
+            unsubAll && unsubAll();
+        };
+    }, [societyId]);
+
+    const stats = useMemo(() => {
+        const activeSOS = activeAlerts.length;
+        const medical = alerts.filter(a => (a.type || '').toLowerCase() === 'medical').length;
+        const fire = alerts.filter(a => (a.type || '').toLowerCase() === 'fire').length;
+        const security = alerts.filter(a => (a.type || '').toLowerCase() === 'security').length;
+        return { activeSOS, medical, fire, security };
+    }, [activeAlerts, alerts]);
+
+    const handleResolve = async (alert) => {
         if(window.confirm('Mark this alert as resolved?')) {
-            setAlerts(prev => prev.map(a => a.id === id ? {...a, status: 'Resolved'} : a));
+            await updateEmergencyStatus(alert.id, 'RESOLVED', { resolvedBy: user?.id || 'admin' });
         }
     };
 
@@ -226,7 +240,7 @@ const EmergencyManagement = () => {
                             <tbody>
                                 {alerts.map((alert) => (
                                     <tr key={alert.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                                        <td style={{ padding: '16px', fontWeight: '500' }}>{alert.id}</td>
+                                        <td style={{ padding: '16px', fontWeight: '500' }}>{alert.code || alert.id}</td>
                                         <td style={{ padding: '16px' }}>
                                             <span style={{ 
                                                 display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -240,30 +254,32 @@ const EmergencyManagement = () => {
                                                 {alert.type}
                                             </span>
                                         </td>
-                                        <td style={{ padding: '16px', color: '#374151' }}>{alert.reporter}</td>
+                                        <td style={{ padding: '16px', color: '#374151' }}>{alert.reporter || alert.raisedByName || '-'}</td>
                                         <td style={{ padding: '16px', color: '#4b5563' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                 <MapPin size={14} /> {alert.location}
                                             </div>
                                         </td>
-                                        <td style={{ padding: '16px', color: '#6b7280', fontSize: '13px' }}>{alert.time}</td>
+                                        <td style={{ padding: '16px', color: '#6b7280', fontSize: '13px' }}>
+                                            {alert.createdAt?.toDate?.().toLocaleString?.() || ''}
+                                        </td>
                                         <td style={{ padding: '16px' }}>
                                             <span style={{ 
                                                 display: 'inline-flex', alignItems: 'center', gap: '6px',
                                                 padding: '4px 12px', borderRadius: '999px', fontSize: '12px', fontWeight: '600',
-                                                backgroundColor: alert.status === 'Active' ? '#fef2f2' : '#ecfdf5',
-                                                color: alert.status === 'Active' ? '#ef4444' : '#10b981',
-                                                border: `1px solid ${alert.status === 'Active' ? '#fecaca' : '#a7f3d0'}`
+                                                backgroundColor: alert.status === 'ACTIVE' ? '#fef2f2' : '#ecfdf5',
+                                                color: alert.status === 'ACTIVE' ? '#ef4444' : '#10b981',
+                                                border: `1px solid ${alert.status === 'ACTIVE' ? '#fecaca' : '#a7f3d0'}`
                                             }}>
-                                                {alert.status === 'Active' && <span className="animate-pulse">●</span>}
+                                                {alert.status === 'ACTIVE' && <span className="animate-pulse">●</span>}
                                                 {alert.status}
                                             </span>
                                         </td>
                                         <td style={{ padding: '16px', textAlign: 'right' }}>
-                                            {alert.status === 'Active' && (
+                                            {alert.status === 'ACTIVE' && (
                                                 <Button 
                                                     style={{ fontSize: '12px', padding: '6px 12px', height: 'auto', backgroundColor: '#10b981', borderColor: '#10b981', color: 'white' }}
-                                                    onClick={() => handleResolve(alert.id)}
+                                                    onClick={() => handleResolve(alert)}
                                                 >
                                                     Mark Resolved
                                                 </Button>
@@ -333,7 +349,22 @@ const EmergencyManagement = () => {
                                     <input type="checkbox" defaultChecked /> SMS
                                 </label>
                             </div>
-                            <Button style={{ backgroundColor: '#e11d48', border: 'none', color: 'white' }}>
+                            <Button
+                                style={{ backgroundColor: '#e11d48', border: 'none', color: 'white' }}
+                                onClick={async () => {
+                                    if (!broadcastMessage.trim()) return;
+                                    await triggerEmergency({
+                                        societyId,
+                                        raisedBy: user?.id || 'admin',
+                                        raisedByName: user?.name || user?.email,
+                                        type: 'BROADCAST',
+                                        title: 'Admin Broadcast Alert',
+                                        message: broadcastMessage.trim(),
+                                        role: 'admin',
+                                    });
+                                    setBroadcastMessage('');
+                                }}
+                            >
                                 Send Alert
                             </Button>
                         </div>

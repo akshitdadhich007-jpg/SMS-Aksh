@@ -1,90 +1,84 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { auth } from '../firebase/config';
+import { getOrCreateUserProfile, updateUserProfile } from '../firebase/userService';
 
 const AuthContext = createContext(null);
 
-const DEMO_USERS = {
-  'admin@society.local': { password: 'Admin@12345', role: 'admin', name: 'Demo Admin', id: 'demo-admin' },
-  'resident1@society.local': { password: 'Resident@123', role: 'resident', name: 'Demo Resident', id: 'demo-resident-1' },
-  'security@society.local': { password: 'Security@123', role: 'security', name: 'Demo Security', id: 'demo-security' },
-};
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem('user');
-      return stored ? JSON.parse(stored) : null;
-    } catch { return null; }
-  });
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Sync with localStorage changes (Login component writes directly)
+  // Listen to Firebase Auth state changes
   useEffect(() => {
-    const handleStorage = () => {
-      try {
-        const stored = localStorage.getItem('user');
-        setUser(stored ? JSON.parse(stored) : null);
-      } catch { setUser(null); }
-    };
-
-    window.addEventListener('storage', handleStorage);
-
-    // Also poll for same-tab changes (storage event doesn't fire for same-tab)
-    const interval = setInterval(() => {
-      try {
-        const stored = localStorage.getItem('user');
-        const parsed = stored ? JSON.parse(stored) : null;
-        setUser(prev => {
-          if (JSON.stringify(prev) !== JSON.stringify(parsed)) return parsed;
-          return prev;
-        });
-      } catch { /* ignore */ }
-    }, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      clearInterval(interval);
-    };
-  }, []);
-
-  // Set loading false on mount (no Supabase session check needed)
-  useEffect(() => {
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const profile = await getOrCreateUserProfile(firebaseUser);
+          setUser({
+            id: firebaseUser.uid,
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            name: profile.name || firebaseUser.displayName || firebaseUser.email,
+            role: profile.role,
+            flatNumber: profile.flatNumber || null,
+            societyId: profile.societyId || null,
+          });
+        } catch (err) {
+          console.error('Auth state profile error:', err);
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
   const signIn = useCallback(async (email, password) => {
-    const normalizedEmail = email.toLowerCase().trim();
-
-    // Demo user check
-    const demo = DEMO_USERS[normalizedEmail];
-    if (demo && demo.password === password) {
-      const userData = { id: demo.id, email: normalizedEmail, name: demo.name, role: demo.role };
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      return { user: userData, error: null };
+    try {
+      const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const profile = await getOrCreateUserProfile(credential.user);
+      return {
+        user: { id: credential.user.uid, email: credential.user.email, role: profile.role, name: profile.name },
+        error: null,
+      };
+    } catch (err) {
+      return { user: null, error: { message: err.message } };
     }
-
-    // TODO: Firebase - signInWithEmailAndPassword(auth, email, password)
-    return { user: null, error: { message: 'Invalid credentials. Use demo accounts or configure Firebase.' } };
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    // TODO: Firebase - signInWithPopup(auth, new GoogleAuthProvider())
-    return { error: { message: 'Google sign-in not yet configured. Please use demo accounts.' } };
+    try {
+      const provider = new GoogleAuthProvider();
+      const credential = await signInWithPopup(auth, provider);
+      const profile = await getOrCreateUserProfile(credential.user);
+      return {
+        user: { id: credential.user.uid, email: credential.user.email, role: profile.role, name: profile.name },
+        error: null,
+      };
+    } catch (err) {
+      return { user: null, error: { message: err.message } };
+    }
   }, []);
 
   const signOut = useCallback(async () => {
-    localStorage.removeItem('user');
+    await firebaseSignOut(auth);
     setUser(null);
-    // TODO: Firebase - signOut(auth)
   }, []);
 
   const updateProfile = useCallback(async (updates) => {
     if (!user?.id) return;
     try {
-      // TODO: Firebase - update Firestore user document
-      const newUser = { ...user, ...updates };
-      localStorage.setItem('user', JSON.stringify(newUser));
-      setUser(newUser);
+      await updateUserProfile(user.id, updates);
+      setUser(prev => ({ ...prev, ...updates }));
     } catch (err) {
       console.error('updateProfile error:', err);
     }

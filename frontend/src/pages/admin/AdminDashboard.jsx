@@ -8,6 +8,12 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
+import { useAuth } from '../../context/AuthContext';
+import { subscribeToResidents } from '../../firebase/residentService';
+import { subscribeBillingStats } from '../../firebase/billService';
+import { subscribeToAllComplaints } from '../../firebase/complaintService';
+import { subscribeToTodayAttendance } from '../../firebase/attendanceService';
+import { subscribeToActiveEmergencies } from '../../firebase/emergencyService';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, PieChart, Pie, Cell
@@ -95,11 +101,44 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(true);
+    const { user } = useAuth();
+    const societyId = user?.societyId || 'default-society';
+
+    const [residentCount, setResidentCount] = useState(0);
+    const [collectionStats, setCollectionStats] = useState({ totalBilled: 0, totalCollected: 0, totalPending: 0, billCount: 0, collectionPercentage: 0 });
+    const [openComplaints, setOpenComplaints] = useState(0);
+    const [presentStaff, setPresentStaff] = useState(0);
+    const [activeAlerts, setActiveAlerts] = useState(0);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => setIsLoading(false), 800);
         return () => clearTimeout(timeoutId);
     }, []);
+
+    useEffect(() => {
+        const unsubResidents = subscribeToResidents(societyId, (items) => {
+            setResidentCount(items.length);
+        });
+        const unsubBills = subscribeBillingStats((stats) => {
+            setCollectionStats(stats);
+        });
+        const unsubComplaints = subscribeToAllComplaints((items) => {
+            setOpenComplaints(items.filter(c => (c.status || '').toLowerCase() !== 'resolved').length);
+        });
+        const unsubAttendance = subscribeToTodayAttendance(societyId, (items) => {
+            setPresentStaff(items.length);
+        });
+        const unsubEmergencies = subscribeToActiveEmergencies(societyId, (items) => {
+            setActiveAlerts(items.length);
+        });
+        return () => {
+            unsubResidents && unsubResidents();
+            unsubBills && unsubBills();
+            unsubComplaints && unsubComplaints();
+            unsubAttendance && unsubAttendance();
+            unsubEmergencies && unsubEmergencies();
+        };
+    }, [societyId]);
 
     const kpiCards = useMemo(() => ([
         {
@@ -117,7 +156,7 @@ const AdminDashboard = () => {
         {
             key: 'residents',
             label: 'Total Residents',
-            value: 305,
+            value: residentCount || 0,
             prefix: '',
             suffix: '',
             description: 'Including tenants',
@@ -129,7 +168,7 @@ const AdminDashboard = () => {
         {
             key: 'collection',
             label: 'Monthly Collection',
-            value: 450000,
+            value: collectionStats.totalCollected || 0,
             prefix: '₹',
             suffix: '',
             description: 'Collected this month',
@@ -141,7 +180,7 @@ const AdminDashboard = () => {
         {
             key: 'pending',
             label: 'Pending Payments',
-            value: 45000,
+            value: collectionStats.totalPending || 0,
             prefix: '₹',
             suffix: '',
             description: 'From 18 units',
@@ -153,7 +192,7 @@ const AdminDashboard = () => {
         {
             key: 'complaints',
             label: 'Active Complaints',
-            value: 14,
+            value: openComplaints || 0,
             prefix: '',
             suffix: '',
             description: 'Need attention',

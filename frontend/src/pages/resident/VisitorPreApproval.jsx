@@ -1,167 +1,303 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import PageHeader from '../../components/ui/PageHeader';
-import { Button, Card } from '../../components/ui';
+import React, { useEffect, useState } from 'react';
+import { PageHeader, Card, Button, StatusBadge, StatCard } from '../../components/ui';
+import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import {
-  approveVisitor,
-  getCurrentRole,
-  getResidentFlat,
-  listPendingApprovalsForFlat,
-  listVisitorsForFlat,
-  rejectVisitor,
-  subscribeVisitorRealtime,
-  VISITOR_STATUS,
-} from '../../utils/visitorService';
+    subscribeToResidentPreApprovals,
+    createPreApproval,
+    cancelPreApproval
+} from '../../firebase/visitorService';
+import Modal from '../../components/ui/Modal.jsx';
+import { Plus, Trash2 } from 'lucide-react';
+import './VisitorPreApproval.css';
 
-const ResidentVisitorApproval = () => {
-  const toast = useToast();
-  const role = getCurrentRole();
-  const flat = getResidentFlat();
-  const [pending, setPending] = useState([]);
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const refresh = async () => {
-    if (!flat) {
-      setPending([]);
-      setHistory([]);
-      return;
-    }
-    const [p, all] = await Promise.all([
-      listPendingApprovalsForFlat(flat),
-      listVisitorsForFlat(flat),
-    ]);
-    setPending(p);
-    setHistory(all.filter((row) => row.status !== VISITOR_STATUS.WAITING));
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    refresh()
-      .catch((err) => toast.error(err.message || 'Failed to load visitor approvals'))
-      .finally(() => mounted && setLoading(false));
-
-    const unsub = subscribeVisitorRealtime(() => {
-      refresh().catch(() => null);
+const VisitorPreApproval = () => {
+    const { user } = useAuth();
+    const toast = useToast();
+    const [preApprovals, setPreApprovals] = useState([]);
+    const [stats, setStats] = useState({ pending: 0, approved: 0, inProgress: 0 });
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        visitorName: '',
+        phone: '',
+        dateOfVisit: '',
+        startTime: '',
+        endTime: '',
+        purpose: ''
     });
 
-    return () => {
-      mounted = false;
-      unsub();
+    // Subscribe to resident's pre-approvals
+    useEffect(() => {
+        if (!user?.uid) {
+            console.log('[VisitorPreApproval] Waiting for user auth...');
+            return;
+        }
+        
+        console.log('[VisitorPreApproval] Setting up subscription for user:', user.uid);
+        
+        const unsub = subscribeToResidentPreApprovals(user.uid, (data) => {
+            console.log('[VisitorPreApproval] Real-time update received:', data);
+            setPreApprovals(data);
+            
+            // Calculate stats
+            const pending = data.filter(p => p.status === 'pending').length;
+            const approved = data.filter(p => p.status === 'checked_in').length;
+            const inProgress = data.filter(p => p.status === 'checked_out').length;
+            
+            console.log('[VisitorPreApproval] Stats:', { pending, approved, inProgress, total: data.length });
+            setStats({ pending, approved, inProgress });
+            setLoading(false);
+        });
+        
+        return () => {
+            console.log('[VisitorPreApproval] Cleaning up subscription');
+            unsub();
+        };
+    }, [user?.uid]);
+
+    const handleCreatePreApproval = async (e) => {
+        e.preventDefault();
+        
+        // Validate form
+        if (!formData.visitorName || !formData.phone || !formData.dateOfVisit) {
+            toast.error('Please fill all required fields', 'Error');
+            return;
+        }
+
+        // Validate user is authenticated
+        if (!user?.uid) {
+            toast.error('You must be logged in to create a pre-approval', 'Error');
+            console.error('User not authenticated:', user);
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const preApprovalData = {
+                visitorName: formData.visitorName,
+                phone: formData.phone,
+                dateOfVisit: formData.dateOfVisit,
+                startTime: formData.startTime || '10:00',
+                endTime: formData.endTime || '18:00',
+                purpose: formData.purpose || 'Visit',
+                residentUid: user.uid,
+                residentFlat: user.flatNumber || 'N/A',
+                residentName: user.displayName || user.name || 'Resident'
+            };
+            
+            console.log('Creating pre-approval with data:', preApprovalData);
+            await createPreApproval(preApprovalData);
+            
+            toast.success(`Pre-approval created for ${formData.visitorName}!`, 'Visitor Added');
+            setIsModalOpen(false);
+            setFormData({
+                visitorName: '',
+                phone: '',
+                dateOfVisit: '',
+                startTime: '',
+                endTime: '',
+                purpose: ''
+            });
+        } catch (err) {
+            console.error('Pre-approval creation error:', err);
+            const errorMsg = err.message || 'Failed to create pre-approval. Check Firebase rules and authentication.';
+            toast.error(errorMsg, 'Error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-  }, [flat]);
 
-  const summary = useMemo(() => ({
-    pending: pending.length,
-    approved: history.filter((h) => h.approved).length,
-    rejected: history.filter((h) => h.status === VISITOR_STATUS.CANCELLED).length,
-  }), [pending, history]);
+    const handleCancel = async (preApprovalId) => {
+        if (window.confirm('Cancel this pre-approval? Security will no longer allow this visitor.')) {
+            try {
+                await cancelPreApproval(preApprovalId);
+                toast.success('Pre-approval cancelled', 'Cancelled');
+            } catch (err) {
+                toast.error('Failed to cancel pre-approval', 'Error');
+            }
+        }
+    };
 
-  const onApprove = async (id) => {
-    try {
-      await approveVisitor(id);
-      await refresh();
-      toast.success('Visitor approved. Security can allow entry now.');
-    } catch (error) {
-      toast.error(error.message || 'Failed to approve visitor');
-    }
-  };
+    const getStatusBadgeType = (status) => {
+        switch (status) {
+            case 'pending': return 'Pending';
+            case 'approved': return 'Approved';
+            case 'checked_in': return 'In Progress';
+            case 'checked_out': return 'Completed';
+            case 'cancelled': return 'Cancelled';
+            case 'denied': return 'Cancelled';
+            default: return 'Pending';
+        }
+    };
 
-  const onReject = async (id) => {
-    try {
-      await rejectVisitor(id);
-      await refresh();
-      toast.info('Visitor request rejected.');
-    } catch (error) {
-      toast.error(error.message || 'Failed to reject visitor');
-    }
-  };
+    return (
+        <>
+            <PageHeader
+                title="Visitor Pre-Approvals"
+                subtitle="Schedule and approve visitors in advance"
+                action={<Button onClick={() => setIsModalOpen(true)} icon={<Plus size={16} />}>+ New Visitor</Button>}
+            />
 
-  if (role !== 'resident') {
-    return <Card><div style={{ padding: 20 }}>Unauthorized: resident role required.</div></Card>;
-  }
+            {/* Stats */}
+            <div className="vpa-stats-grid">
+                <StatCard label="Pending Approvals" value={stats.pending} />
+                <StatCard label="Checked In" value={stats.approved} />
+                <StatCard label="Checked Out" value={stats.inProgress} />
+                <StatCard label="Total Visitors" value={preApprovals.length} />
+            </div>
 
-  return (
-    <div>
-      <PageHeader
-        title="Visitor Approval Center"
-        subtitle="Approve or reject incoming visitors for your flat"
-      />
+            {/* Pre-Approvals List */}
+            <Card>
+                <div style={{ padding: '24px' }}>
+                    <h3 style={{ margin: '0 0 24px 0', fontSize: '18px', fontWeight: '600' }}>
+                        Your Pre-Approvals
+                    </h3>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginBottom: 16 }}>
-        <Card><div style={{ padding: 16 }}><div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Your Flat</div><strong>{flat || 'Not configured'}</strong></div></Card>
-        <Card><div style={{ padding: 16 }}><div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Pending Approvals</div><strong>{summary.pending}</strong></div></Card>
-        <Card><div style={{ padding: 16 }}><div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Approved / Rejected</div><strong>{summary.approved} / {summary.rejected}</strong></div></Card>
-      </div>
+                    {loading ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
+                            Loading your pre-approvals...
+                        </div>
+                    ) : preApprovals.length === 0 ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
+                            <p>No pre-approvals yet. Create one to get started!</p>
+                        </div>
+                    ) : (
+                        <div className="vpa-list">
+                            {preApprovals.map(preApproval => (
+                                <div key={preApproval.id} className="vpa-card">
+                                    <div className="vpa-card-header">
+                                        <div>
+                                            <h4 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: '700' }}>
+                                                {preApproval.visitorName}
+                                            </h4>
+                                            <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>
+                                                {preApproval.phone} • {preApproval.purpose}
+                                            </p>
+                                        </div>
+                                        <StatusBadge status={getStatusBadgeType(preApproval.status)} />
+                                    </div>
 
-      <Card>
-        <div style={{ padding: 20 }}>
-          <h3 style={{ marginTop: 0 }}>Pending Visitor Requests</h3>
-          {loading ? <div>Loading...</div> : pending.length === 0 ? (
-            <div style={{ color: 'var(--text-secondary)' }}>No pending approvals right now.</div>
-          ) : (
-            <div style={{ display: 'grid', gap: 10 }}>
-              {pending.map((row) => (
-                <div key={row.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-                    <div>
-                      <div style={{ fontWeight: 700 }}>{row.visitor_name}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                        {row.phone_number} | {row.visitor_type} | Purpose: {row.purpose}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                        Arrived: {new Date(row.entry_time || row.created_at).toLocaleString()}
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <Button variant="primary" size="sm" onClick={() => onApprove(row.id)}>Approve</Button>
-                      <Button variant="danger" size="sm" onClick={() => onReject(row.id)}>Reject</Button>
-                    </div>
-                  </div>
+                                    <div className="vpa-card-details">
+                                        <div className="vpa-detail-row">
+                                            <span className="vpa-detail-label">Date of Visit:</span>
+                                            <span className="vpa-detail-value">{preApproval.dateOfVisit}</span>
+                                        </div>
+                                        <div className="vpa-detail-row">
+                                            <span className="vpa-detail-label">Time Window:</span>
+                                            <span className="vpa-detail-value">{preApproval.startTime} - {preApproval.endTime}</span>
+                                        </div>
+                                        <div className="vpa-detail-row">
+                                            <span className="vpa-detail-label">Approval Code:</span>
+                                            <span className="vpa-detail-value monospace">{preApproval.approvalCode}</span>
+                                        </div>
+                                    </div>
+
+                                    {preApproval.status === 'pending' && (
+                                        <div className="vpa-card-actions">
+                                            <button
+                                                onClick={() => handleCancel(preApproval.id)}
+                                                className="vpa-delete-btn"
+                                                title="Cancel"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </Card>
+            </Card>
 
-      <Card style={{ marginTop: 16 }}>
-        <div style={{ padding: 20 }}>
-          <h3 style={{ marginTop: 0 }}>Visitor History</h3>
-          {history.length === 0 ? (
-            <div style={{ color: 'var(--text-secondary)' }}>No history yet.</div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="table" style={{ width: '100%' }}>
-                <thead>
-                  <tr>
-                    <th>Visitor</th>
-                    <th>Purpose</th>
-                    <th>Entry</th>
-                    <th>Exit</th>
-                    <th>Status</th>
-                    <th>Approval</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.slice(0, 25).map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.visitor_name}</td>
-                      <td>{row.purpose}</td>
-                      <td>{row.entry_time ? new Date(row.entry_time).toLocaleString() : '-'}</td>
-                      <td>{row.exit_time ? new Date(row.exit_time).toLocaleString() : '-'}</td>
-                      <td>{row.status}</td>
-                      <td>{row.approval_method}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </Card>
-    </div>
-  );
+            {/* Create Pre-Approval Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title="Schedule New Visitor"
+            >
+                <form className="vpa-form" onSubmit={handleCreatePreApproval}>
+                    <div className="form-group">
+                        <label>Visitor Name *</label>
+                        <input
+                            type="text"
+                            value={formData.visitorName}
+                            onChange={(e) => setFormData({ ...formData, visitorName: e.target.value })}
+                            placeholder="Full name"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Phone Number *</label>
+                        <input
+                            type="tel"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            placeholder="10-digit phone"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Date of Visit *</label>
+                        <input
+                            type="date"
+                            value={formData.dateOfVisit}
+                            onChange={(e) => setFormData({ ...formData, dateOfVisit: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>From Time</label>
+                            <input
+                                type="time"
+                                value={formData.startTime}
+                                onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>To Time</label>
+                            <input
+                                type="time"
+                                value={formData.endTime}
+                                onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Purpose of Visit</label>
+                        <select
+                            value={formData.purpose}
+                            onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
+                        >
+                            <option value="">Select purpose...</option>
+                            <option value="Family Visit">Family Visit</option>
+                            <option value="Friends">Friends</option>
+                            <option value="Business">Business</option>
+                            <option value="Delivery">Delivery</option>
+                            <option value="Service">Service/Maintenance</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                        <Button variant="secondary" type="button" onClick={() => setIsModalOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Creating...' : 'Create Pre-Approval'}
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+        </>
+    );
 };
 
-export default ResidentVisitorApproval;
+export default VisitorPreApproval;

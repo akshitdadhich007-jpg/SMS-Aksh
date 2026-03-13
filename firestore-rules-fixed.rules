@@ -1,0 +1,106 @@
+// Firestore Security Rules for SMS-Aksh
+// Deploy these rules in Firebase Console → Firestore → Rules tab
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===== COMPLAINTS COLLECTION =====
+    match /complaints/{docId} {
+      // Admin and Security can read all
+      allow read: if request.auth.token.role in ['admin', 'security'];
+      // Residents can read their own complaints
+      allow read: if request.auth.uid == resource.data.residentUid;
+      // Anyone authenticated can create
+      allow create: if request.auth != null;
+      // Admin/Security can update status
+      allow update: if request.auth.token.role in ['admin', 'security'];
+      // Admin can delete
+      allow delete: if request.auth.token.role == 'admin';
+    }
+
+    // ===== ANNOUNCEMENTS COLLECTION =====
+    match /announcements/{docId} {
+      // Everyone can read
+      allow read: if request.auth != null;
+      // Only admin can create/update/delete
+      allow create, update, delete: if request.auth.token.role == 'admin';
+    }
+
+    // ===== BILLS COLLECTION =====
+    match /bills/{docId} {
+      // Admin can read/write all bills
+      allow read, write: if request.auth.token.role == 'admin';
+      
+      // Residents can read all bills
+      allow read: if request.auth.token.role == 'resident';
+      
+      // Residents can only update the 'payments' array (to record their payment)
+      allow update: if request.auth.token.role == 'resident' 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payments', 'updatedAt']);
+    }
+
+    // ===== USERS COLLECTION =====
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if request.auth.uid == userId;
+      // Users can update their own profile
+      allow update: if request.auth.uid == userId;
+      // Admin can read all users
+      allow read: if request.auth.token.role == 'admin';
+      // Only admin can create new users (Firebase Auth does this)
+      allow create: if request.auth.token.role == 'admin';
+    }
+
+    // ===== VISITOR PRE-APPROVALS COLLECTION =====
+    match /visitor_preapprovals/{docId} {
+      // Residents can create their own pre-approvals
+      allow create: if request.auth != null && request.auth.token.role == 'resident';
+      
+      // Residents can read their own pre-approvals
+      allow read: if request.auth != null && request.auth.uid == resource.data.residentUid;
+      
+      // Admin and Security can read all pre-approvals
+      allow read: if request.auth != null && request.auth.token.role in ['admin', 'security'];
+      
+      // Admin can update all pre-approvals (for approval/rejection)
+      allow update: if request.auth != null && request.auth.token.role == 'admin';
+      
+      // Admin can delete pre-approvals
+      allow delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // ===== VISITORS COLLECTION (Manual check-in) =====
+    match /visitors/{docId} {
+      // Security can create/read/update visitors
+      allow create, read, update: if request.auth != null && request.auth.token.role == 'security';
+      
+      // Residents can read visitor logs (any)
+      allow read: if request.auth != null && request.auth.token.role == 'resident';
+      
+      // Admin can read all
+      allow read: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // ===== VISITOR BLACKLIST COLLECTION =====
+    match /visitor_blacklist/{docId} {
+      // Security can read all blacklist entries
+      allow read: if request.auth != null && request.auth.token.role in ['security', 'admin'];
+      
+      // Admin can create/update/delete blacklist
+      allow create, update, delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // ===== VISITOR SETTINGS COLLECTION =====
+    match /visitor_settings/{docId} {
+      // Security and Admin can read settings
+      allow read: if request.auth != null && request.auth.token.role in ['security', 'admin'];
+      
+      // Only Admin can update settings
+      allow update: if request.auth != null && request.auth.token.role == 'admin';
+      
+      // Only Admin can create settings
+      allow create: if request.auth != null && request.auth.token.role == 'admin';
+    }
+  }
+}

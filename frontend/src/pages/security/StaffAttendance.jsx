@@ -11,6 +11,8 @@ import {
     Navigation,
     Aperture
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { markStaffIn } from "../../firebase/attendanceService";
 import "../../styles/StaffAttendance.css";
 
 export default function StaffAttendance() {
@@ -26,6 +28,7 @@ export default function StaffAttendance() {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     const videoRef = useRef(null);
+    const { user } = useAuth();
 
     // 🔹 Society Location (CHANGE to your real location)
     const societyLocation = {
@@ -197,7 +200,7 @@ export default function StaffAttendance() {
     };
 
     // 🔹 Mark Attendance
-    const markAttendance = () => {
+    const markAttendance = async () => {
         if (!location || !image) {
             alert("Capture location and photo first");
             return;
@@ -220,27 +223,20 @@ export default function StaffAttendance() {
             return;
         }
 
-        const attendance = {
-            id: Date.now(),
-            staff: "Security Guard",
-            time: new Date().toLocaleString(),
-            location: {
-                ...location,
-                name: locationName || location?.name || "Location name unavailable",
-            },
-            image,
-            status: "Verified",
-        };
-
-        const existing =
-            JSON.parse(localStorage.getItem("attendance")) || [];
-
-        localStorage.setItem(
-            "attendance",
-            JSON.stringify([...existing, attendance])
-        );
-
-        setStatus("Attendance Marked Successfully ✅");
+        try {
+            await markStaffIn(user?.id || user?.uid || "security-guard", user?.societyId || "default-society", {
+                staffName: user?.name || "Security Guard",
+                location: {
+                    ...location,
+                    name: locationName || location?.name || "Location name unavailable",
+                },
+                proofImage: image,
+            });
+            setStatus("Attendance Marked Successfully ✅");
+        } catch (err) {
+            console.error("Failed to mark attendance", err);
+            alert("Unable to mark attendance. Please try again.");
+        }
     };
 
     // ── UI Helpers ──

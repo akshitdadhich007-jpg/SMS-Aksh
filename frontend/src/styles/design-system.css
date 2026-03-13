@@ -1,0 +1,94 @@
+/* ============================================================
+   CIVIORA DESIGN SYSTEM — Global CSS Variables
+   ============================================================ */
+
+:root {
+  /* ── Brand Colors ── */
+  --color-primary:        #3B82F6;
+  --color-primary-light:  #EFF6FF;
+  --color-primary-dark:   #1D4ED8;
+
+  --color-success:        #10B981;
+  --color-success-light:  #ECFDF5;
+
+  --color-warning:        #F59E0B;
+  --color-warning-light:  #FFFBEB;
+
+  --color-error:          #EF4444;
+  --color-error-light:    #FEF2F2;
+
+  /* ── Neutral ── */
+  --color-bg-primary:     #FFFFFF;
+  --color-bg-secondary:   #F9FAFB;
+  --color-bg-tertiary:    #F3F4F6;
+
+  --color-text-primary:   #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary:  #9CA3AF;
+
+  --color-border:         #E5E7EB;
+  --color-border-strong:  #D1D5DB;
+
+  /* ── Announcement Type Colors ── */
+  --type-event-color:       #7C3AED;
+  --type-event-bg:          #F5F3FF;
+  --type-event-border:      #8B5CF6;
+
+  --type-notice-color:      #2563EB;
+  --type-notice-bg:         #EFF6FF;
+  --type-notice-border:     #3B82F6;
+
+  --type-info-color:        #0284C7;
+  --type-info-bg:           #F0F9FF;
+  --type-info-border:       #0EA5E9;
+
+  --type-maintenance-color: #C2410C;
+  --type-maintenance-bg:    #FFF7ED;
+  --type-maintenance-border:#EA580C;
+
+  --type-alert-color:       #B91C1C;
+  --type-alert-bg:          #FEF2F2;
+  --type-alert-border:      #EF4444;
+
+  --type-meeting-color:     #15803D;
+  --type-meeting-bg:        #F0FDF4;
+  --type-meeting-border:    #16A34A;
+
+  /* ── Spacing ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── Border Radius ── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  18px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+  --shadow-lg:  0 10px 30px rgba(15,23,42,0.12), 0 4px 10px rgba(15,23,42,0.05);
+  --shadow-hover: 0 12px 40px rgba(15,23,42,0.14);
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-xs:   11px;
+  --font-size-sm:   13px;
+  --font-size-base: 14px;
+  --font-size-md:   15px;
+  --font-size-lg:   18px;
+  --font-size-xl:   22px;
+  --font-size-2xl:  28px;
+
+  /* ── Transitions ── */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+}

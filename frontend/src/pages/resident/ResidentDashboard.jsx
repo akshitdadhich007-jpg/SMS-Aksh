@@ -12,6 +12,10 @@ import {
     ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip
 } from 'recharts';
 import '../../styles/ResidentDashboard.css';
+import { useAuth } from '../../context/AuthContext';
+import { subscribeToResidentBills } from '../../firebase/billService';
+import { subscribeToResidentComplaints } from '../../firebase/complaintService';
+import { subscribeToAnnouncements } from '../../firebase/announcementService';
 
 const Skeleton = ({ className = '' }) => <div className={`rd-skeleton ${className}`} />;
 
@@ -38,18 +42,40 @@ const AnimatedCount = ({ value, prefix = '', duration = 1000 }) => {
 const ResidentDashboard = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+    const { user } = useAuth();
+    const [pendingBills, setPendingBills] = useState(0);
+    const [activeComplaints, setActiveComplaints] = useState(0);
+    const [announcementCount, setAnnouncementCount] = useState(0);
 
     useEffect(() => {
         const id = setTimeout(() => setIsLoading(false), 850);
         return () => clearTimeout(id);
     }, []);
 
+    useEffect(() => {
+        if (!user?.uid) return;
+        const unsubBills = subscribeToResidentBills(user.uid, (items) => {
+            setPendingBills(items.filter(b => !b.isPaid).length);
+        });
+        const unsubComplaints = subscribeToResidentComplaints(user.uid, (items) => {
+            setActiveComplaints(items.filter(c => (c.status || '').toLowerCase() !== 'resolved').length);
+        });
+        const unsubAnnouncements = subscribeToAnnouncements((items) => {
+            setAnnouncementCount(items.length);
+        });
+        return () => {
+            unsubBills && unsubBills();
+            unsubComplaints && unsubComplaints();
+            unsubAnnouncements && unsubAnnouncements();
+        };
+    }, [user?.uid]);
+
     const stats = useMemo(() => ([
         {
             key: 'due',
             label: 'Total Due',
-            value: 2500,
-            hint: 'Due in 5 days',
+            value: pendingBills,
+            hint: pendingBills > 0 ? 'Bills pending' : 'All clear',
             Icon: CreditCard,
             accent: 'danger',
             prefix: '₹'
@@ -66,8 +92,8 @@ const ResidentDashboard = () => {
         {
             key: 'complaints',
             label: 'Active Complaints',
-            value: 1,
-            hint: 'In Progress',
+            value: activeComplaints,
+            hint: activeComplaints > 0 ? 'In Progress' : 'No active complaints',
             Icon: AlertTriangle,
             accent: 'warning',
             prefix: ''
@@ -75,8 +101,8 @@ const ResidentDashboard = () => {
         {
             key: 'announce',
             label: 'Announcements',
-            value: 2,
-            hint: 'New Updates',
+            value: announcementCount,
+            hint: announcementCount > 0 ? 'New Updates' : 'No new updates',
             Icon: Bell,
             accent: 'info',
             prefix: ''
@@ -87,7 +113,7 @@ const ResidentDashboard = () => {
         { label: 'Pay Maintenance', Icon: WalletCards, route: '/resident/pay', accent: 'indigo' },
         { label: 'File Complaint', Icon: MessageSquareWarning, route: '/resident/complaints', accent: 'violet' },
         { label: 'View Announcements', Icon: Megaphone, route: '/resident/announcements', accent: 'sky' },
-        { label: 'Emergency Contact', Icon: PhoneCall, route: '/resident/emergency', accent: 'danger' },
+        { label: 'Emergency Contact', Icon: PhoneCall, route: '/resident/emergency-sos', accent: 'danger' },
     ];
 
     const recentActivity = [
