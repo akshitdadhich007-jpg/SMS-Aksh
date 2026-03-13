@@ -25,13 +25,13 @@ const OnboardingDashboard = () => {
     const [flatsLoading, setFlatsLoading] = useState(false);
 
     // Step 1 — Residents
-    const [residentForm, setResidentForm] = useState({ flatNumber: '', name: '', email: '' });
+    const [residentForm, setResidentForm] = useState({ flatNumber: '', name: '', email: '', password: '', confirmPassword: '' });
     const [residentList, setResidentList] = useState([]);
     const [credsLoading, setCredsLoading] = useState(false);
     const [generatedCreds, setGeneratedCreds] = useState([]);
 
     // Step 2 — Staff
-    const [staffForm, setStaffForm] = useState({ name: '', role: 'security', email: '' });
+    const [staffForm, setStaffForm] = useState({ name: '', role: 'security', email: '', password: '', confirmPassword: '' });
     const [staffList, setStaffList] = useState([]);
     const [staffLoading, setStaffLoading] = useState(false);
     const [staffAdded, setStaffAdded] = useState(false);
@@ -71,17 +71,30 @@ const OnboardingDashboard = () => {
 
     /* ─── Step 1: Add Residents ─── */
     const addResident = () => {
-        const { flatNumber, name, email } = residentForm;
-        if (!flatNumber.trim() || !name.trim() || !email.trim()) {
+        const { flatNumber, name, email, password, confirmPassword } = residentForm;
+        if (!flatNumber.trim() || !name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
             toast.error('All resident fields are required.');
+            return;
+        }
+        if (password.length < 6) {
+            toast.error('Resident password must be at least 6 characters.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            toast.error('Resident password and confirm password do not match.');
             return;
         }
         if (residentList.find((r) => r.email.toLowerCase() === email.trim().toLowerCase())) {
             toast.error('This email is already added.');
             return;
         }
-        setResidentList((prev) => [...prev, { flatNumber: flatNumber.trim(), name: name.trim(), email: email.trim().toLowerCase() }]);
-        setResidentForm({ flatNumber: '', name: '', email: '' });
+        setResidentList((prev) => [...prev, {
+            flatNumber: flatNumber.trim(),
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+        }]);
+        setResidentForm({ flatNumber: '', name: '', email: '', password: '', confirmPassword: '' });
     };
 
     const removeResident = (email) => {
@@ -128,13 +141,21 @@ const OnboardingDashboard = () => {
 
     /* ─── Step 2: Add Staff ─── */
     const addStaff = () => {
-        const { name, email, role } = staffForm;
-        if (!name.trim() || !email.trim()) {
-            toast.error('Name and email are required for staff.');
+        const { name, email, role, password, confirmPassword } = staffForm;
+        if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+            toast.error('Name, email, and password are required for staff.');
             return;
         }
-        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role }]);
-        setStaffForm({ name: '', role: 'security', email: '' });
+        if (password.length < 6) {
+            toast.error('Staff password must be at least 6 characters.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            toast.error('Staff password and confirm password do not match.');
+            return;
+        }
+        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role, password }]);
+        setStaffForm({ name: '', role: 'security', email: '', password: '', confirmPassword: '' });
     };
 
     const removeStaff = (email) => {
@@ -159,6 +180,7 @@ const OnboardingDashboard = () => {
                     email: member.email,
                     name: member.name,
                     role: member.role,
+                    password: member.password,
                 });
             }
             setStaffAdded(true);
@@ -208,7 +230,7 @@ const OnboardingDashboard = () => {
         <div className="onb-step-content">
             <div className="onb-step-icon">👤</div>
             <h2>Generate Resident Credentials</h2>
-            <p className="onb-step-desc">Add residents and generate login credentials for them.</p>
+            <p className="onb-step-desc">Add residents with their email and password. They will use these same credentials in the resident portal.</p>
 
             {generatedCreds.length === 0 ? (
                 <>
@@ -233,6 +255,18 @@ const OnboardingDashboard = () => {
                             placeholder="Email Address"
                             value={residentForm.email}
                             onChange={(e) => setResidentForm((p) => ({ ...p, email: e.target.value }))}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={residentForm.password}
+                            onChange={(e) => setResidentForm((p) => ({ ...p, password: e.target.value }))}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={residentForm.confirmPassword}
+                            onChange={(e) => setResidentForm((p) => ({ ...p, confirmPassword: e.target.value }))}
                         />
                         <button className="onb-btn onb-btn-secondary" onClick={addResident} type="button">
                             + Add Resident
@@ -264,7 +298,7 @@ const OnboardingDashboard = () => {
                     <div className="onb-creds-table-wrap">
                         <table className="onb-creds-table">
                             <thead>
-                                <tr><th>Name</th><th>Flat</th><th>Email</th><th>Temp Password</th></tr>
+                                <tr><th>Name</th><th>Flat</th><th>Email</th><th>Password</th></tr>
                             </thead>
                             <tbody>
                                 {generatedCreds.map((c) => (
@@ -295,7 +329,7 @@ const OnboardingDashboard = () => {
         <div className="onb-step-content">
             <div className="onb-step-icon">👮</div>
             <h2>Add Staff Members</h2>
-            <p className="onb-step-desc">Optionally add security guards or maintenance staff.</p>
+            <p className="onb-step-desc">Add staff with direct login credentials. These same email and password values will be used at login.</p>
 
             <div className="onb-resident-form">
                 <input
@@ -316,6 +350,18 @@ const OnboardingDashboard = () => {
                     placeholder="Email Address"
                     value={staffForm.email}
                     onChange={(e) => setStaffForm((p) => ({ ...p, email: e.target.value }))}
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={staffForm.password}
+                    onChange={(e) => setStaffForm((p) => ({ ...p, password: e.target.value }))}
+                />
+                <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={staffForm.confirmPassword}
+                    onChange={(e) => setStaffForm((p) => ({ ...p, confirmPassword: e.target.value }))}
                 />
                 <button className="onb-btn onb-btn-secondary" onClick={addStaff} type="button">
                     + Add Staff

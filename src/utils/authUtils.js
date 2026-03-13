@@ -9,7 +9,7 @@ export const ROLE_PATHS = {
 export const normalizeRole = (role) => {
   const roleValue = String(role || '').toLowerCase().trim();
   if (roleValue === 'admin') return 'admin';
-  if (roleValue === 'security' || roleValue === 'guard') return 'security';
+  if (roleValue === 'security' || roleValue === 'guard' || roleValue === 'staff' || roleValue === 'maintenance') return 'security';
   return 'resident';
 };
 

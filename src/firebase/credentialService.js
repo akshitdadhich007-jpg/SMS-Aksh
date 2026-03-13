@@ -113,6 +113,7 @@ export const generateBulkCredentials = async (societyId, members) => {
       name: member.name,
       role: member.role || 'resident',
       flatNumber: member.flatNumber || null,
+      password: member.password,
     });
     results.push({
       ...result,
