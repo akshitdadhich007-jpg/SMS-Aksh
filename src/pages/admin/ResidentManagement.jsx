@@ -8,6 +8,10 @@ import {
     createResident,
     updateResident,
 } from '../../firebase/residentService';
+import {
+    assignResidentToFlat,
+    subscribeToFlats,
+} from '../../firebase/flatService';
 
 const ResidentManagement = () => {
     const toast = useToast();
@@ -15,6 +19,7 @@ const ResidentManagement = () => {
     const societyId = user?.societyId || 'default-society';
 
     const [residents, setResidents] = useState([]);
+    const [flats, setFlats] = useState([]);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingResident, setEditingResident] = useState(null);
@@ -37,38 +42,43 @@ const ResidentManagement = () => {
         return () => unsubscribe && unsubscribe();
     }, [societyId]);
 
+    useEffect(() => {
+        const unsubscribe = subscribeToFlats(societyId, setFlats);
+        return () => unsubscribe && unsubscribe();
+    }, [societyId]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             if (editingResident) {
                 await updateResident(editingResident.id, form);
+                const selectedFlat = flats.find((flat) => String(flat.flatNumber) === String(form.flat));
+                if (selectedFlat) {
+                    await assignResidentToFlat(selectedFlat.id, editingResident.id, form.name);
+                }
                 toast.success(`${form.name}'s details updated successfully!`, 'Resident Updated');
             } else {
-                await createResident({
+                const residentRef = await createResident({
                     ...form,
                     societyId,
                 });
+                const selectedFlat = flats.find((flat) => String(flat.flatNumber) === String(form.flat));
+                if (selectedFlat) {
+                    await assignResidentToFlat(selectedFlat.id, residentRef.id, form.name);
+                }
                 toast.success(`${form.name} added to flat ${form.flat}!`, 'Resident Added');
             }
             setModalOpen(false);
+            setEditingResident(null);
+            setForm({ name: '', flat: '', email: '', phone: '', status: 'Active' });
         } catch (err) {
             console.error('Resident save failed', err);
             toast.error('Unable to save resident. Please try again.', 'Error');
         }
     };
 
-    if (!residents || residents.length === 0) {
-        return (
-            <>
-                <PageHeader title="Resident Management" subtitle="Manage flats and residents" />
-                <Card className="text-center p-12">
-                    <h3 className="text-lg font-semibold text-gray-700">No residents found</h3>
-                    <p className="text-gray-500 mt-2">Get started by adding a new resident.</p>
-                    <Button variant="primary" style={{ marginTop: '16px' }} onClick={openAddModal}>+ Add Resident</Button>
-                </Card>
-            </>
-        );
-    }
+    const availableFlats = flats.filter((flat) => !flat.residentUid || editingResident?.flat === flat.flatNumber);
+    const hasResidents = Array.isArray(residents) && residents.length > 0;
 
     return (
         <>
@@ -78,41 +88,53 @@ const ResidentManagement = () => {
                 action={<Button variant="primary" onClick={openAddModal}>+ Add Resident</Button>}
             />
 
-            <Card>
-                <div style={{ overflowX: 'auto' }}>
-                    <table className="table" style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
-                        <colgroup>
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                            <col style={{ width: '96px' }} />
-                        </colgroup>
-                        <thead>
-                            <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
-                                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Name</th>
-                                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Flat Number</th>
-                                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Email</th>
-                                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Status</th>
-                                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {residents.map((resident) => (
-                                <tr key={resident.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                                    <td style={{ padding: '16px', fontWeight: '500', color: 'var(--text-primary)', verticalAlign: 'middle' }}>{resident.name}</td>
-                                    <td style={{ padding: '16px', fontFamily: 'monospace', fontWeight: 'bold', verticalAlign: 'middle' }}>{resident.flat}</td>
-                                    <td style={{ padding: '16px', color: 'var(--text-secondary)', verticalAlign: 'middle' }}>{resident.email}</td>
-                                    <td style={{ padding: '16px', verticalAlign: 'middle' }}><StatusBadge status={resident.status} /></td>
-                                    <td style={{ padding: '16px', textAlign: 'center', verticalAlign: 'middle' }}>
-                                        <Button variant="secondary" size="sm" onClick={() => openEditModal(resident)}>Edit</Button>
-                                    </td>
+            {!hasResidents ? (
+                <Card className="text-center p-12">
+                    <h3 className="text-lg font-semibold text-gray-700">No residents found</h3>
+                    <p className="text-gray-500 mt-2">
+                        {flats.length > 0
+                            ? 'Get started by assigning a resident to one of your flats.'
+                            : 'Create flats in onboarding first, then add residents here.'}
+                    </p>
+                    <Button variant="primary" style={{ marginTop: '16px' }} onClick={openAddModal}>+ Add Resident</Button>
+                </Card>
+            ) : (
+                <Card>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table className="table" style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+                            <colgroup>
+                                <col />
+                                <col />
+                                <col />
+                                <col />
+                                <col style={{ width: '96px' }} />
+                            </colgroup>
+                            <thead>
+                                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
+                                    <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Name</th>
+                                    <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Flat Number</th>
+                                    <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Email</th>
+                                    <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', verticalAlign: 'middle' }}>Status</th>
+                                    <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px', textAlign: 'center', verticalAlign: 'middle' }}>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </Card>
+                            </thead>
+                            <tbody>
+                                {residents.map((resident) => (
+                                    <tr key={resident.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                                        <td style={{ padding: '16px', fontWeight: '500', color: 'var(--text-primary)', verticalAlign: 'middle' }}>{resident.name}</td>
+                                        <td style={{ padding: '16px', fontFamily: 'monospace', fontWeight: 'bold', verticalAlign: 'middle' }}>{resident.flat}</td>
+                                        <td style={{ padding: '16px', color: 'var(--text-secondary)', verticalAlign: 'middle' }}>{resident.email}</td>
+                                        <td style={{ padding: '16px', verticalAlign: 'middle' }}><StatusBadge status={resident.status} /></td>
+                                        <td style={{ padding: '16px', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <Button variant="secondary" size="sm" onClick={() => openEditModal(resident)}>Edit</Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Card>
+            )}
 
             <Modal isOpen={modalOpen} title={editingResident ? 'Edit Resident' : 'Add New Resident'} onClose={() => setModalOpen(false)}>
                 <form className="modal-form" onSubmit={handleSubmit}>
@@ -123,7 +145,12 @@ const ResidentManagement = () => {
                         </div>
                         <div className="form-group">
                             <label>Flat Number</label>
-                            <input type="text" value={form.flat} onChange={e => setForm({ ...form, flat: e.target.value })} placeholder="e.g. A-101" required />
+                            <select value={form.flat} onChange={e => setForm({ ...form, flat: e.target.value })} required>
+                                <option value="">Select flat</option>
+                                {availableFlats.map((flat) => (
+                                    <option key={flat.id} value={flat.flatNumber}>{flat.flatNumber}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                     <div className="form-row">
@@ -145,7 +172,9 @@ const ResidentManagement = () => {
                     </div>
                     <div className="modal-actions">
                         <Button variant="secondary" type="button" onClick={() => setModalOpen(false)}>Cancel</Button>
-                        <Button variant="primary" type="submit">{editingResident ? 'Save Changes' : 'Add Resident'}</Button>
+                        <Button variant="primary" type="submit" disabled={!editingResident && availableFlats.length === 0}>
+                            {editingResident ? 'Save Changes' : 'Add Resident'}
+                        </Button>
                     </div>
                 </form>
             </Modal>
