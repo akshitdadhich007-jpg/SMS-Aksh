@@ -62,7 +62,10 @@ export function AuthProvider({ children }) {
         error: null,
       };
     } catch (err) {
-      return { user: null, error: { message: err.message } };
+      // Sanitize raw Firebase/Firestore internal error messages before surfacing them.
+      const raw = err.message || '';
+      const isInternal = raw.includes('INTERNAL ASSERTION') || raw.includes('FIRESTORE') || raw.includes('FirebaseError: [Default]');
+      return { user: null, error: { message: isInternal ? 'Authentication service error. Please refresh and try again.' : raw } };
     }
   }, []);
 

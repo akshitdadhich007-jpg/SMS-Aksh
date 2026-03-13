@@ -1,4 +1,4 @@
-import { deleteApp, initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -32,21 +32,26 @@ const generateTempPassword = () => {
   return pass.split('').sort(() => Math.random() - 0.5).join('');
 };
 
+// Reuse a single secondary app instance for the lifetime of the page.
+// NEVER call deleteApp() on it — doing so corrupts the primary Firestore WebChannel state.
+const SECONDARY_APP_NAME = 'civiora-secondary-auth';
+
+const getSecondaryAuth = () => {
+  const existing = getApps().find((a) => a.name === SECONDARY_APP_NAME);
+  const app = existing || initializeApp(firebaseConfig, SECONDARY_APP_NAME);
+  return getAuth(app);
+};
+
 const createUserWithoutSwitchingSession = async (email, password) => {
   if (!auth?.currentUser) {
     return createUserWithEmailAndPassword(auth, email, password);
   }
 
-  const secondaryApp = initializeApp(firebaseConfig, `secondary-auth-${Date.now()}`);
-  const secondaryAuth = getAuth(secondaryApp);
-
-  try {
-    const credential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-    await signOutAuth(secondaryAuth);
-    return credential;
-  } finally {
-    await deleteApp(secondaryApp);
-  }
+  const secondaryAuth = getSecondaryAuth();
+  const credential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+  // Sign out of secondary app so the slot is free for next call; do NOT delete the app.
+  await signOutAuth(secondaryAuth);
+  return credential;
 };
 
 /**
