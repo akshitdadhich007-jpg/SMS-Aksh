@@ -1,5 +1,5 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -21,18 +21,40 @@ const hasRequiredFirebaseConfig = [
 const hasValidApiKeyFormat = typeof firebaseConfig.apiKey === 'string'
   && firebaseConfig.apiKey.startsWith('AIza');
 
+/**
+ * Each browser tab gets its own Firebase app instance keyed by a tab-scoped ID
+ * stored in sessionStorage. This gives full tab isolation (different users in
+ * different tabs) without the refresh-logout trade-off:
+ *
+ *  ✅ Tab 1 (Admin) stays logged in while Tab 2 (Resident) is open
+ *  ✅ Refreshing any tab keeps the user logged in (sessionStorage survives refresh)
+ *  ✅ New tab starts fresh — pick whichever account you want
+ */
+const getTabAppName = () => {
+  try {
+    let id = window.sessionStorage.getItem('_civiora_tab');
+    if (!id) {
+      id = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+      window.sessionStorage.setItem('_civiora_tab', id);
+    }
+    return id;
+  } catch {
+    return '[DEFAULT]';
+  }
+};
+
+const TAB_APP_NAME = typeof window !== 'undefined' ? getTabAppName() : '[DEFAULT]';
+
 let app = null;
 let auth = null;
 let db = null;
 
 if (hasRequiredFirebaseConfig && hasValidApiKeyFormat) {
   try {
-    app = initializeApp(firebaseConfig);
+    // Reuse the same named app if already initialised (e.g. HMR in dev)
+    const existing = getApps().find((a) => a.name === TAB_APP_NAME);
+    app = existing ?? initializeApp(firebaseConfig, TAB_APP_NAME);
     auth = getAuth(app);
-    // Use session persistence so each browser tab keeps its own independent
-    // auth session — opening admin, resident, and security in separate tabs
-    // will not log each other out.
-    setPersistence(auth, browserSessionPersistence).catch(console.error);
     db = getFirestore(app);
   } catch (error) {
     console.error('Firebase initialization failed:', error);
