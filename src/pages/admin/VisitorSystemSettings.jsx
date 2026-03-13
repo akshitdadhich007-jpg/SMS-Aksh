@@ -2,22 +2,22 @@ import React, { useEffect, useState } from 'react';
 import PageHeader from '../../components/ui/PageHeader';
 import { Button, Card } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
+import { useAuth } from '../../context/AuthContext';
 import {
-  getCurrentRole,
-  getVisitorSettings,
+  subscribeToVisitorSettings,
   updateVisitorSettings,
-} from '../../utils/visitorService';
+} from '../../firebase/visitorService';
 
 const VisitorSystemSettings = () => {
   const toast = useToast();
-  const role = getCurrentRole();
+  const { user } = useAuth();
+  const role = user?.role || '';
   const [settings, setSettings] = useState(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    getVisitorSettings()
-      .then(setSettings)
-      .catch((err) => toast.error(err.message || 'Failed to load settings'));
+    const unsubscribe = subscribeToVisitorSettings(setSettings);
+    return () => unsubscribe && unsubscribe();
   }, []);
 
   const toggle = (key) => {

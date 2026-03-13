@@ -2,43 +2,79 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../components/ui/PageHeader';
 import { Button, Card } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
+import { useAuth } from '../../context/AuthContext';
 import {
   addToBlacklist,
-  downloadTextFile,
-  getCurrentRole,
-  listVisitors,
-  subscribeVisitorRealtime,
-  toCsv,
-} from '../../utils/visitorService';
+  subscribeToAllVisitors,
+} from '../../firebase/visitorService';
 
 const VisitorRecords = () => {
   const toast = useToast();
-  const role = getCurrentRole();
+  const { user } = useAuth();
+  const role = user?.role || '';
   const [rows, setRows] = useState([]);
   const [search, setSearch] = useState('');
   const [flat, setFlat] = useState('');
   const [type, setType] = useState('all');
   const [date, setDate] = useState('');
 
-  const refresh = async () => {
-    const data = await listVisitors();
-    setRows(data);
+  const toCsv = (dataRows) => {
+    const headers = [
+      'Visitor Name', 'Phone Number', 'Flat Number', 'Purpose', 'Visitor Type',
+      'Entry Time', 'Exit Time', 'Status', 'Approval Method'
+    ];
+    const body = dataRows.map((r) => [
+      r.visitorName || '-',
+      r.phone || '-',
+      r.flatNumber || '-',
+      r.purpose || '-',
+      r.visitorType || '-',
+      r.entryTime || '-',
+      r.exitTime || '-',
+      r.status || '-',
+      r.approvalMethod || '-',
+    ]);
+    return [headers, ...body].map((row) => row.map((cell) => `"${String(cell || '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  };
+
+  const downloadTextFile = (fileName, content, mimeType) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   useEffect(() => {
-    refresh().catch((err) => toast.error(err.message || 'Failed to load visitor records'));
-    const unsub = subscribeVisitorRealtime(() => {
-      refresh().catch(() => null);
+    const unsub = subscribeToAllVisitors((items) => {
+      const normalized = items.map((row) => ({
+        id: row.id,
+        visitorName: row.visitorName || row.visitor_name || '-',
+        phone: row.phone || row.phone_number || '-',
+        flatNumber: row.flatNumber || row.flat_number || '-',
+        purpose: row.purpose || '-',
+        visitorType: row.visitorType || row.visitor_type || '-',
+        entryTime: row.entryTime || '-',
+        exitTime: row.exitTime || '-',
+        status: row.status || '-',
+        approvalMethod: row.approvalMethod || row.approval_method || '-',
+        createdDate: row.createdAt?.toDate?.()?.toISOString?.().slice(0, 10) || '',
+      }));
+      setRows(normalized);
     });
-    return () => unsub();
+    return () => unsub && unsub();
   }, []);
 
   const filtered = useMemo(() => rows.filter((row) => {
     const s = search.trim().toLowerCase();
-    const matchSearch = !s || [row.visitor_name, row.phone_number, row.purpose, row.flat_number].some((x) => String(x || '').toLowerCase().includes(s));
-    const matchFlat = !flat.trim() || String(row.flat_number || '').toLowerCase().includes(flat.trim().toLowerCase());
-    const matchType = type === 'all' || row.visitor_type === type;
-    const matchDate = !date || String(row.created_at || '').startsWith(date);
+    const matchSearch = !s || [row.visitorName, row.phone, row.purpose, row.flatNumber].some((x) => String(x || '').toLowerCase().includes(s));
+    const matchFlat = !flat.trim() || String(row.flatNumber || '').toLowerCase().includes(flat.trim().toLowerCase());
+    const matchType = type === 'all' || row.visitorType === type;
+    const matchDate = !date || row.createdDate === date;
     return matchSearch && matchFlat && matchType && matchDate;
   }), [rows, search, flat, type, date]);
 
@@ -58,9 +94,11 @@ const VisitorRecords = () => {
     if (!reason) return;
     try {
       await addToBlacklist({
-        visitor_name: row.visitor_name,
-        phone_number: row.phone_number,
+        visitor_name: row.visitorName,
+        phone_number: row.phone,
+        phone: row.phone,
         reason,
+        addedBy: user?.uid || user?.id || 'admin',
       });
       toast.success('Visitor added to blacklist.');
     } catch (error) {
@@ -110,14 +148,14 @@ const VisitorRecords = () => {
               <tbody>
                 {filtered.map((row) => (
                   <tr key={row.id}>
-                    <td>{row.visitor_name}</td>
-                    <td>{row.flat_number}</td>
+                    <td>{row.visitorName}</td>
+                    <td>{row.flatNumber}</td>
                     <td>{row.purpose}</td>
-                    <td>{row.entry_time ? new Date(row.entry_time).toLocaleString() : '-'}</td>
-                    <td>{row.exit_time ? new Date(row.exit_time).toLocaleString() : '-'}</td>
+                    <td>{row.entryTime || '-'}</td>
+                    <td>{row.exitTime || '-'}</td>
                     <td>{row.status}</td>
-                    <td>{row.approval_method}</td>
-                    <td>{row.visitor_type}</td>
+                    <td>{row.approvalMethod}</td>
+                    <td>{row.visitorType}</td>
                     <td><Button variant="danger" size="sm" onClick={() => onBlacklist(row)}>Blacklist</Button></td>
                   </tr>
                 ))}

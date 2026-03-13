@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
-import { PageHeader, Card, Button } from '../../components/ui';
+import React, { useEffect, useState } from 'react';
+import { PageHeader } from '../../components/ui';
 import { FileText, Download } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { subscribeToResidentDocuments } from '../../firebase/documentService';
 import './Documents.css';
 
 const Documents = () => {
-    // Mock Data
-    const [documents] = useState([
-        { id: 1, title: 'Society Bylaws 2026', type: 'PDF', size: '2.4 MB', date: '01 Jan 2026' },
-        { id: 2, title: 'Feb 2026 Maintenance Receipt', type: 'PDF', size: '150 KB', date: '05 Feb 2026' },
-        { id: 3, title: 'Circular - Parking Rules', type: 'PDF', size: '500 KB', date: '20 Jan 2026' },
-        { id: 4, title: 'Annual Budget Report 2025', type: 'XLSX', size: '1.2 MB', date: '10 Jan 2026' },
-    ]);
+    const { user } = useAuth();
+    const toast = useToast();
+    const [documents, setDocuments] = useState([]);
 
-    const handleDownload = (docName) => {
-        alert(`Downloading ${docName}...`);
+    useEffect(() => {
+        const unsubscribe = subscribeToResidentDocuments(user?.societyId || 'default-society', setDocuments);
+        return () => unsubscribe && unsubscribe();
+    }, [user?.societyId]);
+
+    const handleDownload = (doc) => {
+        if (!doc.fileUrl) {
+            toast.error('Document file URL is missing', 'Download Failed');
+            return;
+        }
+        window.open(doc.fileUrl, '_blank', 'noopener,noreferrer');
     };
 
     if (!documents || documents.length === 0) {
@@ -54,7 +62,7 @@ const Documents = () => {
                         <div className="document-actions">
                             <button
                                 className="document-download-btn"
-                                onClick={() => handleDownload(doc.title)}
+                                onClick={() => handleDownload(doc)}
                                 type="button"
                             >
                                 <Download />

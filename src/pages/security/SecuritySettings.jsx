@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Shield, Bell, Palette } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import SettingsTabs from '../../components/ui/SettingsTabs';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { saveSecuritySettings, subscribeSecuritySettings } from '../../firebase/appSettingsService';
 import './SecuritySettings.css';
 
 const SecuritySettings = () => {
+  const { user } = useAuth();
+  const toast = useToast();
+
   const [profileData, setProfileData] = useState({
-    name: 'Amit Yadav',
+    name: user?.name || '',
     shiftStart: '08:00',
     shiftEnd: '20:00',
-    contact: '+91-9876543210',
+    contact: '',
   });
 
   const [accessControls, setAccessControls] = useState({
@@ -23,6 +29,19 @@ const SecuritySettings = () => {
     nightMode: false,
   });
 
+  useEffect(() => {
+    if (!user?.uid) return;
+    const unsub = subscribeSecuritySettings(user.uid, (settings) => {
+      setProfileData({
+        ...(settings.profileData || profileData),
+        name: settings.profileData?.name || user?.name || '',
+      });
+      setAccessControls(settings.accessControls || accessControls);
+      setAlertSettings(settings.alertSettings || alertSettings);
+    });
+    return () => unsub && unsub();
+  }, [user?.uid]);
+
   const handleProfileChange = (key, value) => {
     setProfileData(prev => ({ ...prev, [key]: value }));
   };
@@ -35,16 +54,34 @@ const SecuritySettings = () => {
     setAlertSettings(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSaveProfile = () => {
-    console.log('Profile saved:', profileData);
+  const handleSaveProfile = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveSecuritySettings(user.uid, { profileData });
+      toast.success('Profile updated', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save profile', 'Error');
+    }
   };
 
-  const handleSaveAccessControls = () => {
-    console.log('Access controls saved:', accessControls);
+  const handleSaveAccessControls = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveSecuritySettings(user.uid, { accessControls });
+      toast.success('Access controls updated', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save access controls', 'Error');
+    }
   };
 
-  const handleSaveAlerts = () => {
-    console.log('Alert settings saved:', alertSettings);
+  const handleSaveAlerts = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveSecuritySettings(user.uid, { alertSettings });
+      toast.success('Alert settings updated', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save alert settings', 'Error');
+    }
   };
 
   const tabs = [

@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bell, Lock, LogOut, Key } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { updatePassword } from 'firebase/auth';
 import PageHeader from '../../components/ui/PageHeader';
 import SettingsTabs from '../../components/ui/SettingsTabs';
 import Modal from '../../components/ui/Modal';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { auth } from '../../firebase/config';
+import { subscribeResidentSettings, saveResidentSettings } from '../../firebase/appSettingsService';
 import './ResidentSettings.css';
 
 const ResidentSettings = () => {
+  const { user, signOut, updateProfile } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+
   // Profile State (Read-only for flat number)
   const [profileData, setProfileData] = useState({
-    name: 'Rajesh Kumar',
-    phone: '9876543210',
-    email: 'rajesh@example.com',
-    flatNo: 'A-304',
+    name: user?.name || '',
+    phone: '',
+    email: user?.email || '',
+    flatNo: user?.flatNumber || '',
   });
 
   // Notification Settings State
@@ -29,9 +39,29 @@ const ResidentSettings = () => {
 
   // Security State
   const [securityData, setSecurityData] = useState({
-    lastPasswordChange: '2025-12-15',
-    lastLogin: 'Today at 10:45 AM',
+    lastPasswordChange: '',
+    lastLogin: new Date().toLocaleString('en-IN'),
   });
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const unsub = subscribeResidentSettings(user.uid, (settings) => {
+      setProfileData({
+        name: settings.profileData?.name || user?.name || '',
+        phone: settings.profileData?.phone || '',
+        email: settings.profileData?.email || user?.email || '',
+        flatNo: settings.profileData?.flatNo || user?.flatNumber || '',
+      });
+      setNotificationSettings(settings.notificationSettings || notificationSettings);
+      setPaymentPreferences(settings.paymentPreferences || paymentPreferences);
+      setSecurityData((prev) => ({
+        ...prev,
+        ...(settings.securityData || {}),
+        lastLogin: new Date().toLocaleString('en-IN'),
+      }));
+    });
+    return () => unsub && unsub();
+  }, [user?.uid]);
 
   // Modal States
   const [modals, setModals] = useState({
@@ -65,20 +95,35 @@ const ResidentSettings = () => {
     }));
   };
 
-  const handleSaveProfile = () => {
-    // In production: API call to save profile
-    console.log('Profile saved:', profileData);
-    // Show success message
+  const handleSaveProfile = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveResidentSettings(user.uid, { profileData });
+      await updateProfile({ name: profileData.name, flatNumber: profileData.flatNo });
+      toast.success('Profile updated', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save profile', 'Error');
+    }
   };
 
-  const handleSaveNotifications = () => {
-    // In production: API call
-    console.log('Notification settings saved:', notificationSettings);
+  const handleSaveNotifications = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveResidentSettings(user.uid, { notificationSettings });
+      toast.success('Notification preferences saved', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save notification settings', 'Error');
+    }
   };
 
-  const handleSavePaymentPreferences = () => {
-    // In production: API call
-    console.log('Payment preferences saved:', paymentPreferences);
+  const handleSavePaymentPreferences = async () => {
+    if (!user?.uid) return;
+    try {
+      await saveResidentSettings(user.uid, { paymentPreferences });
+      toast.success('Payment preferences saved', 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save payment preferences', 'Error');
+    }
   };
 
   const openChangePasswordModal = () => {
@@ -86,41 +131,45 @@ const ResidentSettings = () => {
     setModals(prev => ({ ...prev, changePassword: true }));
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     // Validation
     if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-      alert('All fields are required');
+      toast.error('All fields are required', 'Validation Error');
       return;
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert('New passwords do not match');
+      toast.error('New passwords do not match', 'Validation Error');
       return;
     }
     if (passwordForm.newPassword.length < 8) {
-      alert('Password must be at least 8 characters');
+      toast.error('Password must be at least 8 characters', 'Validation Error');
       return;
     }
 
-    // In production: API call
-    console.log('Password change request:', {
-      currentPassword: passwordForm.currentPassword,
-      newPassword: passwordForm.newPassword,
-    });
-    
-    alert('Password changed successfully');
-    setModals(prev => ({ ...prev, changePassword: false }));
-    setSecurityData(prev => ({
-      ...prev,
-      lastPasswordChange: new Date().toLocaleDateString()
-    }));
+    try {
+      if (!auth?.currentUser) {
+        throw new Error('No authenticated user session found');
+      }
+      await updatePassword(auth.currentUser, passwordForm.newPassword);
+      const nextSecurityData = {
+        ...securityData,
+        lastPasswordChange: new Date().toLocaleDateString('en-IN'),
+      };
+      setSecurityData(nextSecurityData);
+      if (user?.uid) {
+        await saveResidentSettings(user.uid, { securityData: nextSecurityData });
+      }
+      toast.success('Password changed successfully', 'Saved');
+      setModals(prev => ({ ...prev, changePassword: false }));
+    } catch (err) {
+      toast.error(err?.message || 'Failed to change password', 'Error');
+    }
   };
 
-  const handleLogoutAllDevices = () => {
-    // In production: API call
-    console.log('Logging out from all devices');
-    alert('You have been logged out from all devices. Please login again.');
-    // Redirect to login
-    window.location.href = '/';
+  const handleLogoutAllDevices = async () => {
+    await signOut();
+    toast.info('Signed out. Please login again.', 'Session Closed');
+    navigate('/');
   };
 
   const tabs = [

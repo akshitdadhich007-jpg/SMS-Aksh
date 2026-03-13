@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Building2, DollarSign, Zap, Users, Package2, Bell, DownloadCloud,
   Plus, Edit2, Trash2, ChevronDown
@@ -6,9 +6,16 @@ import {
 import PageHeader from '../../components/ui/PageHeader';
 import SettingsTabs from '../../components/ui/SettingsTabs';
 import Modal from '../../components/ui/Modal';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/ui/Toast';
+import { saveAdminSettings, subscribeAdminSettings } from '../../firebase/appSettingsService';
 import './AdminSettings.css';
 
 const AdminSettings = () => {
+  const { user } = useAuth();
+  const toast = useToast();
+  const societyId = user?.societyId || 'default-society';
+
   // Society Profile State
   const [societyProfile, setSocietyProfile] = useState({
     name: 'Greenfield Residency',
@@ -83,6 +90,28 @@ const AdminSettings = () => {
   const [expenseForm, setExpenseForm] = useState({ name: '', budget: '' });
   const [roleForm, setRoleForm] = useState({ name: '', email: '', role: 'Admin', permissions: [] });
 
+  useEffect(() => {
+    const unsubscribe = subscribeAdminSettings(societyId, (settings) => {
+      if (settings?.societyProfile) setSocietyProfile(settings.societyProfile);
+      if (settings?.maintenanceSettings) setMaintenanceSettings(settings.maintenanceSettings);
+      if (settings?.paymentSettings) setPaymentSettings(settings.paymentSettings);
+      if (Array.isArray(settings?.expenseCategories)) setExpenseCategories(settings.expenseCategories);
+      if (Array.isArray(settings?.adminUsers)) setAdminUsers(settings.adminUsers);
+      if (settings?.lostFoundSettings) setLostFoundSettings(settings.lostFoundSettings);
+      if (settings?.notificationSettings) setNotificationSettings(settings.notificationSettings);
+    });
+    return () => unsubscribe && unsubscribe();
+  }, [societyId]);
+
+  const saveSection = async (payload, successMessage) => {
+    try {
+      await saveAdminSettings(societyId, payload);
+      toast.success(successMessage, 'Saved');
+    } catch (err) {
+      toast.error(err?.message || 'Failed to save settings', 'Error');
+    }
+  };
+
   // Handlers
   const handleSocietyProfile = (key, value) => {
     setSocietyProfile(prev => ({ ...prev, [key]: value }));
@@ -109,6 +138,7 @@ const AdminSettings = () => {
   };
 
   const saveExpense = () => {
+    if (!expenseForm.name || !expenseForm.budget) return;
     if (currentEditingItem) {
       setExpenseCategories(prev => prev.map(cat =>
         cat.id === currentEditingItem.id ? { ...cat, name: expenseForm.name, budget: parseInt(expenseForm.budget) } : cat
@@ -123,10 +153,20 @@ const AdminSettings = () => {
       setExpenseCategories(prev => [...prev, newExpense]);
       setModals(prev => ({ ...prev, addExpense: false }));
     }
+    saveSection({ expenseCategories: currentEditingItem
+      ? expenseCategories.map(cat => cat.id === currentEditingItem.id ? { ...cat, name: expenseForm.name, budget: parseInt(expenseForm.budget, 10) } : cat)
+      : [...expenseCategories, {
+        id: Math.max(...expenseCategories.map(c => Number(c.id) || 0), 0) + 1,
+        name: expenseForm.name,
+        budget: parseInt(expenseForm.budget, 10),
+      }]
+    }, 'Expense categories updated');
   };
 
   const deleteExpense = (id) => {
-    setExpenseCategories(prev => prev.filter(cat => cat.id !== id));
+    const next = expenseCategories.filter(cat => cat.id !== id);
+    setExpenseCategories(next);
+    saveSection({ expenseCategories: next }, 'Expense category removed');
   };
 
   const handleNotificationChange = (key) => {
@@ -216,7 +256,7 @@ const AdminSettings = () => {
             </div>
           </div>
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary">
+            <button className="settings-button settings-button-primary" onClick={() => saveSection({ societyProfile }, 'Society profile saved')}>
               Save Society Profile
             </button>
           </div>
@@ -273,7 +313,7 @@ const AdminSettings = () => {
             </button>
           </div>
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary">
+            <button className="settings-button settings-button-primary" onClick={() => saveSection({ maintenanceSettings }, 'Maintenance settings saved')}>
               Save Maintenance Settings
             </button>
           </div>
@@ -345,7 +385,7 @@ const AdminSettings = () => {
             </>
           )}
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary">
+            <button className="settings-button settings-button-primary" onClick={() => saveSection({ paymentSettings }, 'Payment settings saved')}>
               Save Payment Settings
             </button>
           </div>
@@ -509,7 +549,7 @@ const AdminSettings = () => {
             </>
           )}
           <div className="settings-button-group">
-            <button className="settings-button settings-button-primary">
+            <button className="settings-button settings-button-primary" onClick={() => saveSection({ lostFoundSettings }, 'Lost and found settings saved')}>
               Save Lost & Found Settings
             </button>
           </div>
@@ -593,6 +633,11 @@ const AdminSettings = () => {
               checked={notificationSettings.residentUpdates}
               onChange={() => handleNotificationChange('residentUpdates')}
             />
+          </div>
+          <div className="settings-button-group">
+            <button className="settings-button settings-button-primary" onClick={() => saveSection({ notificationSettings }, 'Notification settings saved')}>
+              Save Notification Settings
+            </button>
           </div>
         </div>
       ),

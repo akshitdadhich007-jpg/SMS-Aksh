@@ -1,6 +1,6 @@
 import { db } from './config';
 import {
-    collection, addDoc, updateDoc, deleteDoc, doc, getDoc,
+    collection, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc,
     query, where, orderBy, onSnapshot, serverTimestamp,
     getDocs, Timestamp, limit
 } from 'firebase/firestore';
@@ -382,29 +382,31 @@ export const subscribeToVisitorSettings = (callback) => {
         } else {
             // Return default settings if none exist
             callback({
-                requireResidentApproval: true,
-                enableQRPass: false,
-                enablePhotoCapture: false,
-                enableVehicleTracking: true,
-                enableOTP: false,
-                allowWalkIns: true,
-                autoApproveDelivery: false,
-                maxVisitorsPerFlat: 5,
-                passExpiryHours: 24,
+                society_name: 'CIVIORA',
+                require_resident_approval: true,
+                enable_qr_pass: false,
+                enable_photo_capture: false,
+                enable_vehicle_tracking: true,
+                enable_otp_verification: false,
+                allow_walkin_visitors: true,
+                auto_approve_delivery: false,
+                max_visitors_per_flat: 5,
+                visitor_pass_expiry_hours: 24,
             });
         }
     }, (error) => {
         console.error('[Firestore Error] subscribeToVisitorSettings:', error);
         callback({
-            requireResidentApproval: true,
-            enableQRPass: false,
-            enablePhotoCapture: false,
-            enableVehicleTracking: true,
-            enableOTP: false,
-            allowWalkIns: true,
-            autoApproveDelivery: false,
-            maxVisitorsPerFlat: 5,
-            passExpiryHours: 24,
+            society_name: 'CIVIORA',
+            require_resident_approval: true,
+            enable_qr_pass: false,
+            enable_photo_capture: false,
+            enable_vehicle_tracking: true,
+            enable_otp_verification: false,
+            allow_walkin_visitors: true,
+            auto_approve_delivery: false,
+            max_visitors_per_flat: 5,
+            visitor_pass_expiry_hours: 24,
         });
     });
 };
@@ -415,21 +417,10 @@ export const subscribeToVisitorSettings = (callback) => {
  */
 export const updateVisitorSettings = (updates) => {
     const settingsRef = doc(db, SETTINGS_COLLECTION, 'default');
-    return updateDoc(settingsRef, {
+    return setDoc(settingsRef, {
         ...updates,
         updatedAt: serverTimestamp()
-    }).catch((error) => {
-        // Create if doesn't exist
-        if (error.code === 'not-found') {
-            return new Promise((resolve) => {
-                addDoc(collection(db, SETTINGS_COLLECTION), {
-                    ...updates,
-                    createdAt: serverTimestamp(),
-                }).then(resolve);
-            });
-        }
-        throw error;
-    });
+    }, { merge: true });
 };
 
 /**
