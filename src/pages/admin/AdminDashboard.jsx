@@ -88,24 +88,35 @@ const AdminDashboard = () => {
     }, []);
 
     useEffect(() => {
-        if (!societyId) return;
+        if (!societyId) {
+            console.log('[AdminDashboard] No societyId, skipping subscriptions');
+            return;
+        }
+
+        console.log('[AdminDashboard] Subscribing to data for societyId:', societyId);
 
         const unsubFlats = subscribeToFlats(societyId, (items) => {
+            console.log('[AdminDashboard] Received flats:', items.length);
             setFlatCount(items.length);
         });
         const unsubResidents = subscribeToResidents(societyId, (items) => {
+            console.log('[AdminDashboard] Received residents:', items.length);
             setResidentCount(items.length);
         });
         const unsubBills = subscribeBillingStats(societyId, (stats) => {
+            console.log('[AdminDashboard] Received billing stats:', stats);
             setCollectionStats(stats || { totalBilled: 0, totalCollected: 0, totalPending: 0, billCount: 0, collectionPercentage: 0 });
         });
         const unsubComplaints = subscribeToAllComplaints(societyId, (items) => {
+            console.log('[AdminDashboard] Received complaints:', items.length);
             setOpenComplaints(items.filter(c => (c.status || '').toLowerCase() !== 'resolved').length);
         });
         const unsubAttendance = subscribeToTodayAttendance(societyId, (items) => {
+            console.log('[AdminDashboard] Received attendance:', items.length);
             setPresentStaff(items.length);
         });
         const unsubEmergencies = subscribeToActiveEmergencies(societyId, (items) => {
+            console.log('[AdminDashboard] Received emergencies:', items.length);
             setActiveAlerts(items.length);
         });
         return () => {
@@ -201,10 +212,6 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="admin-dashboard-head-actions">
-                    <button className="glass-action-btn" onClick={() => navigate('/admin/reports')}>
-                        <Search size={16} />
-                        Analyze Insights
-                    </button>
                     <Button variant="primary" onClick={handleDownloadReport}>
                         <Download size={16} /> Download Report
                     </Button>

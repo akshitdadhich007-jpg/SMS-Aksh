@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -6,7 +6,8 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '../firebase/config';
 import { getOrCreateUserProfile, updateUserProfile } from '../firebase/userService';
 import { normalizeRole } from '../utils/authUtils';
 
@@ -15,38 +16,73 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const profileUnsubRef = useRef(null);
 
-  // Listen to Firebase Auth state changes
+  // Listen to Firebase Auth state changes, then subscribe to Firestore profile in real-time
   useEffect(() => {
-    if (!auth) {
+    if (!auth || !db) {
       setUser(null);
       setLoading(false);
       return () => {};
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Clean up any previous profile listener
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
+        profileUnsubRef.current = null;
+      }
+
       if (firebaseUser) {
         try {
-          const profile = await getOrCreateUserProfile(firebaseUser);
-          setUser({
-            id: firebaseUser.uid,
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: profile.name || firebaseUser.displayName || firebaseUser.email,
-            role: normalizeRole(profile.role),
-            flatNumber: profile.flatNumber || null,
-            societyId: profile.societyId || null,
+          // Ensure the profile doc exists (creates it if first login)
+          await getOrCreateUserProfile(firebaseUser);
+
+          // Now subscribe in real-time so societyId updates propagate instantly
+          const userDocRef = doc(db, 'users', firebaseUser.uid);
+          profileUnsubRef.current = onSnapshot(userDocRef, (snap) => {
+            if (snap.exists()) {
+              const profile = snap.data();
+              const societyId = profile.societyId && profile.societyId !== '__pending__'
+                ? profile.societyId
+                : null;
+              console.log('[AuthContext] Profile updated, societyId:', societyId);
+              setUser({
+                id: firebaseUser.uid,
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: profile.name || firebaseUser.displayName || firebaseUser.email,
+                role: normalizeRole(profile.role),
+                flatNumber: profile.flatNumber || null,
+                societyId,
+              });
+            } else {
+              setUser(null);
+            }
+            setLoading(false);
+          }, (err) => {
+            console.error('[AuthContext] Profile listener error:', err);
+            setUser(null);
+            setLoading(false);
           });
         } catch (err) {
-          console.error('Auth state profile error:', err);
+          console.error('[AuthContext] Auth state profile error:', err);
           setUser(null);
+          setLoading(false);
         }
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
-    return unsubscribe;
+
+    return () => {
+      unsubscribe();
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
+        profileUnsubRef.current = null;
+      }
+    };
   }, []);
 
   const signIn = useCallback(async (email, password) => {
@@ -62,7 +98,6 @@ export function AuthProvider({ children }) {
         error: null,
       };
     } catch (err) {
-      // Sanitize raw Firebase/Firestore internal error messages before surfacing them.
       const raw = err.message || '';
       const isInternal = raw.includes('INTERNAL ASSERTION') || raw.includes('FIRESTORE') || raw.includes('FirebaseError: [Default]');
       return { user: null, error: { message: isInternal ? 'Authentication service error. Please refresh and try again.' : raw } };
@@ -101,7 +136,7 @@ export function AuthProvider({ children }) {
     if (!user?.id) return;
     try {
       await updateUserProfile(user.id, updates);
-      setUser(prev => ({ ...prev, ...updates }));
+      // No need to setUser here — the onSnapshot listener will pick up the change automatically
     } catch (err) {
       console.error('updateProfile error:', err);
     }
