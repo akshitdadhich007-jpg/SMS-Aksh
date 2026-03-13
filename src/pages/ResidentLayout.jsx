@@ -105,15 +105,6 @@ const ResidentLayout = () => {
                 </nav>
 
                 <div className="sidebar-footer">
-                    <NavLink
-                        to="/resident/settings"
-                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                        style={{ width: 'calc(100% - 48px)', marginBottom: '8px' }}
-                    >
-                        <span className="icon"><Settings size={20} /></span>
-                        Settings
-                    </NavLink>
-
                     <button
                         className={`theme-shortcut ${isDarkMode ? 'active' : ''}`}
                         onClick={toggleDarkMode}

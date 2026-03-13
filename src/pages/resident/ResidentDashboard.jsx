@@ -83,8 +83,8 @@ const ResidentDashboard = () => {
         {
             key: 'paid',
             label: 'Last Payment',
-            value: 2500,
-            hint: 'Jan 10, 2026',
+            value: 0,
+            hint: 'No payment history yet',
             Icon: CheckCircle2,
             accent: 'success',
             prefix: '₹'
@@ -116,38 +116,11 @@ const ResidentDashboard = () => {
         { label: 'Emergency Contact', Icon: PhoneCall, route: '/resident/emergency-sos', accent: 'danger' },
     ];
 
-    const recentActivity = [
-        { time: '2 hrs ago', text: 'Maintenance payment of ₹2,500 completed', Icon: CircleCheckBig, accent: 'success' },
-        { time: 'Yesterday', text: 'Complaint #103 submitted and assigned', Icon: AlertTriangle, accent: 'warning' },
-        { time: '2 days ago', text: 'New announcement received: Water shutdown alert', Icon: Bell, accent: 'info' },
-    ];
+    const recentActivity = [];
 
-    const societyUpdates = [
-        {
-            title: 'Water Tank Maintenance Scheduled',
-            description: 'Block A and B water supply will pause from 11:00 AM to 1:00 PM this Sunday.',
-            date: 'Mar 08, 2026'
-        },
-        {
-            title: 'Holi Community Event',
-            description: 'Join residents at Club Lawn for Holi celebration and community lunch.',
-            date: 'Mar 10, 2026'
-        },
-        {
-            title: 'Parking Sticker Renewal',
-            description: 'Please update your vehicle sticker details in Resident Settings by this Friday.',
-            date: 'Mar 12, 2026'
-        },
-    ];
+    const societyUpdates = [];
 
-    const paymentSeries = [
-        { month: 'Sep', amount: 2200 },
-        { month: 'Oct', amount: 2500 },
-        { month: 'Nov', amount: 2500 },
-        { month: 'Dec', amount: 2500 },
-        { month: 'Jan', amount: 2500 },
-        { month: 'Feb', amount: 2500 },
-    ];
+    const paymentSeries = [];
 
     return (
         <div className="resident-dashboard-sa">
@@ -218,6 +191,8 @@ const ResidentDashboard = () => {
                     </div>
                     {isLoading ? (
                         <Skeleton className="rd-panel-skeleton" />
+                    ) : recentActivity.length === 0 ? (
+                        <div className="rd-empty">No data yet</div>
                     ) : (
                         <div className="rd-timeline">
                             {recentActivity.map((item, idx) => (
@@ -240,6 +215,8 @@ const ResidentDashboard = () => {
                         </div>
                         {isLoading ? (
                             <Skeleton className="rd-chart-skeleton" />
+                        ) : paymentSeries.length === 0 ? (
+                            <div className="rd-empty">No data yet</div>
                         ) : (
                             <div className="rd-chart-wrap">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -278,10 +255,10 @@ const ResidentDashboard = () => {
                         </div>
                         <div className="rd-reminder">
                             <div>
-                                <strong>Maintenance Due: ₹2,500</strong>
-                                <p>Due by 15 Mar, 2026 • 5 days left</p>
+                                <strong>No upcoming dues</strong>
+                                <p>No data yet</p>
                             </div>
-                            <Button variant="primary" onClick={() => navigate('/resident/pay')}>Pay Now</Button>
+                            <Button variant="primary" disabled>Pay Now</Button>
                         </div>
                     </div>
 
@@ -289,17 +266,7 @@ const ResidentDashboard = () => {
                         <div className="rd-surface-head">
                             <h3>Weather • Jaipur</h3>
                         </div>
-                        <div className="rd-weather-grid">
-                            <div className="rd-weather-main">
-                                <CloudSun size={20} />
-                                <div>
-                                    <strong>29°C</strong>
-                                    <span>Partly Cloudy</span>
-                                </div>
-                            </div>
-                            <div className="rd-weather-meta"><Droplets size={14} /> Humidity 42%</div>
-                            <div className="rd-weather-meta"><Wind size={14} /> Wind 9 km/h</div>
-                        </div>
+                        <div className="rd-empty">No data yet</div>
                     </div>
                 </div>
             </motion.section>
@@ -315,16 +282,20 @@ const ResidentDashboard = () => {
                         <h3>Society Updates</h3>
                     </div>
                     <div className="rd-updates-grid">
-                        {societyUpdates.map((item) => (
-                            <article key={item.title} className="rd-update-card">
-                                <h4>{item.title}</h4>
-                                <p>{item.description}</p>
-                                <div className="rd-update-foot">
-                                    <span><CalendarDays size={13} /> {item.date}</span>
-                                    <button onClick={() => navigate('/resident/announcements')}>Read More</button>
-                                </div>
-                            </article>
-                        ))}
+                        {societyUpdates.length === 0 ? (
+                            <div className="rd-empty">No data yet</div>
+                        ) : (
+                            societyUpdates.map((item) => (
+                                <article key={item.title} className="rd-update-card">
+                                    <h4>{item.title}</h4>
+                                    <p>{item.description}</p>
+                                    <div className="rd-update-foot">
+                                        <span><CalendarDays size={13} /> {item.date}</span>
+                                        <button onClick={() => navigate('/resident/announcements')}>Read More</button>
+                                    </div>
+                                </article>
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -333,32 +304,21 @@ const ResidentDashboard = () => {
                         <div className="rd-surface-head">
                             <h3>Society Events</h3>
                         </div>
-                        <div className="rd-mini-list">
-                            <div><CalendarDays size={14} /> Yoga Session • 7:00 AM</div>
-                            <div><Activity size={14} /> Club House Meeting • 6:00 PM</div>
-                            <div><Megaphone size={14} /> Cultural Night • Saturday</div>
-                        </div>
+                        <div className="rd-empty">No data yet</div>
                     </div>
 
                     <div className="rd-surface rd-ai-card">
                         <div className="rd-surface-head">
                             <h3>AI Insights</h3>
                         </div>
-                        <div className="rd-ai-content">
-                            <Sparkles size={16} />
-                            <p>Pay your maintenance before due date to avoid ₹150 late fine and keep your payment streak active.</p>
-                        </div>
+                        <div className="rd-empty">No data yet</div>
                     </div>
 
                     <div className="rd-surface rd-smart-notif-card">
                         <div className="rd-surface-head">
                             <h3>Smart Notifications</h3>
                         </div>
-                        <div className="rd-mini-list">
-                            <div><BadgeIndianRupee size={14} /> Bill generated for March cycle</div>
-                            <div><Clock3 size={14} /> Complaint #103 updated by admin</div>
-                            <div><ShieldAlert size={14} /> Security advisory shared today</div>
-                        </div>
+                        <div className="rd-empty">No data yet</div>
                     </div>
                 </div>
             </motion.section>

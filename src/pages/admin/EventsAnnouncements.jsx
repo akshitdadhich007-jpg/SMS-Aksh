@@ -111,8 +111,8 @@ const EventsAnnouncements = () => {
                 <div className="ea-kpi-card">
                     <div className="ea-kpi-icon kpi-amber"><Clock size={18} /></div>
                     <div>
-                        <div className="ea-kpi-value">Live</div>
-                        <div className="ea-kpi-label">Real-Time Updates</div>
+                        <div className="ea-kpi-value">0</div>
+                        <div className="ea-kpi-label">No data yet</div>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@ const EventsAnnouncements = () => {
 
                     <div className="form-group">
                         <label>Title</label>
-                        <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Holi Celebration" required />
+                        <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Enter title" required />
                     </div>
 
                     {createType === 'event' ? (

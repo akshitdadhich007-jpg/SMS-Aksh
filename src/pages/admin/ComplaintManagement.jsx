@@ -236,7 +236,7 @@ const ComplaintManagement = () => {
                 <div className="cm-stat-total" style={styles.statCard}>
                     <div style={styles.statHeader}>
                         <div style={styles.iconBox('#3b82f6')}><MessageSquare size={24} /></div>
-                        <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>+2 this week</span>
+                        <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>No trend yet</span>
                     </div>
                     <div>
                         <span style={styles.statLabel}>Total Complaints</span>
@@ -402,6 +402,15 @@ const ComplaintManagement = () => {
                                         </td>
                                     </tr>
                                 ))
+                            ) : complaints.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                                            <Search size={32} style={{ opacity: 0.2 }} />
+                                            <p>No complaints yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
                             ) : (
                                 <tr>
                                     <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>

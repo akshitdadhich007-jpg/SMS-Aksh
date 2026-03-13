@@ -9,12 +9,13 @@ import {
   approvePreApprovalBySecurity,
   rejectPreApprovalBySecurity,
 } from '../../firebase/visitorService';
+import { useAuth } from '../../context/AuthContext';
 import '../resident/VisitorPreApproval.css';
 
 const PreApprovedVisitors = () => {
-  const securityOfficerId = 'SEC001';
-  const securityOfficerName = 'Vikram Singh';
-  const securityOfficerShift = 'Morning (6 AM - 2 PM)';
+  const { user } = useAuth();
+  const securityOfficerName = user?.name || 'No officer assigned';
+  const securityOfficerShift = 'No shift data';
 
   const [searchType, setSearchType] = useState('code');
   const [searchQuery, setSearchQuery] = useState('');
@@ -407,7 +408,7 @@ const PreApprovedVisitors = () => {
               {allApprovals.length === 0 ? (
                 <div className="empty-state">
                   <Users size={48} />
-                  <p>No pre-approved visitors at the moment</p>
+                  <p>No pre-approved visitors</p>
                 </div>
               ) : (
                 <div className="approvals-list">

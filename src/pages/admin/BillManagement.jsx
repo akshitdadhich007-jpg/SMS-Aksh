@@ -93,10 +93,11 @@ const BillManagement = () => {
     const getCollectionStats = (bill) => {
         const payments = bill.payments || [];
         const totalCollected = payments.filter(p => p.status === 'Paid').length;
+        const totalResidents = Number(bill.totalResidents || 0);
         return {
             collected: totalCollected,
-            total: 50, // Assuming 50 residents
-            percentage: Math.round((totalCollected / 50) * 100)
+            total: totalResidents,
+            percentage: totalResidents > 0 ? Math.round((totalCollected / totalResidents) * 100) : 0
         };
     };
 
@@ -125,7 +126,7 @@ const BillManagement = () => {
                 <StatCard 
                     label="Pending Amount" 
                     value={`₹ ${(stats.totalPending / 100000).toFixed(1)}L`} 
-                    trend={-Math.round((stats.totalPending / stats.totalBilled) * 100)}
+                    trend={stats.totalBilled > 0 ? -Math.round((stats.totalPending / stats.totalBilled) * 100) : 0}
                     trendLabel="of total"
                 />
             </div>
@@ -143,7 +144,7 @@ const BillManagement = () => {
                     <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading bills...</div>
                 ) : bills.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
-                        No bills generated yet. Create one to get started!
+                        No payments yet
                     </div>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
@@ -332,7 +333,7 @@ const BillManagement = () => {
                         )}
                         <div style={{ backgroundColor: '#f0f9ff', padding: '12px', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
                             <p style={{ margin: 0, fontSize: '13px', color: '#1e40af' }}>
-                                <strong>{getCollectionStats(viewModal).collected}</strong> out of <strong>50</strong> residents have paid
+                                <strong>{getCollectionStats(viewModal).collected}</strong> out of <strong>{getCollectionStats(viewModal).total}</strong> residents have paid
                             </p>
                         </div>
                     </div>

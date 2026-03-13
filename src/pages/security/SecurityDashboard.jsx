@@ -19,6 +19,7 @@ const SecurityDashboard = () => {
     const [deliveryCount, setDeliveryCount] = useState(0);
     const [staffInside, setStaffInside] = useState(0);
     const [activeAlerts, setActiveAlerts] = useState(0);
+    const recentActivity = [];
 
     useEffect(() => {
         const unsubVisitors = subscribeToAllVisitors((items) => {
@@ -86,22 +87,21 @@ const SecurityDashboard = () => {
                 <Card>
                     <div style={{ padding: '4px' }}>
                         <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '600', color: 'var(--text-secondary)' }}>Recent Activity</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {[
-                                { time: '2:30 PM', text: 'Visitor Rahul checked in — Flat A-101', icon: '👤' },
-                                { time: '1:15 PM', text: 'Amazon delivery logged — Flat B-205', icon: '📦' },
-                                { time: '12:00 PM', text: 'Vehicle KA-01-AB-1234 entered', icon: '�' },
-                                { time: '10:30 AM', text: 'Pre-approved visitor Anita arrived', icon: '✅' },
-                            ].map((item, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-light)' }}>
-                                    <span style={{ fontSize: '18px' }}>{item.icon}</span>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>{item.text}</div>
+                        {recentActivity.length === 0 ? (
+                            <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '20px' }}>No data yet</div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {recentActivity.map((item, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-light)' }}>
+                                        <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>{item.text}</div>
+                                        </div>
+                                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{item.time}</span>
                                     </div>
-                                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{item.time}</span>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </Card>
             </div>

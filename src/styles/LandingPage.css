@@ -45,7 +45,7 @@
 .hero-left {
     width: 70%;
     position: relative;
-    background-image: url('/assets/society-bg.jpg');
+    background-image: url('/public/assets/society-bg.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

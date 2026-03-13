@@ -119,7 +119,7 @@ const ResidentManagement = () => {
                     <div className="form-row">
                         <div className="form-group">
                             <label>Full Name</label>
-                            <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Raj Kumar" required />
+                            <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Enter full name" required />
                         </div>
                         <div className="form-group">
                             <label>Flat Number</label>

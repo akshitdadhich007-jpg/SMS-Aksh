@@ -20,45 +20,15 @@ import {
 } from 'recharts';
 import '../../styles/AdminDashboard.css';
 
-const monthlyCollectionData = [
-    { month: 'Jan', collection: 3.9 },
-    { month: 'Feb', collection: 4.1 },
-    { month: 'Mar', collection: 4.3 },
-    { month: 'Apr', collection: 4.2 },
-    { month: 'May', collection: 4.7 },
-    { month: 'Jun', collection: 4.9 },
-];
+const monthlyCollectionData = [];
 
-const expenseData = [
-    { name: 'Utilities', value: 28, color: '#6366F1' },
-    { name: 'Staff Salaries', value: 36, color: '#22C55E' },
-    { name: 'Repairs', value: 18, color: '#F59E0B' },
-    { name: 'Events', value: 10, color: '#EC4899' },
-    { name: 'Misc', value: 8, color: '#0EA5E9' },
-];
+const expenseData = [];
 
-const recentPayments = [
-    { flat: 'A-101', resident: 'Raj Kumar', month: 'Mar 2026', amount: 2500, status: 'Paid' },
-    { flat: 'B-205', resident: 'Anita Sharma', month: 'Mar 2026', amount: 2500, status: 'Pending' },
-    { flat: 'C-304', resident: 'Vikram Singh', month: 'Feb 2026', amount: 2500, status: 'Overdue' },
-    { flat: 'A-202', resident: 'Suresh Mehta', month: 'Mar 2026', amount: 2500, status: 'Paid' },
-    { flat: 'D-108', resident: 'Neha Jain', month: 'Mar 2026', amount: 2500, status: 'Paid' },
-    { flat: 'E-412', resident: 'Aman Verma', month: 'Mar 2026', amount: 2500, status: 'Pending' },
-];
+const recentPayments = [];
 
-const latestComplaints = [
-    { id: '#CMP-219', category: 'Plumbing', status: 'Open', time: '10 mins ago', icon: Wrench },
-    { id: '#CMP-217', category: 'Electrical', status: 'Processing', time: '1 hour ago', icon: Zap },
-    { id: '#CMP-210', category: 'Noise', status: 'Resolved', time: 'Yesterday', icon: Volume2 },
-    { id: '#CMP-208', category: 'Lift Issue', status: 'Processing', time: 'Yesterday', icon: AlertTriangle },
-];
+const latestComplaints = [];
 
-const timelineEvents = [
-    { title: 'March maintenance cycle generated', meta: '120 flats billed', time: '09:15 AM', color: 'indigo' },
-    { title: 'Complaint #CMP-217 assigned', meta: 'Assigned to electrical vendor', time: '10:05 AM', color: 'amber' },
-    { title: 'Bulk notice sent', meta: 'Water supply shutdown alert', time: '11:40 AM', color: 'sky' },
-    { title: 'Payment milestone reached', meta: '82% collection achieved', time: '12:10 PM', color: 'green' },
-];
+const timelineEvents = [];
 
 const quickActions = [
     { label: 'Add Resident', icon: UserPlus, path: '/admin/residents' },
@@ -144,11 +114,11 @@ const AdminDashboard = () => {
         {
             key: 'flats',
             label: 'Total Flats',
-            value: 120,
+            value: 0,
             prefix: '',
             suffix: '',
-            description: 'Across all towers',
-            trend: '+3.2%',
+            description: 'No data yet',
+            trend: '0%',
             trendType: 'up',
             Icon: Building2,
             tint: 'indigo',
@@ -159,8 +129,8 @@ const AdminDashboard = () => {
             value: residentCount || 0,
             prefix: '',
             suffix: '',
-            description: 'Including tenants',
-            trend: '+2.5%',
+            description: residentCount > 0 ? 'Live resident count' : 'No data yet',
+            trend: '0%',
             trendType: 'up',
             Icon: Users,
             tint: 'sky',
@@ -171,8 +141,8 @@ const AdminDashboard = () => {
             value: collectionStats.totalCollected || 0,
             prefix: '₹',
             suffix: '',
-            description: 'Collected this month',
-            trend: '+12%',
+            description: collectionStats.totalCollected > 0 ? 'Collected this month' : 'No data yet',
+            trend: '0%',
             trendType: 'up',
             Icon: IndianRupee,
             tint: 'green',
@@ -183,8 +153,8 @@ const AdminDashboard = () => {
             value: collectionStats.totalPending || 0,
             prefix: '₹',
             suffix: '',
-            description: 'From 18 units',
-            trend: '-5%',
+            description: collectionStats.totalPending > 0 ? 'Pending collection' : 'No data yet',
+            trend: '0%',
             trendType: 'down',
             Icon: CreditCard,
             tint: 'amber',
@@ -195,8 +165,8 @@ const AdminDashboard = () => {
             value: openComplaints || 0,
             prefix: '',
             suffix: '',
-            description: 'Need attention',
-            trend: '-8%',
+            description: openComplaints > 0 ? 'Need attention' : 'No data yet',
+            trend: '0%',
             trendType: 'down',
             Icon: AlertTriangle,
             tint: 'rose',
@@ -285,6 +255,8 @@ const AdminDashboard = () => {
 
                     {isLoading ? (
                         <SkeletonCard className="chart-skeleton" />
+                    ) : monthlyCollectionData.length === 0 ? (
+                        <div className="chart-empty">No data yet</div>
                     ) : (
                         <div className="chart-area">
                             <ResponsiveContainer width="100%" height="100%">
@@ -328,6 +300,8 @@ const AdminDashboard = () => {
 
                     {isLoading ? (
                         <SkeletonCard className="chart-skeleton" />
+                    ) : expenseData.length === 0 ? (
+                        <div className="chart-empty">No data yet</div>
                     ) : (
                         <div className="donut-wrap">
                             <div className="chart-area donut-chart-area">
@@ -388,6 +362,8 @@ const AdminDashboard = () => {
                         <div className="table-skeleton-wrap">
                             <SkeletonCard className="table-skeleton" />
                         </div>
+                    ) : recentPayments.length === 0 ? (
+                        <div className="table-empty">No payments yet</div>
                     ) : (
                         <div className="table-wrap">
                             <table className="saas-table">
@@ -435,6 +411,8 @@ const AdminDashboard = () => {
 
                         {isLoading ? (
                             <SkeletonCard className="complaints-skeleton" />
+                        ) : latestComplaints.length === 0 ? (
+                            <div className="list-empty">No complaints yet</div>
                         ) : (
                             <div className="complaint-list">
                                 {latestComplaints.map((item) => (
@@ -486,16 +464,20 @@ const AdminDashboard = () => {
                         </div>
 
                         <div className="timeline-list">
-                            {timelineEvents.map((event, idx) => (
-                                <div key={`${event.title}-${idx}`} className="timeline-item">
-                                    <span className={`timeline-dot ${event.color}`} />
-                                    <div className="timeline-content">
-                                        <strong>{event.title}</strong>
-                                        <p>{event.meta}</p>
+                            {timelineEvents.length === 0 ? (
+                                <div className="list-empty">No data yet</div>
+                            ) : (
+                                timelineEvents.map((event, idx) => (
+                                    <div key={`${event.title}-${idx}`} className="timeline-item">
+                                        <span className={`timeline-dot ${event.color}`} />
+                                        <div className="timeline-content">
+                                            <strong>{event.title}</strong>
+                                            <p>{event.meta}</p>
+                                        </div>
+                                        <span className="timeline-time">{event.time}</span>
                                     </div>
-                                    <span className="timeline-time">{event.time}</span>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
