@@ -10,7 +10,7 @@ import './BillManagement.css';
 const BillManagement = () => {
     const toast = useToast();
     const { user } = useAuth();
-    const societyId = user?.societyId || null;
+    const societyId = user?.societyId;
     const [bills, setBills] = useState([]);
     const [stats, setStats] = useState({
         totalBilled: 0,
@@ -33,6 +33,7 @@ const BillManagement = () => {
 
     // Subscribe to all bills and stats
     useEffect(() => {
+        if (!societyId) return;
         const unsubBills = subscribeToAllBills(societyId, (data) => {
             setBills(data);
             setLoading(false);

@@ -9,7 +9,7 @@ import { generateCredential } from '../../firebase/credentialService';
 import { useToast } from '../../components/ui/Toast';
 import './OnboardingDashboard.css';
 
-const STEPS = ['Add Flats', 'Add Residents', 'Add Staff', 'Complete!'];
+const STEPS = ['Add Flats', 'Add Residents', 'Add Security Officers', 'Complete!'];
 
 const defaultFlats = Array.from({ length: 10 }, (_, i) => String(101 + i));
 
@@ -37,7 +37,6 @@ const OnboardingDashboard = () => {
     const [staffList, setStaffList] = useState([]);
     const [staffLoading, setStaffLoading] = useState(false);
     const [staffAdded, setStaffAdded] = useState(false);
-    const [staffGeneratedCreds, setStaffGeneratedCreds] = useState([]);
 
     // Guard: must be admin
     useEffect(() => {
@@ -174,10 +173,10 @@ const OnboardingDashboard = () => {
             return;
         }
         if (password !== confirmPassword) {
-            toast.error('Staff password and confirm password do not match.');
+            toast.error('Security password and confirm password do not match.');
             return;
         }
-        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role, phone: phone.trim(), password }]);
+        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role: 'security', phone: phone.trim(), password }]);
         setStaffForm({ name: '', role: 'security', email: '', phone: '', password: '', confirmPassword: '' });
     };
 
@@ -197,7 +196,6 @@ const OnboardingDashboard = () => {
         }
         setStaffLoading(true);
         try {
-            const results = [];
             for (const member of staffList) {
                 const issued = await generateCredential({
                     societyId,
@@ -216,33 +214,15 @@ const OnboardingDashboard = () => {
                     societyId,
                     uid: issued.uid,
                 });
-                results.push({ ...issued, name: member.name, role: member.role, phone: member.phone });
             }
-            setStaffGeneratedCreds(results);
             setStaffAdded(true);
             toast.success(`${staffList.length} staff credentials created!`);
+            setStep(3);
         } catch (err) {
             toast.error(err?.message || 'Failed to add staff');
         } finally {
             setStaffLoading(false);
         }
-    };
-
-    const downloadStaffCredentials = () => {
-        const lines = [
-            ['Name', 'Role', 'Email', 'Phone', 'Password'],
-            ...staffGeneratedCreds.map((c) => [c.name, c.role, c.email, c.phone || '', c.tempPassword]),
-        ];
-        const csv = lines.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'staff-credentials.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
     };
 
     /* ─── Renderers ─── */
@@ -408,16 +388,16 @@ const OnboardingDashboard = () => {
     const renderStep2 = () => (
         <div className="onb-step-content">
             <div className="onb-step-icon">👮</div>
-            <h2>Add Staff Members</h2>
-            <p className="onb-step-desc">Add staff with the same direct login style as the admin panels. Their email and password will work immediately for Security/Staff login.</p>
+            <h2>Add Security Officers (Optional)</h2>
+            <p className="onb-step-desc">Add security officers. Their email and password will work immediately for Security login.</p>
 
             <div className="onb-form-shell">
                 <div className="onb-form-grid onb-form-grid-3">
                     <div className="onb-field">
-                        <label>Staff Name</label>
+                        <label>Security Officer Name</label>
                         <input
                             type="text"
-                            placeholder="Staff Name"
+                            placeholder="Officer Name"
                             value={staffForm.name}
                             onChange={(e) => setStaffForm((p) => ({ ...p, name: e.target.value }))}
                         />
@@ -427,9 +407,9 @@ const OnboardingDashboard = () => {
                         <select
                             value={staffForm.role}
                             onChange={(e) => setStaffForm((p) => ({ ...p, role: e.target.value }))}
+                            disabled
                         >
                             <option value="security">Security Guard</option>
-                            <option value="staff">Maintenance Staff</option>
                         </select>
                     </div>
                     <div className="onb-field">
@@ -472,7 +452,7 @@ const OnboardingDashboard = () => {
                     </div>
                 </div>
                 <button className="onb-btn onb-btn-secondary onb-inline-action" onClick={addStaff} type="button">
-                    + Add Staff
+                    + Add Officer
                 </button>
             </div>
 
@@ -480,53 +460,23 @@ const OnboardingDashboard = () => {
                 <div className="onb-list">
                     {staffList.map((s) => (
                         <div className="onb-list-item" key={s.email}>
-                            <span><strong>{s.name}</strong> ({s.role}) — {s.email} • {s.phone}</span>
+                            <span><strong>{s.name}</strong> — {s.email} • {s.phone}</span>
                             <button className="onb-remove-btn" onClick={() => removeStaff(s.email)} type="button">✕</button>
                         </div>
                     ))}
                 </div>
             )}
 
-            {staffGeneratedCreds.length === 0 ? (
-                <div className="onb-creds-actions" style={{ marginTop: 24 }}>
-                    <button className="onb-btn onb-btn-outline" onClick={() => setStep(3)}>
-                        Skip →
+            <div className="onb-creds-actions" style={{ marginTop: 24 }}>
+                <button className="onb-btn onb-btn-outline" onClick={() => setStep(3)}>
+                    Skip →
+                </button>
+                {staffList.length > 0 && (
+                    <button className="onb-btn onb-btn-primary" onClick={handleGenerateStaff} disabled={staffLoading}>
+                        {staffLoading ? 'Adding Officers…' : `👮 Add ${staffList.length} Officers & Continue`}
                     </button>
-                    {staffList.length > 0 && (
-                        <button className="onb-btn onb-btn-primary" onClick={handleGenerateStaff} disabled={staffLoading}>
-                            {staffLoading ? 'Adding Staff…' : `👮 Add ${staffList.length} Staff & Continue`}
-                        </button>
-                    )}
-                </div>
-            ) : (
-                <>
-                    <div className="onb-creds-table-wrap">
-                        <table className="onb-creds-table">
-                            <thead>
-                                <tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr>
-                            </thead>
-                            <tbody>
-                                {staffGeneratedCreds.map((c) => (
-                                    <tr key={c.email}>
-                                        <td>{c.name}</td>
-                                        <td>{c.role}</td>
-                                        <td>{c.email}</td>
-                                        <td><code className="onb-pass">{c.tempPassword}</code></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="onb-creds-actions">
-                        <button className="onb-btn onb-btn-secondary" onClick={downloadStaffCredentials}>
-                            ⬇️ Download CSV
-                        </button>
-                        <button className="onb-btn onb-btn-primary" onClick={() => setStep(3)}>
-                            Next →
-                        </button>
-                    </div>
-                </>
-            )}
+                )}
+            </div>
         </div>
     );
 
@@ -539,7 +489,7 @@ const OnboardingDashboard = () => {
             <ul className="onb-checklist">
                 {flatsCreated && <li>✅ Flats setup completed</li>}
                 {generatedCreds.length > 0 && <li>✅ {generatedCreds.length} resident credentials generated</li>}
-                {staffAdded && staffList.length > 0 && <li>✅ {staffList.length} staff members added</li>}
+                {staffAdded && staffList.length > 0 && <li>✅ {staffList.length} security officers added</li>}
             </ul>
 
             <button

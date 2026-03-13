@@ -10,7 +10,7 @@ import './ComplaintManagement.css';
 const ComplaintManagement = () => {
     const toast = useToast();
     const { user } = useAuth();
-    const societyId = user?.societyId || null;
+    const societyId = user?.societyId;
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -21,6 +21,7 @@ const ComplaintManagement = () => {
 
     // Subscribe to all complaints from Firestore
     useEffect(() => {
+        if (!societyId) return;
         const unsub = subscribeToAllComplaints(societyId, (data) => {
             setComplaints(data);
             setLoading(false);

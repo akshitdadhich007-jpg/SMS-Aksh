@@ -17,8 +17,8 @@ const MyBills = () => {
 
     // Subscribe to resident's bills
     useEffect(() => {
-        if (!user?.uid) return;
-        const unsub = subscribeToResidentBills(user.uid, user?.societyId || null, (data) => {
+        if (!user?.uid || !user?.societyId) return;
+        const unsub = subscribeToResidentBills(user.uid, user.societyId, (data) => {
             setBills(data);
             setLoading(false);
         });

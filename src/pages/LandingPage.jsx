@@ -25,7 +25,7 @@ const LandingPage = () => {
                     <div className="landing-cta-panel">
                         <div className="landing-cta-icon">🏢</div>
                         <h2 className="landing-cta-title">Live in Harmony</h2>
-                        <p className="landing-cta-sub">Create a society first, or choose the right portal for Admin, Resident, or Security/Staff login.</p>
+                        <p className="landing-cta-sub">Create a society first, or choose the right portal for Admin, Resident, or Security login.</p>
                         <div className="landing-cta-buttons">
                             <Link to="/signup/create-society" className="landing-btn landing-btn-primary">
                                 🚀 Create New Society
@@ -41,7 +41,7 @@ const LandingPage = () => {
                                 <span className="landing-role-hint">Bills, complaints, announcements</span>
                             </Link>
                             <Link to="/login?role=security" className="landing-role-card security">
-                                <span className="landing-role-label">Security / Staff Login</span>
+                                <span className="landing-role-label">Security Login</span>
                                 <span className="landing-role-hint">Visitor entry, attendance, alerts</span>
                             </Link>
                         </div>

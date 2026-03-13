@@ -73,7 +73,7 @@ const AdminDashboard = () => {
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuth();
-    const societyId = user?.societyId || 'default-society';
+    const societyId = user?.societyId;
 
     const [flatCount, setFlatCount] = useState(0);
     const [residentCount, setResidentCount] = useState(0);
@@ -81,7 +81,6 @@ const AdminDashboard = () => {
     const [openComplaints, setOpenComplaints] = useState(0);
     const [presentStaff, setPresentStaff] = useState(0);
     const [activeAlerts, setActiveAlerts] = useState(0);
-    const [firestoreError, setFirestoreError] = useState(null);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => setIsLoading(false), 800);
@@ -89,22 +88,16 @@ const AdminDashboard = () => {
     }, []);
 
     useEffect(() => {
-        const handleFirestoreError = (err) => {
-            if (err?.code === 'permission-denied') {
-                setFirestoreError('Firestore rules are blocking data reads. Go to Firebase Console → Firestore → Rules → publish the open rules.');
-            } else {
-                setFirestoreError(`Firestore error: ${err?.message || err?.code || 'Unknown'}`);
-            }
-        };
+        if (!societyId) return;
 
         const unsubFlats = subscribeToFlats(societyId, (items) => {
             setFlatCount(items.length);
-        }, handleFirestoreError);
+        });
         const unsubResidents = subscribeToResidents(societyId, (items) => {
             setResidentCount(items.length);
-        }, handleFirestoreError);
+        });
         const unsubBills = subscribeBillingStats(societyId, (stats) => {
-            setCollectionStats(stats);
+            setCollectionStats(stats || { totalBilled: 0, totalCollected: 0, totalPending: 0, billCount: 0, collectionPercentage: 0 });
         });
         const unsubComplaints = subscribeToAllComplaints(societyId, (items) => {
             setOpenComplaints(items.filter(c => (c.status || '').toLowerCase() !== 'resolved').length);
@@ -116,12 +109,12 @@ const AdminDashboard = () => {
             setActiveAlerts(items.length);
         });
         return () => {
-            unsubFlats && unsubFlats();
-            unsubResidents && unsubResidents();
-            unsubBills && unsubBills();
-            unsubComplaints && unsubComplaints();
-            unsubAttendance && unsubAttendance();
-            unsubEmergencies && unsubEmergencies();
+            if (unsubFlats) unsubFlats();
+            if (unsubResidents) unsubResidents();
+            if (unsubBills) unsubBills();
+            if (unsubComplaints) unsubComplaints();
+            if (unsubAttendance) unsubAttendance();
+            if (unsubEmergencies) unsubEmergencies();
         };
     }, [societyId]);
 
@@ -196,19 +189,6 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-dashboard-sa">
-            {firestoreError && (
-                <div style={{
-                    background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8,
-                    padding: '12px 16px', marginBottom: 16, color: '#dc2626',
-                    fontSize: 13, display: 'flex', alignItems: 'flex-start', gap: 8
-                }}>
-                    <span style={{ fontSize: 16 }}>⚠️</span>
-                    <div>
-                        <strong>Data not loading</strong><br />
-                        {firestoreError}
-                    </div>
-                </div>
-            )}
             <motion.div
                 className="admin-dashboard-head"
                 initial={{ opacity: 0, y: 10 }}

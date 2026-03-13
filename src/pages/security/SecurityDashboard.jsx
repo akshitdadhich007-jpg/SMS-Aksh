@@ -13,7 +13,7 @@ const SecurityDashboard = () => {
     const toast = useToast();
     const [emergencyModal, setEmergencyModal] = useState(false);
     const { user } = useAuth();
-    const societyId = user?.societyId || 'default-society';
+    const societyId = user?.societyId;
 
     const [visitorCount, setVisitorCount] = useState(0);
     const [deliveryCount, setDeliveryCount] = useState(0);
@@ -22,11 +22,13 @@ const SecurityDashboard = () => {
     const recentActivity = [];
 
     useEffect(() => {
-        const unsubVisitors = subscribeToAllVisitors((items) => {
+        if (!societyId) return;
+
+        const unsubVisitors = subscribeToAllVisitors(societyId, (items) => {
             setVisitorCount(items.length);
             setDeliveryCount(items.filter(v => (v.purpose || '').toLowerCase().includes('delivery')).length);
         });
-        const unsubStats = subscribeToVisitorStats((stats) => {
+        const unsubStats = subscribeToVisitorStats(societyId, (stats) => {
             // not used directly yet but available for future KPIs
         });
         const unsubAttendance = subscribeToTodayAttendance(societyId, (items) => {

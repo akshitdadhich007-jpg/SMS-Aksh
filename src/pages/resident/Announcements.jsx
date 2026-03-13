@@ -10,13 +10,14 @@ import './Announcements.css';
 
 const Announcements = () => {
     const { user } = useAuth();
-    const societyId = user?.societyId || null;
+    const societyId = user?.societyId;
     const [announcements, setAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [expandedIds, setExpandedIds] = useState([]);
     const [readIds, setReadIds] = useState(new Set());
 
     useEffect(() => {
+        if (!societyId) return;
         const unsub = subscribeToAnnouncements(societyId, (items) => {
             // Map Firestore fields to UI shape
             const mapped = items.map(item => ({

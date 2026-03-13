@@ -241,10 +241,15 @@
 .landing-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    color: inherit;
 }
 
 .landing-btn-primary {
     background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+}
+
+.landing-btn-primary:hover {
     color: #fff;
 }
 

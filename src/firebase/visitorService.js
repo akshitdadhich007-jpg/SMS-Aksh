@@ -221,13 +221,13 @@ export const markPreApprovalExit = (preApprovalId) => {
 
 /**
  * Get all visitors for admin view with real-time updates
+ * @param {string} societyId
  * @param {function} callback
  */
-export const subscribeToAllVisitors = (callback) => {
-    const q = query(
-        collection(db, VISITORS_COLLECTION),
-        orderBy('createdAt', 'desc')
-    );
+export const subscribeToAllVisitors = (societyId, callback) => {
+    const q = societyId 
+        ? query(collection(db, VISITORS_COLLECTION), where('societyId', '==', societyId))
+        : query(collection(db, VISITORS_COLLECTION));
     return onSnapshot(q, (snapshot) => {
         const items = snapshot.docs.map(d => {
             const data = d.data();
@@ -236,6 +236,7 @@ export const subscribeToAllVisitors = (callback) => {
             const createdDate = data.createdAt?.toDate?.()?.toLocaleDateString?.('en-IN') || '-';
             return { id: d.id, ...data, entryTime, exitTime, createdDate };
         });
+        items.sort((a,b) => (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0));
         callback(items);
     }, (error) => {
         console.error('[Firestore Error] subscribeToAllVisitors:', error);
@@ -310,10 +311,13 @@ export const checkBlacklist = (phone, callback) => {
 
 /**
  * Get visitor statistics
+ * @param {string} societyId
  * @param {function} callback - Real-time stats callback
  */
-export const subscribeToVisitorStats = (callback) => {
-    const q = query(collection(db, VISITORS_COLLECTION));
+export const subscribeToVisitorStats = (societyId, callback) => {
+    const q = societyId 
+        ? query(collection(db, VISITORS_COLLECTION), where('societyId', '==', societyId))
+        : query(collection(db, VISITORS_COLLECTION));
     return onSnapshot(q, (snapshot) => {
         const visitors = snapshot.docs.map(d => d.data());
         

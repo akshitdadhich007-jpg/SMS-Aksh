@@ -62,7 +62,7 @@ const AdminLayout = () => {
             title: "General",
             items: [
                 { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/admin' },
-                { name: 'Reports', icon: <BarChart size={20} />, path: '/admin/reports' },
+
                 { name: 'Notices', icon: <Bell size={20} />, path: '/admin/notices' },
             ]
         },
@@ -70,7 +70,7 @@ const AdminLayout = () => {
             title: "Management",
             items: [
                 { name: 'Residents', icon: <Users size={20} />, path: '/admin/residents' },
-                { name: 'Staff & Roles', icon: <UserCog size={20} />, path: '/admin/staff' },
+
             ]
         },
         {

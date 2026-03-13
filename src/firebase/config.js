@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -26,11 +26,13 @@ let auth = null;
 let db = null;
 
 if (hasRequiredFirebaseConfig && hasValidApiKeyFormat) {
-  // Reuse existing [DEFAULT] app on HMR / hot reload — prevents "App already exists" crash
-  // that sets db = null and silently kills all Firestore subscriptions.
-  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (error) {
+    console.error('Firebase initialization failed:', error);
+  }
 } else {
   console.warn('Firebase config is missing or invalid. Add VITE_FIREBASE_* values in your .env file.');
 }

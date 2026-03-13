@@ -65,7 +65,7 @@ export const assignResidentToFlat = (flatId, residentUid, residentName) => {
  * @param {function} callback
  * @returns {function} unsubscribe
  */
-export const subscribeToFlats = (societyId, callback, onError) => {
+export const subscribeToFlats = (societyId, callback) => {
   if (!societyId) {
     callback([]);
     return () => {};
@@ -77,7 +77,6 @@ export const subscribeToFlats = (societyId, callback, onError) => {
     callback(items);
   }, (err) => {
     console.error('[Firestore Error] subscribeToFlats:', err);
-    if (onError) onError(err);
     callback([]);
   });
 };

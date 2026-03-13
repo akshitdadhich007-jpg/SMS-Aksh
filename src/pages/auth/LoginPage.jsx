@@ -14,8 +14,8 @@ const ROLE_COPY = {
         subtitle: 'Use the email and password assigned to you by your admin.',
     },
     security: {
-        title: 'Security / Staff Login',
-        subtitle: 'Use your gate or staff credentials for daily operations.',
+        title: 'Security Login',
+        subtitle: 'Use your security credentials for daily operations.',
     },
 };
 
@@ -85,7 +85,7 @@ const LoginPage = () => {
                             className={`auth-role-tab ${selectedRole === role ? 'active' : ''}`}
                             onClick={() => setSearchParams({ role })}
                         >
-                            {role === 'admin' ? 'Admin' : role === 'resident' ? 'Resident' : 'Security / Staff'}
+                            {role === 'admin' ? 'Admin' : role === 'resident' ? 'Resident' : 'Security'}
                         </button>
                     ))}
                 </div>

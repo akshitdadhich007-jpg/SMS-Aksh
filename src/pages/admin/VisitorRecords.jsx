@@ -50,7 +50,10 @@ const VisitorRecords = () => {
   };
 
   useEffect(() => {
-    const unsub = subscribeToAllVisitors((items) => {
+    const societyId = user?.societyId;
+    if (!societyId) return;
+
+    const unsub = subscribeToAllVisitors(societyId, (items) => {
       const normalized = items.map((row) => ({
         id: row.id,
         visitorName: row.visitorName || row.visitor_name || '-',

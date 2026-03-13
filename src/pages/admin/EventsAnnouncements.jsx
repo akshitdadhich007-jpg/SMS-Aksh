@@ -13,7 +13,7 @@ import './EventsAnnouncements.css';
 const EventsAnnouncements = () => {
     const toast = useToast();
     const { user } = useAuth();
-    const societyId = user?.societyId || null;
+    const societyId = user?.societyId;
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [createModal, setCreateModal] = useState(false);
@@ -22,6 +22,7 @@ const EventsAnnouncements = () => {
     const [form, setForm] = useState({ title: '', date: '', time: '', location: '', message: '', annType: 'info' });
 
     useEffect(() => {
+        if (!societyId) return;
         const unsub = subscribeToAnnouncements(societyId, (data) => {
             setItems(data);
             setLoading(false);

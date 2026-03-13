@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { PageHeader, Card, Button, CardHeader, CardContent, StatusBadge } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
+import { useAuth } from '../../context/AuthContext';
 import { checkInVisitor, checkOutVisitor, subscribeToAllVisitors } from '../../firebase/visitorService';
 
 const VisitorEntry = () => {
+    const { user } = useAuth();
+    const societyId = user?.societyId;
     const toast = useToast();
     const [visitors, setVisitors] = useState([]);
     const [form, setForm] = useState({ name: '', purpose: '', flat: '' });
@@ -11,14 +14,16 @@ const VisitorEntry = () => {
 
     // Subscribe to all active visitors
     useEffect(() => {
-        const unsubscribe = subscribeToAllVisitors((visitorsList) => {
+        if (!societyId) return;
+
+        const unsubscribe = subscribeToAllVisitors(societyId, (visitorsList) => {
             // Filter only active (checked in but not checked out) visitors
             const activeVisitors = visitorsList.filter(v => v.status === 'checked_in');
             setVisitors(activeVisitors);
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [societyId]);
 
     const handleCheckIn = async (e) => {
         e.preventDefault();
@@ -36,6 +41,7 @@ const VisitorEntry = () => {
                 purpose: form.purpose,
                 flatNumber: form.flat,
                 phone: '', // Not required for manual check-in
+                societyId: societyId,
             });
 
             toast.success(`${form.name} checked in for flat ${form.flat}!`, 'Visitor Checked In');
