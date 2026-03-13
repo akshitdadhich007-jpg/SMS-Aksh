@@ -37,6 +37,7 @@ const OnboardingDashboard = () => {
     const [staffList, setStaffList] = useState([]);
     const [staffLoading, setStaffLoading] = useState(false);
     const [staffAdded, setStaffAdded] = useState(false);
+    const [staffGeneratedCreds, setStaffGeneratedCreds] = useState([]);
 
     // Guard: must be admin
     useEffect(() => {
@@ -196,6 +197,7 @@ const OnboardingDashboard = () => {
         }
         setStaffLoading(true);
         try {
+            const results = [];
             for (const member of staffList) {
                 const issued = await generateCredential({
                     societyId,
@@ -214,15 +216,33 @@ const OnboardingDashboard = () => {
                     societyId,
                     uid: issued.uid,
                 });
+                results.push({ ...issued, name: member.name, role: member.role, phone: member.phone });
             }
+            setStaffGeneratedCreds(results);
             setStaffAdded(true);
             toast.success(`${staffList.length} staff credentials created!`);
-            setStep(3);
         } catch (err) {
             toast.error(err?.message || 'Failed to add staff');
         } finally {
             setStaffLoading(false);
         }
+    };
+
+    const downloadStaffCredentials = () => {
+        const lines = [
+            ['Name', 'Role', 'Email', 'Phone', 'Password'],
+            ...staffGeneratedCreds.map((c) => [c.name, c.role, c.email, c.phone || '', c.tempPassword]),
+        ];
+        const csv = lines.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'staff-credentials.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     /* ─── Renderers ─── */
@@ -467,16 +487,46 @@ const OnboardingDashboard = () => {
                 </div>
             )}
 
-            <div className="onb-creds-actions" style={{ marginTop: 24 }}>
-                <button className="onb-btn onb-btn-outline" onClick={() => setStep(3)}>
-                    Skip →
-                </button>
-                {staffList.length > 0 && (
-                    <button className="onb-btn onb-btn-primary" onClick={handleGenerateStaff} disabled={staffLoading}>
-                        {staffLoading ? 'Adding Staff…' : `👮 Add ${staffList.length} Staff & Continue`}
+            {staffGeneratedCreds.length === 0 ? (
+                <div className="onb-creds-actions" style={{ marginTop: 24 }}>
+                    <button className="onb-btn onb-btn-outline" onClick={() => setStep(3)}>
+                        Skip →
                     </button>
-                )}
-            </div>
+                    {staffList.length > 0 && (
+                        <button className="onb-btn onb-btn-primary" onClick={handleGenerateStaff} disabled={staffLoading}>
+                            {staffLoading ? 'Adding Staff…' : `👮 Add ${staffList.length} Staff & Continue`}
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <>
+                    <div className="onb-creds-table-wrap">
+                        <table className="onb-creds-table">
+                            <thead>
+                                <tr><th>Name</th><th>Role</th><th>Email</th><th>Password</th></tr>
+                            </thead>
+                            <tbody>
+                                {staffGeneratedCreds.map((c) => (
+                                    <tr key={c.email}>
+                                        <td>{c.name}</td>
+                                        <td>{c.role}</td>
+                                        <td>{c.email}</td>
+                                        <td><code className="onb-pass">{c.tempPassword}</code></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="onb-creds-actions">
+                        <button className="onb-btn onb-btn-secondary" onClick={downloadStaffCredentials}>
+                            ⬇️ Download CSV
+                        </button>
+                        <button className="onb-btn onb-btn-primary" onClick={() => setStep(3)}>
+                            Next →
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 

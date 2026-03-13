@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -29,6 +29,10 @@ if (hasRequiredFirebaseConfig && hasValidApiKeyFormat) {
   try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    // Use session persistence so each browser tab keeps its own independent
+    // auth session — opening admin, resident, and security in separate tabs
+    // will not log each other out.
+    setPersistence(auth, browserSessionPersistence).catch(console.error);
     db = getFirestore(app);
   } catch (error) {
     console.error('Firebase initialization failed:', error);
