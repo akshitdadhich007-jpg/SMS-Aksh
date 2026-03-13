@@ -25,13 +25,24 @@ const LandingPage = () => {
                     <div className="landing-cta-panel">
                         <div className="landing-cta-icon">🏢</div>
                         <h2 className="landing-cta-title">Live in Harmony</h2>
-                        <p className="landing-cta-sub">Set up your society or log in to your account.</p>
+                        <p className="landing-cta-sub">Create a society first, or choose the right portal for Admin, Resident, or Security/Staff login.</p>
                         <div className="landing-cta-buttons">
                             <Link to="/signup/create-society" className="landing-btn landing-btn-primary">
                                 🚀 Create New Society
                             </Link>
-                            <Link to="/login" className="landing-btn landing-btn-outline">
-                                Login
+                        </div>
+                        <div className="landing-login-options">
+                            <Link to="/login?role=admin" className="landing-role-card admin">
+                                <span className="landing-role-label">Admin Login</span>
+                                <span className="landing-role-hint">Society setup, billing, residents</span>
+                            </Link>
+                            <Link to="/login?role=resident" className="landing-role-card resident">
+                                <span className="landing-role-label">Resident Login</span>
+                                <span className="landing-role-hint">Bills, complaints, announcements</span>
+                            </Link>
+                            <Link to="/login?role=security" className="landing-role-card security">
+                                <span className="landing-role-label">Security / Staff Login</span>
+                                <span className="landing-role-hint">Visitor entry, attendance, alerts</span>
                             </Link>
                         </div>
                     </div>

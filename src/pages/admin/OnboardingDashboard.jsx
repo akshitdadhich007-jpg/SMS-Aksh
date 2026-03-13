@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { createBulkFlats } from '../../firebase/flatService';
+import { assignResidentToFlat, createBulkFlats, fetchFlatsOnce } from '../../firebase/flatService';
+import { createResident } from '../../firebase/residentService';
+import { createStaff } from '../../firebase/staffService';
 import { generateBulkCredentials } from '../../firebase/credentialService';
 import { generateCredential } from '../../firebase/credentialService';
 import { useToast } from '../../components/ui/Toast';
@@ -25,13 +27,13 @@ const OnboardingDashboard = () => {
     const [flatsLoading, setFlatsLoading] = useState(false);
 
     // Step 1 — Residents
-    const [residentForm, setResidentForm] = useState({ flatNumber: '', name: '', email: '', password: '', confirmPassword: '' });
+    const [residentForm, setResidentForm] = useState({ flatNumber: '', name: '', email: '', phone: '', password: '', confirmPassword: '' });
     const [residentList, setResidentList] = useState([]);
     const [credsLoading, setCredsLoading] = useState(false);
     const [generatedCreds, setGeneratedCreds] = useState([]);
 
     // Step 2 — Staff
-    const [staffForm, setStaffForm] = useState({ name: '', role: 'security', email: '', password: '', confirmPassword: '' });
+    const [staffForm, setStaffForm] = useState({ name: '', role: 'security', email: '', phone: '', password: '', confirmPassword: '' });
     const [staffList, setStaffList] = useState([]);
     const [staffLoading, setStaffLoading] = useState(false);
     const [staffAdded, setStaffAdded] = useState(false);
@@ -71,8 +73,8 @@ const OnboardingDashboard = () => {
 
     /* ─── Step 1: Add Residents ─── */
     const addResident = () => {
-        const { flatNumber, name, email, password, confirmPassword } = residentForm;
-        if (!flatNumber.trim() || !name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+        const { flatNumber, name, email, phone, password, confirmPassword } = residentForm;
+        if (!flatNumber.trim() || !name.trim() || !email.trim() || !phone.trim() || !password.trim() || !confirmPassword.trim()) {
             toast.error('All resident fields are required.');
             return;
         }
@@ -92,9 +94,10 @@ const OnboardingDashboard = () => {
             flatNumber: flatNumber.trim(),
             name: name.trim(),
             email: email.trim().toLowerCase(),
+            phone: phone.trim(),
             password,
         }]);
-        setResidentForm({ flatNumber: '', name: '', email: '', password: '', confirmPassword: '' });
+        setResidentForm({ flatNumber: '', name: '', email: '', phone: '', password: '', confirmPassword: '' });
     };
 
     const removeResident = (email) => {
@@ -113,6 +116,25 @@ const OnboardingDashboard = () => {
         setCredsLoading(true);
         try {
             const results = await generateBulkCredentials(societyId, residentList.map((r) => ({ ...r, role: 'resident' })));
+            const flats = await fetchFlatsOnce(societyId);
+            for (const result of results) {
+                const resident = residentList.find((entry) => entry.email === result.email);
+                if (!resident) continue;
+
+                await createResident({
+                    name: resident.name,
+                    flat: resident.flatNumber,
+                    email: resident.email,
+                    phone: resident.phone,
+                    status: 'Active',
+                    societyId,
+                    uid: result.uid,
+                });
+                const flatDoc = flats.find((flat) => String(flat.flatNumber) === String(resident.flatNumber));
+                if (flatDoc) {
+                    await assignResidentToFlat(flatDoc.id, result.uid, resident.name);
+                }
+            }
             setGeneratedCreds(results);
             toast.success(`${results.length} credentials generated!`);
         } catch (err) {
@@ -141,9 +163,9 @@ const OnboardingDashboard = () => {
 
     /* ─── Step 2: Add Staff ─── */
     const addStaff = () => {
-        const { name, email, role, password, confirmPassword } = staffForm;
-        if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-            toast.error('Name, email, and password are required for staff.');
+        const { name, email, role, phone, password, confirmPassword } = staffForm;
+        if (!name.trim() || !email.trim() || !phone.trim() || !password.trim() || !confirmPassword.trim()) {
+            toast.error('Name, email, phone, and password are required for staff.');
             return;
         }
         if (password.length < 6) {
@@ -154,8 +176,8 @@ const OnboardingDashboard = () => {
             toast.error('Staff password and confirm password do not match.');
             return;
         }
-        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role, password }]);
-        setStaffForm({ name: '', role: 'security', email: '', password: '', confirmPassword: '' });
+        setStaffList((prev) => [...prev, { name: name.trim(), email: email.trim().toLowerCase(), role, phone: phone.trim(), password }]);
+        setStaffForm({ name: '', role: 'security', email: '', phone: '', password: '', confirmPassword: '' });
     };
 
     const removeStaff = (email) => {
@@ -175,12 +197,22 @@ const OnboardingDashboard = () => {
         setStaffLoading(true);
         try {
             for (const member of staffList) {
-                await generateCredential({
+                const issued = await generateCredential({
                     societyId,
                     email: member.email,
                     name: member.name,
                     role: member.role,
                     password: member.password,
+                });
+                await createStaff({
+                    name: member.name,
+                    role: member.role,
+                    email: member.email,
+                    phone: member.phone,
+                    salary: 0,
+                    status: 'Active',
+                    societyId,
+                    uid: issued.uid,
                 });
             }
             setStaffAdded(true);
@@ -230,45 +262,73 @@ const OnboardingDashboard = () => {
         <div className="onb-step-content">
             <div className="onb-step-icon">👤</div>
             <h2>Generate Resident Credentials</h2>
-            <p className="onb-step-desc">Add residents with their email and password. They will use these same credentials in the resident portal.</p>
+            <p className="onb-step-desc">Add residents with the same direct login fields used later in resident management. These credentials will work immediately in the resident portal.</p>
 
             {generatedCreds.length === 0 ? (
                 <>
-                    <div className="onb-resident-form">
-                        <select
-                            value={residentForm.flatNumber}
-                            onChange={(e) => setResidentForm((p) => ({ ...p, flatNumber: e.target.value }))}
-                        >
-                            <option value="">Select Flat</option>
-                            {flatInput.split(/[,\s]+/).filter(Boolean).map((n) => (
-                                <option key={n} value={n}>{n}</option>
-                            ))}
-                        </select>
-                        <input
-                            type="text"
-                            placeholder="Resident Name"
-                            value={residentForm.name}
-                            onChange={(e) => setResidentForm((p) => ({ ...p, name: e.target.value }))}
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email Address"
-                            value={residentForm.email}
-                            onChange={(e) => setResidentForm((p) => ({ ...p, email: e.target.value }))}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={residentForm.password}
-                            onChange={(e) => setResidentForm((p) => ({ ...p, password: e.target.value }))}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Confirm Password"
-                            value={residentForm.confirmPassword}
-                            onChange={(e) => setResidentForm((p) => ({ ...p, confirmPassword: e.target.value }))}
-                        />
-                        <button className="onb-btn onb-btn-secondary" onClick={addResident} type="button">
+                    <div className="onb-form-shell">
+                        <div className="onb-form-grid onb-form-grid-3">
+                            <div className="onb-field">
+                                <label>Flat Number</label>
+                                <select
+                                    value={residentForm.flatNumber}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, flatNumber: e.target.value }))}
+                                >
+                                    <option value="">Select Flat</option>
+                                    {flatInput.split(/[,\s]+/).filter(Boolean).map((n) => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="onb-field">
+                                <label>Resident Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="Resident Name"
+                                    value={residentForm.name}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, name: e.target.value }))}
+                                />
+                            </div>
+                            <div className="onb-field">
+                                <label>Phone</label>
+                                <input
+                                    type="tel"
+                                    placeholder="Phone Number"
+                                    value={residentForm.phone}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, phone: e.target.value }))}
+                                />
+                            </div>
+                        </div>
+                        <div className="onb-form-grid onb-form-grid-3">
+                            <div className="onb-field">
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    placeholder="Email Address"
+                                    value={residentForm.email}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, email: e.target.value }))}
+                                />
+                            </div>
+                            <div className="onb-field">
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={residentForm.password}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, password: e.target.value }))}
+                                />
+                            </div>
+                            <div className="onb-field">
+                                <label>Confirm Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    value={residentForm.confirmPassword}
+                                    onChange={(e) => setResidentForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+                                />
+                            </div>
+                        </div>
+                        <button className="onb-btn onb-btn-secondary onb-inline-action" onClick={addResident} type="button">
                             + Add Resident
                         </button>
                     </div>
@@ -277,7 +337,7 @@ const OnboardingDashboard = () => {
                         <div className="onb-list">
                             {residentList.map((r) => (
                                 <div className="onb-list-item" key={r.email}>
-                                    <span>Flat {r.flatNumber} — <strong>{r.name}</strong> ({r.email})</span>
+                                    <span>Flat {r.flatNumber} — <strong>{r.name}</strong> ({r.email}) • {r.phone}</span>
                                     <button className="onb-remove-btn" onClick={() => removeResident(r.email)} type="button">✕</button>
                                 </div>
                             ))}
@@ -329,41 +389,69 @@ const OnboardingDashboard = () => {
         <div className="onb-step-content">
             <div className="onb-step-icon">👮</div>
             <h2>Add Staff Members</h2>
-            <p className="onb-step-desc">Add staff with direct login credentials. These same email and password values will be used at login.</p>
+            <p className="onb-step-desc">Add staff with the same direct login style as the admin panels. Their email and password will work immediately for Security/Staff login.</p>
 
-            <div className="onb-resident-form">
-                <input
-                    type="text"
-                    placeholder="Staff Name"
-                    value={staffForm.name}
-                    onChange={(e) => setStaffForm((p) => ({ ...p, name: e.target.value }))}
-                />
-                <select
-                    value={staffForm.role}
-                    onChange={(e) => setStaffForm((p) => ({ ...p, role: e.target.value }))}
-                >
-                    <option value="security">Security Guard</option>
-                    <option value="staff">Maintenance Staff</option>
-                </select>
-                <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={staffForm.email}
-                    onChange={(e) => setStaffForm((p) => ({ ...p, email: e.target.value }))}
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={staffForm.password}
-                    onChange={(e) => setStaffForm((p) => ({ ...p, password: e.target.value }))}
-                />
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    value={staffForm.confirmPassword}
-                    onChange={(e) => setStaffForm((p) => ({ ...p, confirmPassword: e.target.value }))}
-                />
-                <button className="onb-btn onb-btn-secondary" onClick={addStaff} type="button">
+            <div className="onb-form-shell">
+                <div className="onb-form-grid onb-form-grid-3">
+                    <div className="onb-field">
+                        <label>Staff Name</label>
+                        <input
+                            type="text"
+                            placeholder="Staff Name"
+                            value={staffForm.name}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, name: e.target.value }))}
+                        />
+                    </div>
+                    <div className="onb-field">
+                        <label>Role</label>
+                        <select
+                            value={staffForm.role}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, role: e.target.value }))}
+                        >
+                            <option value="security">Security Guard</option>
+                            <option value="staff">Maintenance Staff</option>
+                        </select>
+                    </div>
+                    <div className="onb-field">
+                        <label>Phone</label>
+                        <input
+                            type="tel"
+                            placeholder="Phone Number"
+                            value={staffForm.phone}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, phone: e.target.value }))}
+                        />
+                    </div>
+                </div>
+                <div className="onb-form-grid onb-form-grid-3">
+                    <div className="onb-field">
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={staffForm.email}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, email: e.target.value }))}
+                        />
+                    </div>
+                    <div className="onb-field">
+                        <label>Password</label>
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={staffForm.password}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, password: e.target.value }))}
+                        />
+                    </div>
+                    <div className="onb-field">
+                        <label>Confirm Password</label>
+                        <input
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={staffForm.confirmPassword}
+                            onChange={(e) => setStaffForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+                        />
+                    </div>
+                </div>
+                <button className="onb-btn onb-btn-secondary onb-inline-action" onClick={addStaff} type="button">
                     + Add Staff
                 </button>
             </div>
@@ -372,7 +460,7 @@ const OnboardingDashboard = () => {
                 <div className="onb-list">
                     {staffList.map((s) => (
                         <div className="onb-list-item" key={s.email}>
-                            <span><strong>{s.name}</strong> ({s.role}) — {s.email}</span>
+                            <span><strong>{s.name}</strong> ({s.role}) — {s.email} • {s.phone}</span>
                             <button className="onb-remove-btn" onClick={() => removeStaff(s.email)} type="button">✕</button>
                         </div>
                     ))}

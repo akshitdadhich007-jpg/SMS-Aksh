@@ -3,6 +3,7 @@ import {
   collection,
   addDoc,
   doc,
+  getDocs,
   updateDoc,
   query,
   where,
@@ -78,4 +79,13 @@ export const subscribeToFlats = (societyId, callback) => {
     console.error('[Firestore Error] subscribeToFlats:', err);
     callback([]);
   });
+};
+
+export const fetchFlatsOnce = async (societyId) => {
+  if (!societyId) return [];
+  const q = query(collection(db, COLLECTION), where('societyId', '==', societyId));
+  const snap = await getDocs(q);
+  const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  items.sort((a, b) => String(a.flatNumber).localeCompare(String(b.flatNumber), undefined, { numeric: true }));
+  return items;
 };

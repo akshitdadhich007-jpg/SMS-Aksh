@@ -1,16 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardPathByRole } from '../../utils/authUtils';
+import { getDashboardPathByRole, normalizeRole } from '../../utils/authUtils';
 import './AuthPages.css';
+
+const ROLE_COPY = {
+    admin: {
+        title: 'Admin Login',
+        subtitle: 'Use your admin credentials to manage society operations.',
+    },
+    resident: {
+        title: 'Resident Login',
+        subtitle: 'Use the email and password assigned to you by your admin.',
+    },
+    security: {
+        title: 'Security / Staff Login',
+        subtitle: 'Use your gate or staff credentials for daily operations.',
+    },
+};
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { signIn, user } = useAuth();
+    const selectedRole = normalizeRole(searchParams.get('role') || 'admin');
+    const roleCopy = useMemo(() => ROLE_COPY[selectedRole] || ROLE_COPY.admin, [selectedRole]);
 
     // Redirect if already logged in
     useEffect(() => {
@@ -59,7 +77,21 @@ const LoginPage = () => {
                     <p className="auth-tagline">Society Management Platform</p>
                 </div>
 
-                <h2 className="auth-title">Login to Your Society</h2>
+                <div className="auth-role-tabs" role="tablist" aria-label="Login role selector">
+                    {['admin', 'resident', 'security'].map((role) => (
+                        <button
+                            key={role}
+                            type="button"
+                            className={`auth-role-tab ${selectedRole === role ? 'active' : ''}`}
+                            onClick={() => setSearchParams({ role })}
+                        >
+                            {role === 'admin' ? 'Admin' : role === 'resident' ? 'Resident' : 'Security / Staff'}
+                        </button>
+                    ))}
+                </div>
+
+                <h2 className="auth-title">{roleCopy.title}</h2>
+                <p className="auth-subtitle">{roleCopy.subtitle}</p>
 
                 {errorMsg && (
                     <div className="auth-error">

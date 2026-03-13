@@ -181,6 +181,64 @@
     margin-bottom: 4px;
 }
 
+.onb-form-shell {
+    width: 100%;
+    max-width: 620px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.onb-form-grid {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+}
+
+.onb-form-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.onb-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.onb-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.onb-field input,
+.onb-field select {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-size: 13px;
+    color: #111827;
+    outline: none;
+    background: #fff;
+    width: 100%;
+}
+
+.onb-field input:focus,
+.onb-field select:focus {
+    border-color: #6366f1;
+}
+
+.onb-inline-action {
+    align-self: flex-end;
+}
+
 .onb-resident-form input,
 .onb-resident-form select {
     border: 1.5px solid #e5e7eb;
@@ -366,5 +424,11 @@
     }
     .onb-creds-actions {
         flex-direction: column;
+    }
+    .onb-form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+    .onb-inline-action {
+        width: 100%;
     }
 }
