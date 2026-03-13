@@ -117,15 +117,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    // Return a fallback so pages don't crash outside AuthProvider
-    return {
-      user: (() => { try { return JSON.parse(localStorage.getItem('user')); } catch { return null; } })(),
-      loading: false,
-      signIn: async () => ({ user: null, error: { message: 'AuthProvider not mounted' } }),
-      signInWithGoogle: async () => ({ error: { message: 'AuthProvider not mounted' } }),
-      signOut: async () => { localStorage.removeItem('user'); },
-      updateProfile: async () => {},
-    };
+    throw new Error('useAuth must be used inside <AuthProvider>. Check that AuthProvider wraps your component tree in App.jsx.');
   }
   return context;
 }
